@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:aba_analysis/screens/setting/setting_screen.dart';
-import 'package:aba_analysis/screens/graph_management/graph_main_screen.dart';
-import 'package:aba_analysis/screens/child_management/child_main_screen.dart';
-import 'package:aba_analysis/screens/subject_management/subject_main_screen.dart';
+import 'package:aba_analysis_local/screens/graph_management/graph_main_screen.dart';
+import 'package:aba_analysis_local/screens/child_management/child_main_screen.dart';
+import 'package:aba_analysis_local/screens/subject_management/subject_main_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -23,11 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    //Firebase.initializeApp().then((_) {
     setState(() {
       firebaseInitialized = true;
     });
-    //});
 
     pageController = PageController();
 
@@ -76,10 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.white,
             child: SubjectMainScreen(),
           ),
-          Container(
-            color: Colors.white,
-            child: SettingScreen(),
-          ),
         ],
         controller: pageController,
         physics: NeverScrollableScrollPhysics(),
@@ -106,13 +99,6 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(
               Icons.library_books_outlined,
               color: (_page == 2) ? Colors.black : Colors.grey,
-            ),
-            backgroundColor: Colors.white,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-              color: (_page == 3) ? Colors.black : Colors.grey,
             ),
             backgroundColor: Colors.white,
           ),
