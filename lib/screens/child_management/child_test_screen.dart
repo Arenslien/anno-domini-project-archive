@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/test.dart';
-import 'package:aba_analysis/models/child.dart';
-import 'package:aba_analysis/models/test_item.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/provider/test_notifier.dart';
-import 'package:aba_analysis/provider/test_item_notifier.dart';
-import 'package:aba_analysis/components/build_list_tile.dart';
-import 'package:aba_analysis/components/build_no_list_widget.dart';
-import 'package:aba_analysis/components/build_toggle_buttons.dart';
-import 'package:aba_analysis/components/build_text_form_field.dart';
-import 'package:aba_analysis/components/build_floating_action_button.dart';
-import 'package:aba_analysis/screens/test_management/test_input_screen.dart';
-import 'package:aba_analysis/screens/test_management/test_modify_screen.dart';
-import 'package:aba_analysis/screens/child_management/child_get_result_screen.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/test.dart';
+import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/test_notifier.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
+import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:aba_analysis_local/components/build_no_list_widget.dart';
+import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
+import 'package:aba_analysis_local/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/components/build_floating_action_button.dart';
+import 'package:aba_analysis_local/screens/test_management/test_input_screen.dart';
+import 'package:aba_analysis_local/screens/test_management/test_modify_screen.dart';
+import 'package:aba_analysis_local/screens/child_management/child_get_result_screen.dart';
 
 class ChildTestScreen extends StatefulWidget {
   final Child child;
@@ -26,8 +25,6 @@ class ChildTestScreen extends StatefulWidget {
 
 class _ChildTestScreenState extends State<ChildTestScreen> {
   _ChildTestScreenState();
-
-  FireStoreService store = FireStoreService();
 
   List<Test> searchResult = [];
 
@@ -167,9 +164,9 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
         onPressed: (idx) async {
           if (idx == 0) {
             // DB에 Test 추가
-            Test copiedTest = await store.copyTest(test);
+            // Test copiedTest = await store.copyTest(test);
             // TestNotifer에 추가
-            context.read<TestNotifier>().addTest(copiedTest);
+            // context.read<TestNotifier>().addTest(copiedTest);
 
             // 복사할 Test의 TestItemList 가져오기
             List<TestItem> testItemList = context
@@ -178,10 +175,10 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
 
             for (TestItem testItem in testItemList) {
               // DB에 TestItem 추가
-              TestItem copiedTestItem =
-                  await store.copyTestItem(copiedTest.testId, copiedTest.childId, testItem);
+              // TestItem copiedTestItem =
+              //     await store.copyTestItem(copiedTest.testId, copiedTest.childId, testItem);
               // 복사된 테스트 아이템 TestItem Notifier에 추가
-              context.read<TestItemNotifier>().addTestItem(copiedTestItem);
+              // context.read<TestItemNotifier>().addTestItem(copiedTestItem);
             }
             setState(() {
               searchTextEditingController.text = '';

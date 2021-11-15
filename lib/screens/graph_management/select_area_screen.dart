@@ -1,11 +1,11 @@
-import 'package:aba_analysis/components/search_delegate.dart';
-import 'package:aba_analysis/models/child.dart';
-import 'package:aba_analysis/models/program_field.dart';
-import 'package:aba_analysis/models/sub_field.dart';
-import 'package:aba_analysis/components/select_appbar.dart';
-import 'package:aba_analysis/screens/graph_management/select_item_graph_screen.dart';
+import 'package:aba_analysis_local/components/search_delegate.dart';
+import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/models/program_field.dart';
+import 'package:aba_analysis_local/models/sub_field.dart';
+import 'package:aba_analysis_local/components/select_appbar.dart';
+import 'package:aba_analysis_local/screens/graph_management/select_item_graph_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:aba_analysis/components/build_list_tile.dart';
+import 'package:aba_analysis_local/components/build_list_tile.dart';
 
 // 선택한 프로그램 영역의 하위영역을 선택하는 스크린
 class SelectAreaScreen extends StatefulWidget {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/sub_field.dart';
-import 'package:aba_analysis/services/firestore.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/sub_field.dart';
 
 class SelectSubitemScreen extends StatefulWidget {
   final SubField subField;
@@ -19,7 +18,6 @@ class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
   // 완료할 때 추가할 하위영역의 하위목록 리스트
   List<String> subitemList = [];
 
-  FireStoreService store = FireStoreService();
   final textController = TextEditingController();
 
   @override

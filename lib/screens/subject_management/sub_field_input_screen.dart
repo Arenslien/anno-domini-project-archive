@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/sub_field.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/models/program_field.dart';
-import 'package:aba_analysis/provider/program_field_notifier.dart';
-import 'package:aba_analysis/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/sub_field.dart';
+import 'package:aba_analysis_local/models/program_field.dart';
+import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class SubFieldInputScreen extends StatefulWidget {
   final ProgramField program;
@@ -25,7 +24,6 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
   Set<String> subItemSet = {};
   late String subFieldName;
   final formkey = GlobalKey<FormState>();
-  FireStoreService store = FireStoreService();
   final textController = TextEditingController();
   @override
   void initState() {
@@ -79,13 +77,13 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                     );
                     // DB에 서브필드 추가
 //                    await store.create
-                    await store.addSubField(
-                        convertProgramFieldTitle(widget.program.title)!,
-                        addSub);
+                    // await store.addSubField(
+                    //     convertProgramFieldTitle(widget.program.title)!,
+                    //     addSub);
                     // Subfield를 Notifier에 추가
-                    context
-                        .read<ProgramFieldNotifier>()
-                        .updateProgramFieldList(await store.readProgramField());
+                    // context
+                    //     .read<ProgramFieldNotifier>()
+                    //     .updateProgramFieldList(await store.readProgramField());
                     subitemList = List<String>.generate(10, (index) => "");
                     Navigator.pop(context);
                   }

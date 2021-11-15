@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/test.dart';
-import 'package:aba_analysis/models/child.dart';
-import 'package:aba_analysis/models/test_item.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/provider/test_notifier.dart';
-import 'package:aba_analysis/components/build_list_tile.dart';
-import 'package:aba_analysis/provider/test_item_notifier.dart';
-import 'package:aba_analysis/components/build_toggle_buttons.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/test.dart';
+import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/test_notifier.dart';
+import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
+import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 
 class ChildGetResultScreen extends StatefulWidget {
   final Child child;
@@ -77,7 +76,7 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    FireStoreService store = FireStoreService();
+    // FireStoreService store = FireStoreService();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -103,14 +102,14 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
             onPressed: () async {
               if (checkResultList()) {
                 for (int i = 0; i < testItemList.length; i++) {
-                  await store.updateTestItem(
-                      testItemList[i].testItemId, result[i]!);
+                  // await store.updateTestItem(
+                  //     testItemList[i].testItemId, result[i]!);
                   context
                       .read<TestItemNotifier>()
                       .updateTestItem(testItemList[i].testItemId, result[i]!);
                 }
-                await store.updateTest(widget.test.testId, widget.test.date,
-                    widget.test.title, true);
+                // await store.updateTest(widget.test.testId, widget.test.date,
+                //     widget.test.title, true);
                 context.read<TestNotifier>().updateTest(widget.test.testId,
                     widget.test.date, widget.test.title, true);
 

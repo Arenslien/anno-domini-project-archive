@@ -1,16 +1,15 @@
-import 'package:aba_analysis/provider/program_field_notifier.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/test.dart';
-import 'package:aba_analysis/models/test_item.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/provider/test_notifier.dart';
-import 'package:aba_analysis/provider/test_item_notifier.dart';
-import 'package:aba_analysis/components/show_date_picker.dart';
-import 'package:aba_analysis/components/show_dialog_delete.dart';
-import 'package:aba_analysis/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/test.dart';
+import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/test_notifier.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
+import 'package:aba_analysis_local/components/show_date_picker.dart';
+import 'package:aba_analysis_local/components/show_dialog_delete.dart';
+import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class TestModifyScreen extends StatefulWidget {
   const TestModifyScreen({required this.test, Key? key}) : super(key: key);
@@ -27,7 +26,6 @@ class _TestInputScreenState extends State<TestModifyScreen> {
   final formkey = GlobalKey<FormState>();
   List<TestItem> testItemList = [];
   List<TestItemInfo> testItemInfoList = [];
-  FireStoreService store = FireStoreService();
 
   void initState() {
     super.initState();
@@ -90,14 +88,14 @@ class _TestInputScreenState extends State<TestModifyScreen> {
 
                       for (TestItem testItem in testItemList1) {
                         // DB 에서 TestItem 제거
-                        await store.deleteTestItem(testItem.testItemId);
+                        // await store.deleteTestItem(testItem.testItemId);
                         // Provider에서 testItem 제거
                         context
                             .read<TestItemNotifier>()
                             .removeTestItem(testItem);
                       }
                       // DB에서 Test 제거
-                      await store.deleteTest(widget.test.testId);
+                      // await store.deleteTest(widget.test.testId);
                       // Provider에서 Test 제거
                       context.read<TestNotifier>().removeTest(widget.test);
 
@@ -116,8 +114,8 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                   // 완료 버튼 누르면 실행
                   if (formkey.currentState!.validate()) {
                     // 테스트의 날짜와 테스트 제목 수정
-                    store.updateTest(
-                        widget.test.testId, date, title, widget.test.isInput);
+                    // store.updateTest(
+                        // widget.test.testId, date, title, widget.test.isInput);
                     context.read<TestNotifier>().updateTest(
                         widget.test.testId, date, title, widget.test.isInput);
 
@@ -127,22 +125,22 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                         .getTestItemList(widget.test.testId, true);
                     for (TestItem testItem in testItemList1) {
                       // DB 에서 TestItem 제거
-                      await store.deleteTestItem(testItem.testItemId);
+                      // await store.deleteTestItem(testItem.testItemId);
                       // Provider에서 testItem 제거
                       context.read<TestItemNotifier>().removeTestItem(testItem);
                     }
                     // 테스트 만들기
                     for (TestItemInfo testItemInfo in testItemInfoList) {
-                      TestItem testItem = TestItem(
-                          testItemId: await store.updateId(AutoID.testItem),
-                          testId: widget.test.testId,
-                          childId: widget.test.childId,
-                          programField: testItemInfo.programField,
-                          subField: testItemInfo.subField,
-                          subItem: testItemInfo.subItem,
-                          result: null);
-                      await store.createTestItem(testItem);
-                      context.read<TestItemNotifier>().addTestItem(testItem);
+                      // TestItem testItem = TestItem(
+                      //     testItemId: await store.updateId(AutoID.testItem),
+                      //     testId: widget.test.testId,
+                      //     childId: widget.test.childId,
+                      //     programField: testItemInfo.programField,
+                      //     subField: testItemInfo.subField,
+                      //     subItem: testItemInfo.subItem,
+                      //     result: null);
+                      // await store.createTestItem(testItem);
+                      // context.read<TestItemNotifier>().addTestItem(testItem);
                     }
 
                     Navigator.pop(context);

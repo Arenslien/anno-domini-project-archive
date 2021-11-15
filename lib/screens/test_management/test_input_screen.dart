@@ -1,16 +1,15 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/test.dart';
-import 'package:aba_analysis/models/child.dart';
-import 'package:aba_analysis/models/test_item.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/provider/test_notifier.dart';
-import 'package:aba_analysis/components/show_date_picker.dart';
-import 'package:aba_analysis/provider/test_item_notifier.dart';
-import 'package:aba_analysis/provider/program_field_notifier.dart';
-import 'package:aba_analysis/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/test.dart';
+import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/test_notifier.dart';
+import 'package:aba_analysis_local/components/show_date_picker.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
+import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class TestInputScreen extends StatefulWidget {
   const TestInputScreen({required this.child, Key? key}) : super(key: key);
@@ -27,7 +26,6 @@ class _TestInputScreenState extends State<TestInputScreen> {
 
   List<TestItemInfo> testItemInfoList = [];
   final formkey = GlobalKey<FormState>();
-  FireStoreService store = FireStoreService();
 
   @override
   Widget build(BuildContext context) {
@@ -60,33 +58,33 @@ class _TestInputScreenState extends State<TestInputScreen> {
                 onPressed: () async {
                   // 완료 버튼 누르면 실행
                   if (formkey.currentState!.validate()) {
-                    Test test = Test(
-                        testId: await store.updateId(AutoID.test),
-                        childId: widget.child.childId,
-                        title: title,
-                        date: date,
-                        isInput: false);
-                    // DB에 테스트 추가
-                    await store.createTest(test);
+                    // Test test = Test(
+                    //     testId: await store.updateId(AutoID.test),
+                    //     childId: widget.child.childId,
+                    //     title: title,
+                    //     date: date,
+                    //     isInput: false);
+                    // // DB에 테스트 추가
+                    // await store.createTest(test);
 
-                    // Test Notifier에 추가
-                    context.read<TestNotifier>().addTest(test);
+                    // // Test Notifier에 추가
+                    // context.read<TestNotifier>().addTest(test);
 
-                    // DB에 테스트 아이템 추가 & TestItem Notifier에 테스트 아이템 추가
-                    for (TestItemInfo testItemInfo in testItemInfoList) {
-                      TestItem testItem = TestItem(
-                          testItemId: await store.updateId(AutoID.testItem),
-                          testId: test.testId,
-                          childId: test.childId,
-                          programField: testItemInfo.programField,
-                          subField: testItemInfo.subField,
-                          subItem: testItemInfo.subItem,
-                          result: null);
+                    // // DB에 테스트 아이템 추가 & TestItem Notifier에 테스트 아이템 추가
+                    // for (TestItemInfo testItemInfo in testItemInfoList) {
+                    //   TestItem testItem = TestItem(
+                    //       testItemId: await store.updateId(AutoID.testItem),
+                    //       testId: test.testId,
+                    //       childId: test.childId,
+                    //       programField: testItemInfo.programField,
+                    //       subField: testItemInfo.subField,
+                    //       subItem: testItemInfo.subItem,
+                    //       result: null);
 
-                      await store.createTestItem(testItem);
+                    //   await store.createTestItem(testItem);
 
-                      context.read<TestItemNotifier>().addTestItem(testItem);
-                    }
+                      // context.read<TestItemNotifier>().addTestItem(testItem);
+                    // }
                     Navigator.pop(context);
                   }
                 },

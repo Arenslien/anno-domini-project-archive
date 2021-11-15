@@ -1,12 +1,12 @@
-import 'package:aba_analysis/components/search_delegate.dart';
-import 'package:aba_analysis/models/child.dart';
-import 'package:aba_analysis/models/program_field.dart';
-import 'package:aba_analysis/provider/program_field_notifier.dart';
-import 'package:aba_analysis/components/select_appbar.dart';
+import 'package:aba_analysis_local/components/search_delegate.dart';
+import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/models/program_field.dart';
+import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/components/select_appbar.dart';
+import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:aba_analysis_local/screens/graph_management/select_area_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/screens/graph_management/select_area_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:aba_analysis/components/build_list_tile.dart';
 
 class SelectProgramScreen extends StatefulWidget {
   final Child child;

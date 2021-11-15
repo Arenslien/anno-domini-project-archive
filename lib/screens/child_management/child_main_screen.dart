@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/models/child.dart';
-import 'package:aba_analysis/components/search_bar.dart';
-import 'package:aba_analysis/provider/child_notifier.dart';
-import 'package:aba_analysis/components/build_list_tile.dart';
-import 'package:aba_analysis/components/build_no_list_widget.dart';
-import 'package:aba_analysis/components/build_floating_action_button.dart';
-import 'package:aba_analysis/screens/child_management/child_test_screen.dart';
-import 'package:aba_analysis/screens/child_management/child_input_screen.dart';
-import 'package:aba_analysis/screens/child_management/child_modify_screen.dart';
+import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/components/search_bar.dart';
+import 'package:aba_analysis_local/provider/child_notifier.dart';
+import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:aba_analysis_local/components/build_no_list_widget.dart';
+import 'package:aba_analysis_local/components/build_floating_action_button.dart';
+import 'package:aba_analysis_local/screens/child_management/child_test_screen.dart';
+import 'package:aba_analysis_local/screens/child_management/child_input_screen.dart';
+import 'package:aba_analysis_local/screens/child_management/child_modify_screen.dart';
 
 class ChildMainScreen extends StatefulWidget {
   const ChildMainScreen({Key? key}) : super(key: key);

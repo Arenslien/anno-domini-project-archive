@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/test_item.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/models/program_field.dart';
-import 'package:aba_analysis/components/build_list_tile.dart';
-import 'package:aba_analysis/provider/test_item_notifier.dart';
-import 'package:aba_analysis/components/show_dialog_delete.dart';
-import 'package:aba_analysis/provider/program_field_notifier.dart';
-import 'package:aba_analysis/components/build_floating_action_button.dart';
-import 'package:aba_analysis/screens/subject_management/sub_field_view_screen.dart';
-import 'package:aba_analysis/screens/subject_management/sub_field_input_screen.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/models/program_field.dart';
+import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
+import 'package:aba_analysis_local/components/show_dialog_delete.dart';
+import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/components/build_floating_action_button.dart';
+import 'package:aba_analysis_local/screens/subject_management/sub_field_view_screen.dart';
+import 'package:aba_analysis_local/screens/subject_management/sub_field_input_screen.dart';
 
 class SelectSubfieldScreen extends StatefulWidget {
   final ProgramField program;
@@ -22,7 +21,6 @@ class SelectSubfieldScreen extends StatefulWidget {
 
 class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
   _SelectSubfieldScreenState();
-  FireStoreService store = FireStoreService();
 
   @override
   Widget build(BuildContext context) {
@@ -86,15 +84,15 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                                 .subFieldName;
 
                             // DB에서 서브필드를 삭제한다.
-                            await store.deleteSubField(
-                                convertProgramFieldTitle(widget.program.title)!,
-                                index);
+                            // await store.deleteSubField(
+                            //     convertProgramFieldTitle(widget.program.title)!,
+                            //     index);
 
                             // 해당 서브필드를 삭제한다.
-                            context
-                                .read<ProgramFieldNotifier>()
-                                .updateProgramFieldList(
-                                    await store.readProgramField());
+                            // context
+                                // .read<ProgramFieldNotifier>()
+                                // .updateProgramFieldList(
+                                //     await store.readProgramField());
 
                             // setState로 삭제한거 업데이트.
                             // DB에서 삭제한 서브필드의 테스트 아이템 삭제
@@ -102,11 +100,11 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                                 context.read<TestItemNotifier>().testItemList;
                             for (TestItem testItem in testItemList) {
                               if (testItem.subField == subFieldNameForDel) {
-                                await store.deleteTestItem(testItem.testItemId);
-                                context
-                                    .read<TestItemNotifier>()
-                                    .updateTestItemList(
-                                        await store.readAllTestItem());
+                                // await store.deleteTestItem(testItem.testItemId);
+                                // context
+                                //     .read<TestItemNotifier>()
+                                //     .updateTestItemList(
+                                //         await store.readAllTestItem());
                               }
                             }
                             Navigator.pop(context);

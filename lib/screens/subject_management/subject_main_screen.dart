@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/program_field.dart';
-import 'package:aba_analysis/components/build_list_tile.dart';
-import 'package:aba_analysis/provider/program_field_notifier.dart';
-import 'package:aba_analysis/screens/subject_management/select_sub_field_screen.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/program_field.dart';
+import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/screens/subject_management/select_sub_field_screen.dart';
 
 class SubjectMainScreen extends StatefulWidget {
   const SubjectMainScreen({Key? key}) : super(key: key);

@@ -1,19 +1,18 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/test.dart';
-import 'package:aba_analysis/models/child.dart';
-import 'package:aba_analysis/models/test_item.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/provider/test_notifier.dart';
-import 'package:aba_analysis/provider/user_notifier.dart';
-import 'package:aba_analysis/provider/child_notifier.dart';
-import 'package:aba_analysis/provider/test_item_notifier.dart';
-import 'package:aba_analysis/components/show_date_picker.dart';
-import 'package:aba_analysis/components/show_dialog_delete.dart';
-import 'package:aba_analysis/components/build_toggle_buttons.dart';
-import 'package:aba_analysis/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/test.dart';
+import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/test_notifier.dart';
+import 'package:aba_analysis_local/provider/user_notifier.dart';
+import 'package:aba_analysis_local/provider/child_notifier.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
+import 'package:aba_analysis_local/components/show_date_picker.dart';
+import 'package:aba_analysis_local/components/show_dialog_delete.dart';
+import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
+import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class ChildModifyScreen extends StatefulWidget {
   const ChildModifyScreen({required this.child, Key? key}) : super(key: key);
@@ -29,7 +28,6 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
   late String gender;
   List<bool> genderSelected = [];
   final formkey = GlobalKey<FormState>();
-  FireStoreService store = FireStoreService();
 
   @override
   void initState() {
@@ -92,7 +90,7 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                             .getTestItemList(test.testId, true);
                         for (TestItem testItem in testItemList) {
                           // DB에서 TestItem 제거
-                          await store.deleteTestItem(testItem.testItemId);
+                          // await store.deleteTestItem(testItem.testItemId);
                           // Provider에서 TestItem 제거
                           context
                               .read<TestItemNotifier>()
@@ -100,13 +98,13 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                         }
 
                         // DB에서 TestItem 제거
-                        await store.deleteTest(test.testId);
+                        // await store.deleteTest(test.testId);
                         // Provider에서 테스트 제거
                         context.read<TestNotifier>().removeTest(test);
                       }
 
                       // DB 에서 Child 제거
-                      await store.deleteChild(widget.child.childId);
+                      // await store.deleteChild(widget.child.childId);
                       // Provider에서 Child 제거
                       context.read<ChildNotifier>().removeChild(widget.child);
 
@@ -139,8 +137,8 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                     context.read<ChildNotifier>().addChild(updatedChild);
 
                     // DB 수정
-                    await store.updateChild(
-                        widget.child.childId, name, birth, gender);
+                    // await store.updateChild(
+                    //     widget.child.childId, name, birth, gender);
 
                     // 화면 전환
                     Navigator.pop(context);

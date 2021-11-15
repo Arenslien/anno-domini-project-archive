@@ -1,14 +1,13 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/child.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/provider/user_notifier.dart';
-import 'package:aba_analysis/provider/child_notifier.dart';
-import 'package:aba_analysis/components/show_date_picker.dart';
-import 'package:aba_analysis/components/build_toggle_buttons.dart';
-import 'package:aba_analysis/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/provider/user_notifier.dart';
+import 'package:aba_analysis_local/provider/child_notifier.dart';
+import 'package:aba_analysis_local/components/show_date_picker.dart';
+import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
+import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class ChildInputScreen extends StatefulWidget {
   const ChildInputScreen({Key? key}) : super(key: key);
@@ -25,7 +24,6 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
   final List<bool> genderSelected = [false, false];
   bool? isGenderSelected;
   bool? isBirthSelected;
-  FireStoreService _store = FireStoreService();
   final formkey = GlobalKey<FormState>();
 
   @override
@@ -68,19 +66,19 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                   if (formkey.currentState!.validate() &&
                       isGenderSelected! &&
                       isBirthSelected!) {
-                    Child child = Child(
-                        childId: await _store.updateId(AutoID.child),
-                        teacherEmail:
-                            context.read<UserNotifier>().abaUser!.email,
-                        name: name,
-                        birthday: birth!,
-                        gender: gender);
+                    // Child child = Child(
+                    //     childId: await _store.updateId(AutoID.child),
+                    //     teacherEmail:
+                    //         context.read<UserNotifier>().abaUser!.email,
+                    //     name: name,
+                    //     birthday: birth!,
+                    //     gender: gender);
 
                     // Firestore에 아동 추가
-                    await _store.createChild(child);
+                    // await _store.createChild(child);
 
                     // Provider ChildNotifier 수정
-                    context.read<ChildNotifier>().addChild(child);
+                    // context.read<ChildNotifier>().addChild(child);
 
                     Navigator.pop(context);
                   }
