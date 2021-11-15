@@ -6,7 +6,6 @@ import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:aba_analysis_local/provider/test_notifier.dart';
-import 'package:aba_analysis_local/provider/user_notifier.dart';
 import 'package:aba_analysis_local/provider/child_notifier.dart';
 import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
@@ -127,8 +126,6 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                     // child 생성
                     Child updatedChild = Child(
                         childId: widget.child.childId,
-                        teacherEmail:
-                            context.read<UserNotifier>().abaUser!.email,
                         name: name,
                         birthday: birth,
                         gender: gender);

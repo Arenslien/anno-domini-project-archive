@@ -1,7 +1,6 @@
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:aba_analysis_local/provider/user_notifier.dart';
 import 'package:aba_analysis_local/screens/graph_management/generateChart.dart';
 import 'package:aba_analysis_local/screens/graph_management/generateExcel.dart';
 import 'package:aba_analysis_local/screens/graph_management/generatePDF.dart';
@@ -95,7 +94,7 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
     // _chartData = getItemGraphData(_charTitleName, widget.subItemList);
 
     exportData = ExportData(
-        context.watch<UserNotifier>().abaUser!.nickname,
+        "치료사",
         widget.child.name,
         _averageRate,
         widget.subItemList[0].testItem.programField,

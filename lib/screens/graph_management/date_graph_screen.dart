@@ -4,7 +4,6 @@ import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:aba_analysis_local/provider/child_notifier.dart';
 import 'package:aba_analysis_local/provider/test_item_notifier.dart';
-import 'package:aba_analysis_local/provider/user_notifier.dart';
 import 'package:aba_analysis_local/screens/graph_management/generateExcel.dart';
 import 'package:aba_analysis_local/screens/graph_management/generatePDF.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
@@ -76,7 +75,7 @@ class _DateGraphState extends State<DateGraph> {
     _charTitleName = DateFormat(graphDateFormat).format(widget.test.date);
     _tableColumn = ['날짜', '하위목록', '성공여부'];
     _chartData = getDateGraphData(_charTitleName, widget.test, context);
-    exportData = ExportData(context.read<UserNotifier>().abaUser!.nickname,
+    exportData = ExportData("치료사",
         _childName, _averageRate, '', '');
     return Scaffold(
       appBar: selectAppBar(context, _childName + "의 " + _graphType + "별 그래프"),

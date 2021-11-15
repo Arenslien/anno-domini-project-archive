@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
-import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/provider/field_notifier.dart';
 import 'package:aba_analysis_local/screens/subject_management/select_sub_field_screen.dart';
 
 class SubjectMainScreen extends StatefulWidget {
@@ -19,7 +19,7 @@ class _SubjectMainScreenState extends State<SubjectMainScreen> {
   @override
   Widget build(BuildContext context) {
     List<ProgramField> programList =
-        context.read<ProgramFieldNotifier>().programFieldList;
+        context.read<FieldNotifier>().programFieldList;
     return Scaffold(
       appBar: AppBar(
         title: Text(

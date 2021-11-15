@@ -1,7 +1,7 @@
 import 'package:aba_analysis_local/components/search_delegate.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
-import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/provider/field_notifier.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/screens/graph_management/select_area_screen.dart';
@@ -29,7 +29,7 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
   Widget build(BuildContext context) {
     // Search관련해서 쓰일 ProgramField와 ProgramField의 title Map을 만들어준다.
     for (ProgramField p
-        in context.read<ProgramFieldNotifier>().programFieldList) {
+        in context.read<FieldNotifier>().programFieldList) {
       programFieldAndTitleMap.addAll({p.title: p});
     }
 
@@ -59,13 +59,13 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
                   ? ListView.builder(
                       padding: const EdgeInsets.all(16),
                       itemCount: context
-                          .read<ProgramFieldNotifier>()
+                          .read<FieldNotifier>()
                           .programFieldList
                           .length,
                       itemBuilder: (BuildContext context, int index) {
                         return dataTile(
                             context
-                                .read<ProgramFieldNotifier>()
+                                .read<FieldNotifier>()
                                 .programFieldList[index],
                             index);
                       },

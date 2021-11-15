@@ -6,7 +6,7 @@ import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/show_dialog_delete.dart';
-import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/provider/field_notifier.dart';
 import 'package:aba_analysis_local/components/build_floating_action_button.dart';
 import 'package:aba_analysis_local/screens/subject_management/sub_field_view_screen.dart';
 import 'package:aba_analysis_local/screens/subject_management/sub_field_input_screen.dart';
@@ -46,13 +46,13 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
       ),
       body: ListView.builder(
         itemCount: context
-            .watch<ProgramFieldNotifier>()
+            .watch<FieldNotifier>()
             .readSubFieldList(widget.program.title)
             .length,
         itemBuilder: (BuildContext context, int index) {
           return buildListTile(
               titleText: context
-                  .watch<ProgramFieldNotifier>()
+                  .watch<FieldNotifier>()
                   .readSubFieldList(widget.program.title)[index]
                   .subFieldName,
               titleSize: 20,
@@ -62,7 +62,7 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                   MaterialPageRoute(
                     builder: (context) => SelectSubitemScreen(
                         subField: context
-                            .watch<ProgramFieldNotifier>()
+                            .watch<FieldNotifier>()
                             .readSubFieldList(widget.program.title)[index]),
                   ),
                 );
@@ -79,7 +79,7 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                           text: '정말 삭제하시겠습니까?',
                           onPressed: () async {
                             String subFieldNameForDel = context
-                                .read<ProgramFieldNotifier>()
+                                .read<FieldNotifier>()
                                 .readSubFieldList(widget.program.title)[index]
                                 .subFieldName;
 
