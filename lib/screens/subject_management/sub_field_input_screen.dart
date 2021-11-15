@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
-import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/provider/field_notifier.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class SubFieldInputScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
 
   bool isCheckDup(String checkDup) {
     List<String> s =
-        context.read<ProgramFieldNotifier>().readAllSubFieldItemList();
+        context.read<FieldNotifier>().readAllSubFieldItemList();
     if (s.contains(checkDup)) {
       return true;
     } else {
@@ -108,7 +108,7 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                     }
 
                     for (String subFieldName in context
-                        .read<ProgramFieldNotifier>()
+                        .read<FieldNotifier>()
                         .readAllSubFieldName()) {
                       if (subFieldName == val) {
                         return '중복된 하위영역 이름입니다.';

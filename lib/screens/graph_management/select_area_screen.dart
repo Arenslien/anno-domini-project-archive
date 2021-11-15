@@ -25,9 +25,11 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
   // 전역변수
   late Map<String, SubField> subFieldAndNameMap = {};
   String selectedSubField = "";
-
   void initState() {
     super.initState();
+
+
+
     for (SubField s in widget.programField.subFieldList) {
       subFieldAndNameMap.addAll({s.subFieldName: s});
     }

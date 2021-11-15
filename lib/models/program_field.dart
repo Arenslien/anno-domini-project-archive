@@ -1,16 +1,15 @@
 import 'package:aba_analysis_local/models/sub_field.dart';
 
 class ProgramField {
+  final int id;
   final String title;
-  late List<SubField> subFieldList;
 
-  ProgramField({ required this.title, required this.subFieldList });
+  ProgramField({ required this.id, required this.title });
 
-  void addSubField(SubField subField) {
-    subFieldList.add(subField);
-  }
-
-  void removeSubField(SubField subField) {
-    subFieldList.remove(subField);
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+    };
   }
 }

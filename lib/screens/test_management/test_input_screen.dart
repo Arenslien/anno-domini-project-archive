@@ -8,7 +8,7 @@ import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:aba_analysis_local/provider/test_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
 import 'package:aba_analysis_local/provider/test_item_notifier.dart';
-import 'package:aba_analysis_local/provider/program_field_notifier.dart';
+import 'package:aba_analysis_local/provider/field_notifier.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class TestInputScreen extends StatefulWidget {
@@ -185,7 +185,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     value: selectedProgramField,
                                                     items: context
                                                         .read<
-                                                            ProgramFieldNotifier>()
+                                                            FieldNotifier>()
                                                         .programFieldList
                                                         .map((value) {
                                                       return DropdownMenuItem(
@@ -198,7 +198,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                       selectedProgramFieldIndex =
                                                           context
                                                               .read<
-                                                                  ProgramFieldNotifier>()
+                                                                  FieldNotifier>()
                                                               .programFieldList
                                                               .indexWhere(
                                                                   (element) =>
@@ -222,7 +222,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                         ? null
                                                         : context
                                                             .read<
-                                                                ProgramFieldNotifier>()
+                                                                FieldNotifier>()
                                                             .programFieldList[
                                                                 selectedProgramFieldIndex]
                                                             .subFieldList
@@ -236,7 +236,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     onChanged: (String? value) {
                                                       selectedSubFieldIndex = context
                                                           .read<
-                                                              ProgramFieldNotifier>()
+                                                              FieldNotifier>()
                                                           .programFieldList[
                                                               selectedProgramFieldIndex]
                                                           .subFieldList
@@ -262,7 +262,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                         ? null
                                                         : context
                                                             .read<
-                                                                ProgramFieldNotifier>()
+                                                                FieldNotifier>()
                                                             .programFieldList[
                                                                 selectedProgramFieldIndex]
                                                             .subFieldList[
@@ -278,7 +278,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     onChanged: (String? value) {
                                                       selectedSubItemIndex = context
                                                           .read<
-                                                              ProgramFieldNotifier>()
+                                                              FieldNotifier>()
                                                           .programFieldList[
                                                               selectedProgramFieldIndex]
                                                           .subFieldList[
@@ -321,13 +321,13 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                       TestItemInfo(
                                                     programField: context
                                                         .read<
-                                                            ProgramFieldNotifier>()
+                                                            FieldNotifier>()
                                                         .programFieldList[
                                                             selectedProgramFieldIndex]
                                                         .title,
                                                     subField: context
                                                         .read<
-                                                            ProgramFieldNotifier>()
+                                                            FieldNotifier>()
                                                         .programFieldList[
                                                             selectedProgramFieldIndex]
                                                         .subFieldList[
@@ -335,7 +335,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                         .subFieldName,
                                                     subItem: context
                                                         .read<
-                                                            ProgramFieldNotifier>()
+                                                            FieldNotifier>()
                                                         .programFieldList[
                                                             selectedProgramFieldIndex]
                                                         .subFieldList[
