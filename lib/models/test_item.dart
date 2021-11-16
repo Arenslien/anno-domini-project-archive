@@ -1,5 +1,5 @@
 class TestItem {
-  final int testItemId; // PK
+  int? id; // PK
   final int testId; // FK
   final int childId;
   final String programField;
@@ -7,11 +7,10 @@ class TestItem {
   final String subItem;
   String? result;
 
-  TestItem({ required this.testItemId, required this.testId, required this.childId, required this.programField, required this.subField, required this.subItem, required this.result});
+  TestItem({this.id, required this.testId, required this.childId, required this.programField, required this.subField, required this.subItem, required this.result});
 
   Map<String, dynamic> toMap() {
     return {
-      'test-item-id': testItemId,
       'test-id': testId,
       'child-id': childId,
       'program-field': programField,
@@ -22,6 +21,6 @@ class TestItem {
   }
 
   String toString() {
-    return '[TestItem ID: $testItemId & Test ID: $testId] - $programField/$subField$subItem/ - $result';
+    return '[TestItem ID: $id & Test ID: $testId] - $programField/$subField$subItem/ - $result';
   }
 }

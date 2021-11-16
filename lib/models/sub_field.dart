@@ -8,12 +8,11 @@ class SubField {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
-      'id': id,
       'programFieldId': programFieldId,
       'title': title,
     };
-    
-    for (int i=0; i<subItemList.length; i++) {
+
+    for (int i = 0; i < subItemList.length; i++) {
       map['item$i'] = subItemList[i];
     }
 

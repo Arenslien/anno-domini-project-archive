@@ -1,15 +1,16 @@
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:path/path.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/components/search_bar.dart';
-import 'package:aba_analysis_local/provider/test_notifier.dart';
-import 'package:aba_analysis_local/provider/child_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 import 'package:aba_analysis_local/components/build_no_list_widget.dart';
 import 'package:aba_analysis_local/screens/graph_management/select_program_screen.dart';
 import 'package:aba_analysis_local/screens/graph_management/select_date_graph_screen.dart';
+import 'package:sqflite/sqflite.dart';
+
 class GraphScreen extends StatefulWidget {
   const GraphScreen({Key? key}) : super(key: key);
 
@@ -18,13 +19,22 @@ class GraphScreen extends StatefulWidget {
 }
 
 class _GraphScreenState extends State<GraphScreen> {
+  late DBService db;
+  List<Child> children = [];
   List<Child> searchResult = [];
   TextEditingController searchTextEditingController = TextEditingController();
 
   void initState() {
     super.initState();
-    //childList 초기화
 
+    Future.delayed(Duration(seconds: 0), () async {
+      db = DBService(
+        db: await openDatabase(
+          join(await getDatabasesPath(), 'doggie_database.db'),
+        ),
+      );
+      //children = await db.readAllChild();
+    });
   }
 
   @override
@@ -38,12 +48,12 @@ class _GraphScreenState extends State<GraphScreen> {
                 setState(() {
                   searchResult.clear();
                 });
-                for (int i = 0; i < context.read<ChildNotifier>().children.length; i++) {
+                for (int i = 0; i < children.length; i++) {
                   bool flag = false;
-                  if (context.read<ChildNotifier>().children[i].name.contains(str)) flag = true;
+                  if (children[i].name.contains(str)) flag = true;
                   if (flag) {
                     setState(() {
-                      searchResult.add(context.read<ChildNotifier>().children[i]);
+                      searchResult.add(children[i]);
                     });
                   }
                 }
@@ -53,15 +63,14 @@ class _GraphScreenState extends State<GraphScreen> {
                   searchTextEditingController.clear();
                 });
               }),
-          body: context.read<ChildNotifier>().children.length == 0
+          body: children.length == 0
               ? noListData(Icons.auto_graph, '아동이 없습니다.')
               : searchTextEditingController.text.isEmpty
                   ? ListView.separated(
                       // 검색한 결과가 없으면 다 출력
-                      itemCount: context.watch<ChildNotifier>().children.length,
+                      itemCount: children.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(
-                            context.watch<ChildNotifier>().children[index]);
+                        return dataTile(children[index], context);
                       },
                       separatorBuilder: (BuildContext context, int index) {
                         return const Divider(color: Colors.black);
@@ -71,7 +80,7 @@ class _GraphScreenState extends State<GraphScreen> {
                       // 검색 결과가 있으면
                       itemCount: searchResult.length, // 최종 선택한 아이 한명밖에 없음.
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(searchResult[index]);
+                        return dataTile(searchResult[index], context);
                       },
                       separatorBuilder: (BuildContext context, int index) {
                         return const Divider(color: Colors.black);
@@ -80,24 +89,18 @@ class _GraphScreenState extends State<GraphScreen> {
     );
   }
 
-  Widget dataTile(Child child) {
+  Widget dataTile(Child child, BuildContext context) {
     return buildListTile(
         titleText: child.name,
         subtitleText: '${child.age.toString()}세',
         trailing: buildToggleButtons(
           minWidth: 100,
           text: ['날짜 그래프', '아이템 그래프'],
-          onPressed: (index) {
+          onPressed: (index) async {
             if (index == 0) {
               // Date Graph 클릭시
-              List<Test> testList = context
-                  .read<TestNotifier>()
-                  .getAllTestListOf(child.childId, true);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SelectDateScreen(child: child, testList: testList)));
+              List<Test> testList = await db.readTestList(child.id!);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SelectDateScreen(child: child, testList: testList)));
             } else if (index == 1) {
               // Item Graph 클릭시
               Navigator.push(

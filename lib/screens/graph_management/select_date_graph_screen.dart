@@ -3,22 +3,21 @@ import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/screens/graph_management/date_graph_screen.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:flutter/material.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'no_test_data_screen.dart';
 
 class SelectDateScreen extends StatefulWidget {
   final Child child;
   final List<Test> testList;
-  const SelectDateScreen(
-      {Key? key, required this.child, required this.testList})
-      : super(key: key);
+  const SelectDateScreen({Key? key, required this.child, required this.testList}) : super(key: key);
   static String routeName = '/select_date';
 
   @override
@@ -26,6 +25,7 @@ class SelectDateScreen extends StatefulWidget {
 }
 
 class _SelectDateScreenState extends State<SelectDateScreen> {
+  late DBService db;
   late Map<String, Test> testAndDateMap = {};
   String selectedDate = "";
   // 검색 관련 변수
@@ -36,14 +36,21 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
     for (Test test in widget.testList) {
       print(test.toString());
     }
+
+    Future.delayed(Duration(seconds: 0), () async {
+      db = DBService(
+        db: await openDatabase(
+          join(await getDatabasesPath(), 'doggie_database.db'),
+        ),
+      );
+    });
     genTestAndDateMap();
   }
 
   // Search관련해서 쓰일 Test와 Test날짜 Map을 만들어준다.
   void genTestAndDateMap() {
     for (Test t in widget.testList) {
-      testAndDateMap
-          .addAll({DateFormat(graphDateFormat).format(t.date).toString(): t});
+      testAndDateMap.addAll({DateFormat(graphDateFormat).format(t.date).toString(): t});
     }
   }
 
@@ -57,8 +64,7 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
       // 검색버튼. 전역변수값을 변경해야되서 해당 스크린에서 정의했음.
       icon: Icon(Icons.search),
       onPressed: () async {
-        final finalResult = await showSearch(
-            context: context, delegate: Search(testAndDateMap.keys.toList()));
+        final finalResult = await showSearch(context: context, delegate: Search(testAndDateMap.keys.toList()));
         setState(() {
           selectedDate = finalResult;
         });
@@ -67,8 +73,7 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
     return GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-          appBar: selectAppBar(context, (widget.child.name + "의 테스트 날짜 선택"),
-              searchButton: searchButton),
+          appBar: selectAppBar(context, (widget.child.name + "의 테스트 날짜 선택"), searchButton: searchButton),
           body: widget.testList.length == 0
               ? noTestData()
               : selectedDate == ""
@@ -77,11 +82,7 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
                       itemCount: widget.testList.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(
-                          widget.testList[index],
-                          index,
-                          context
-                        );
+                        return dataTile(widget.testList[index], index, context);
                       },
                     )
                   : ListView.builder(
@@ -89,11 +90,7 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
                       itemCount: 1,
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(
-                          testAndDateMap[selectedDate]!,
-                          index,
-                          context
-                        );
+                        return dataTile(testAndDateMap[selectedDate]!, index, context);
                       },
                     ),
         ));
@@ -111,11 +108,7 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
           ),
           Text(
             'No Test Data',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: 40,
-                fontFamily: 'KoreanGothic'),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'KoreanGothic'),
           ),
         ],
       ),
@@ -125,14 +118,22 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
   Widget dataTile(Test test, int index, BuildContext context) {
     return buildListTile(
       titleText: DateFormat(graphDateFormat).format(test.date),
-      subtitleText: "평균성공률: ${context.read<TestItemNotifier>().getAverage(test.testId)}%",
-      onTap: () {
+      subtitleText: "평균성공률: ${getAvg(test)}%",
+      onTap: () async {
         setState(() {
           selectedDate = "";
         });
         bool notNull = true;
 
-        List<TestItem> testItemList = context.read<TestItemNotifier>().getTestItemList(test.testId, false);
+        List<TestItem> testItemListNotNull = await db.readAllTestItemNotNull();
+
+        List<TestItem> testItemList = [];
+        for (TestItem testItem in testItemListNotNull) {
+          if (testItem.testId == test.id) {
+            testItemList.add(testItem);
+          }
+        }
+
         for (TestItem ti in testItemList) {
           if (ti.result == null) {
             notNull = false;
@@ -146,11 +147,26 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
                         test: test,
                       )));
         } else {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => NoTestData()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => NoTestData()));
         }
       },
       trailing: Icon(Icons.keyboard_arrow_right),
     );
+  }
+
+  Future<int> getAvg(Test test) async {
+    List<TestItem> testItemList = await db.readAllTestItemNotNull();
+    int cnt = 0;
+    int length = 0;
+
+    for (TestItem testItem in testItemList) {
+      if (testItem.testId == test.id) {
+        length++;
+        if (testItem.result == '+') cnt++;
+      }
+    }
+    num average = (cnt / length * 100).toInt();
+
+    return average.toInt();
   }
 }

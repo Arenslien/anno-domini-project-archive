@@ -1,28 +1,28 @@
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:aba_analysis_local/provider/test_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
-import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 
 class ChildGetResultScreen extends StatefulWidget {
   final Child child;
   final Test test;
-  const ChildGetResultScreen(
-      {Key? key, required this.child, required this.test})
-      : super(key: key);
+  const ChildGetResultScreen({Key? key, required this.child, required this.test}) : super(key: key);
 
   @override
   _ChildGetResultScreenState createState() => _ChildGetResultScreenState();
 }
 
 class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
-  List<TestItem> testItemList = [];
-  List<TestItem> childTestItemList = [];
+  late DBService db;
+
+  late List<TestItem> testItem;
+
   List<String?> result = [];
   List<List<bool>> resultSelected = [];
   List<List<int>> countResult = [];
@@ -35,19 +35,24 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
   }
 
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
-    testItemList = context
-        .read<TestItemNotifier>()
-        .getTestItemList(widget.test.testId, true);
-    childTestItemList = context
-        .read<TestItemNotifier>()
-        .getTestItemListFromChildId(widget.child.childId, false);
-    for (TestItem testItem in testItemList) {
+
+    Future.delayed(Duration(seconds: 0), () async {
+      db = DBService(
+        db: await openDatabase(
+          join(await getDatabasesPath(), 'doggie_database.db'),
+        ),
+      );
+      testItem = (await db.readTestItemList(widget.test.id!));
+    });
+
+    for (int i = 0; i < testItem.length; i++) {
       countResult.add([0, 0, 0]);
-      for (TestItem temp in childTestItemList) {
-        if (temp.testId == testItem.testId) continue;
-        if (temp.subItem == testItem.subItem) {
+      for (TestItem temp in await db.readTestItemListByChild(widget.child.id!)) {
+        // 테스트 진행중인 테스트 아이템은 무시한다
+        if (temp.testId == testItem[i].testId) continue;
+        if (temp.subItem == testItem[i].subItem) {
           if (temp.result == '+') {
             countResult[countResult.length - 1][0]++;
           } else if (temp.result == '-') {
@@ -57,17 +62,18 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
           }
         }
       }
-      if (testItem.result == null) {
+
+      if (testItem[i].result == null) {
         result.add(null);
         resultSelected.add([false, false, false]);
         continue;
-      } else if (testItem.result == '+') {
+      } else if (testItem[i].result == '+') {
         result.add('+');
         resultSelected.add([true, false, false]);
-      } else if (testItem.result == '-') {
+      } else if (testItem[i].result == '-') {
         result.add('-');
         resultSelected.add([false, true, false]);
-      } else if (testItem.result == 'P') {
+      } else if (testItem[i].result == 'P') {
         result.add('P');
         resultSelected.add([false, false, true]);
       }
@@ -101,22 +107,14 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
             ),
             onPressed: () async {
               if (checkResultList()) {
-                for (int i = 0; i < testItemList.length; i++) {
-                  // await store.updateTestItem(
-                  //     testItemList[i].testItemId, result[i]!);
-                  context
-                      .read<TestItemNotifier>()
-                      .updateTestItem(testItemList[i].testItemId, result[i]!);
+                for (int i = 0; i < testItem.length; i++) {
+                  db.updateTestItem(testItem[i].id!, result[i]!);
                 }
-                // await store.updateTest(widget.test.testId, widget.test.date,
-                //     widget.test.title, true);
-                context.read<TestNotifier>().updateTest(widget.test.testId,
-                    widget.test.date, widget.test.title, true);
+                db.updateTest(widget.test);
 
                 Navigator.pop(context);
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    makeSnackBar('테스트 아이템 결과값을 다 체크해주세요.', false));
+                ScaffoldMessenger.of(context).showSnackBar(makeSnackBar('테스트 아이템 결과값을 다 체크해주세요.', false));
               }
             },
           ),
@@ -124,12 +122,12 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount: testItemList.length,
+        itemCount: testItem.length,
         itemBuilder: (BuildContext context, int index) {
           return Column(
             children: [
               buildListTile(
-                titleText: testItemList[index].subItem,
+                titleText: testItem[index].subItem,
                 trailing: buildToggleButtons(
                   text: ['+', '-', 'P'],
                   onPressed: (buttonIndex) {

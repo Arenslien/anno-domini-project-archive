@@ -4,8 +4,7 @@ import 'package:aba_analysis_local/models/sub_field.dart';
 
 class SelectSubitemScreen extends StatefulWidget {
   final SubField subField;
-  const SelectSubitemScreen({Key? key, required this.subField})
-      : super(key: key);
+  const SelectSubitemScreen({Key? key, required this.subField}) : super(key: key);
 
   @override
   _SelectSubitemScreenState createState() => _SelectSubitemScreenState();
@@ -32,14 +31,14 @@ class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            widget.subField.subFieldName,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontFamily: 'KoreanGothic',
-            ),
-          ),
+          // title: Text(
+          //   widget.subField.subFieldName,
+          //   style: TextStyle(
+          //     color: Colors.black,
+          //     fontSize: 16,
+          //     fontFamily: 'KoreanGothic',
+          //   ),
+          // ),
           centerTitle: true,
           leading: IconButton(
             icon: Icon(

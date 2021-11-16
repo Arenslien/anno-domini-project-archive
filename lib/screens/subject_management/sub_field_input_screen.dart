@@ -1,15 +1,15 @@
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
-import 'package:aba_analysis_local/provider/field_notifier.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class SubFieldInputScreen extends StatefulWidget {
   final ProgramField program;
-  const SubFieldInputScreen({Key? key, required this.program})
-      : super(key: key);
+  const SubFieldInputScreen({Key? key, required this.program}) : super(key: key);
 
   @override
   _SubFieldInputScreenState createState() => _SubFieldInputScreenState();
@@ -17,6 +17,8 @@ class SubFieldInputScreen extends StatefulWidget {
 
 class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
   _SubFieldInputScreenState();
+  late DBService db;
+
   late String title;
 
   // 완료할 때 추가할 하위영역의 하위목록 리스트
@@ -28,11 +30,23 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(Duration(seconds: 0), () async {
+      db = DBService(
+        db: await openDatabase(
+          join(await getDatabasesPath(), 'doggie_database.db'),
+        ),
+      );
+    });
   }
 
-  bool isCheckDup(String checkDup) {
-    List<String> s =
-        context.read<FieldNotifier>().readAllSubFieldItemList();
+  Future<bool> isCheckDup(String checkDup) async {
+    List<String> s = [];
+    for (SubField subField in (await db.readAllSubFieldList())) {
+      for (String item in subField.subItemList) {
+        s.add(item);
+      }
+    }
     if (s.contains(checkDup)) {
       return true;
     } else {
@@ -71,10 +85,10 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                 onPressed: () async {
                   print(subitemList);
                   if (formkey.currentState!.validate()) {
-                    SubField addSub = SubField(
-                      subFieldName: subFieldName,
-                      subItemList: subitemList,
-                    );
+                    // SubField addSub = SubField(
+                    //   subFieldName: subFieldName,
+                    //   subItemList: subitemList,
+                    // );
                     // DB에 서브필드 추가
 //                    await store.create
                     // await store.addSubField(
@@ -106,14 +120,13 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                     if (val!.length < 1) {
                       return '하위영역 이름을 입력해주세요.';
                     }
-
-                    for (String subFieldName in context
-                        .read<FieldNotifier>()
-                        .readAllSubFieldName()) {
-                      if (subFieldName == val) {
-                        return '중복된 하위영역 이름입니다.';
+                    Future.delayed(Duration.zero, () async {
+                      for (SubField subField in await db.readAllSubFieldList()) {
+                        if (subField.title == val) {
+                          return '중복된 하위영역 이름입니다.';
+                        }
                       }
-                    }
+                    });
                     return null;
                   },
                 ),
@@ -145,9 +158,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
@@ -169,9 +184,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
@@ -193,9 +210,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
@@ -217,9 +236,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
@@ -241,9 +262,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
@@ -265,9 +288,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
@@ -289,9 +314,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
@@ -313,9 +340,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
@@ -337,9 +366,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
@@ -361,9 +392,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       }
                       i++;
                     }
-                    if (isCheckDup(val)) {
-                      return '다른 하위목록의 이름과 중복되었습니다.';
-                    }
+                    Future.delayed(Duration.zero, () async {
+                      if (await isCheckDup(val)) {
+                        return '다른 하위목록의 이름과 중복되었습니다.';
+                      }
+                    });
                     return null;
                   },
                 ),
