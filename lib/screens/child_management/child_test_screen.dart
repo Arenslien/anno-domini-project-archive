@@ -1,11 +1,10 @@
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:aba_analysis_local/provider/test_notifier.dart';
-import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/components/build_no_list_widget.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
@@ -25,14 +24,25 @@ class ChildTestScreen extends StatefulWidget {
 
 class _ChildTestScreenState extends State<ChildTestScreen> {
   _ChildTestScreenState();
+  late DBService db;
+
+  late List<Test> test;
 
   List<Test> searchResult = [];
-
   TextEditingController searchTextEditingController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(Duration(seconds: 0), () async {
+      db = DBService(
+        db: await openDatabase(
+          join(await getDatabasesPath(), 'doggie_database.db'),
+        ),
+      );
+      test = await db.readAllTest();
+    });
   }
 
   @override
@@ -57,31 +67,14 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
           ),
           backgroundColor: mainGreenColor,
         ),
-        body: context
-                    .watch<TestNotifier>()
-                    .getAllTestListOf(widget.child.childId, false)
-                    .length ==
-                0
+        body: test.length == 0
             ? noListData(Icons.library_add_outlined, '테스트 추가')
             : searchTextEditingController.text.isEmpty
                 ? ListView.separated(
                     // 검색한 결과가 없으면 다 출력
-                    itemCount: context
-                            .watch<TestNotifier>()
-                            .getAllTestListOf(widget.child.childId, false)
-                            .length +
-                        1,
+                    itemCount: test.length + 1,
                     itemBuilder: (BuildContext context, int index) {
-                      return index <
-                              context
-                                  .watch<TestNotifier>()
-                                  .getAllTestListOf(widget.child.childId, false)
-                                  .length
-                          ? buildTestListTile(context
-                              .watch<TestNotifier>()
-                              .getAllTestListOf(
-                                  widget.child.childId, false)[index])
-                          : buildListTile(titleText: '');
+                      return index < test.length ? buildTestListTile(context, test[index]) : buildListTile(titleText: '');
                     },
                     separatorBuilder: (BuildContext context, int index) {
                       return const Divider(color: Colors.black);
@@ -90,9 +83,7 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
                 : ListView.separated(
                     itemCount: searchResult.length + 1,
                     itemBuilder: (BuildContext context, int index) {
-                      return index < searchResult.length
-                          ? buildTestListTile(searchResult[index])
-                          : buildListTile(titleText: '');
+                      return index < searchResult.length ? buildTestListTile(context, searchResult[index]) : buildListTile(titleText: '');
                     },
                     separatorBuilder: (BuildContext context, int index) {
                       return const Divider(color: Colors.black);
@@ -119,24 +110,12 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
             setState(() {
               searchResult.clear();
             });
-            for (int i = 0;
-                i <
-                    context
-                        .read<TestNotifier>()
-                        .getAllTestListOf(widget.child.childId, false)
-                        .length;
-                i++) {
+            for (int i = 0; i < test.length; i++) {
               bool flag = false;
-              if (context
-                  .read<TestNotifier>()
-                  .getAllTestListOf(widget.child.childId, false)[i]
-                  .title
-                  .contains(str)) flag = true;
+              if (test[i].title.contains(str)) flag = true;
               if (flag) {
                 setState(() {
-                  searchResult.add(context
-                      .read<TestNotifier>()
-                      .getAllTestListOf(widget.child.childId, false)[i]);
+                  searchResult.add(test[i]);
                 });
               }
             }
@@ -147,15 +126,14 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
     );
   }
 
-  Widget buildTestListTile(Test test) {
+  Widget buildTestListTile(BuildContext context, Test test) {
     return buildListTile(
       titleText: test.title,
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ChildGetResultScreen(child: widget.child, test: test),
+            builder: (context) => ChildGetResultScreen(child: widget.child, test: test),
           ),
         );
       },
@@ -164,22 +142,8 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
         onPressed: (idx) async {
           if (idx == 0) {
             // DB에 Test 추가
-            // Test copiedTest = await store.copyTest(test);
-            // TestNotifer에 추가
-            // context.read<TestNotifier>().addTest(copiedTest);
+            db.copyTest(test);
 
-            // 복사할 Test의 TestItemList 가져오기
-            List<TestItem> testItemList = context
-                .read<TestItemNotifier>()
-                .getTestItemList(test.testId, true);
-
-            for (TestItem testItem in testItemList) {
-              // DB에 TestItem 추가
-              // TestItem copiedTestItem =
-              //     await store.copyTestItem(copiedTest.testId, copiedTest.childId, testItem);
-              // 복사된 테스트 아이템 TestItem Notifier에 추가
-              // context.read<TestItemNotifier>().addTestItem(copiedTestItem);
-            }
             setState(() {
               searchTextEditingController.text = '';
             });

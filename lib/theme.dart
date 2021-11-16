@@ -1,4 +1,3 @@
-import 'package:aba_analysis_local/size_config.dart';
 import 'package:flutter/material.dart';
 
 ThemeData theme() {
@@ -10,11 +9,10 @@ ThemeData theme() {
       elevation: 0,
       color: Colors.white,
       textTheme: TextTheme(
-        headline6: TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-        )
-      ),
+          headline6: TextStyle(
+        color: Colors.black,
+        fontSize: 20,
+      )),
     ),
   );
 }

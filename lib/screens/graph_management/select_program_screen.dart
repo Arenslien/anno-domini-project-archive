@@ -1,12 +1,13 @@
 import 'package:aba_analysis_local/components/search_delegate.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
-import 'package:aba_analysis_local/provider/field_notifier.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/screens/graph_management/select_area_screen.dart';
-import 'package:provider/provider.dart';
+import 'package:aba_analysis_local/services/db.dart';
+import 'package:path/path.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 
 class SelectProgramScreen extends StatefulWidget {
   final Child child;
@@ -18,18 +19,28 @@ class SelectProgramScreen extends StatefulWidget {
 }
 
 class _SelectProgramScreenState extends State<SelectProgramScreen> {
+  late DBService db;
   // 전역변수
   late Map<String, ProgramField> programFieldAndTitleMap = {};
   String selectedProgramField = "";
+
+  get programFieldList => null;
   void initState() {
     super.initState();
+
+    Future.delayed(Duration(seconds: 0), () async {
+      db = DBService(
+        db: await openDatabase(
+          join(await getDatabasesPath(), 'doggie_database.db'),
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     // Search관련해서 쓰일 ProgramField와 ProgramField의 title Map을 만들어준다.
-    for (ProgramField p
-        in context.read<FieldNotifier>().programFieldList) {
+    for (ProgramField p in programFieldList) {
       programFieldAndTitleMap.addAll({p.title: p});
     }
 
@@ -37,9 +48,7 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
       // 검색버튼
       icon: Icon(Icons.search),
       onPressed: () async {
-        final finalResult = await showSearch(
-            context: context,
-            delegate: Search(programFieldAndTitleMap.keys.toList()));
+        final finalResult = await showSearch(context: context, delegate: Search(programFieldAndTitleMap.keys.toList()));
         setState(() {
           selectedProgramField = finalResult;
         });
@@ -58,25 +67,16 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
               : selectedProgramField == ""
                   ? ListView.builder(
                       padding: const EdgeInsets.all(16),
-                      itemCount: context
-                          .read<FieldNotifier>()
-                          .programFieldList
-                          .length,
+                      itemCount: programFieldList.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(
-                            context
-                                .read<FieldNotifier>()
-                                .programFieldList[index],
-                            index);
+                        return dataTile(programFieldList[index], index, context);
                       },
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.all(16),
                       itemCount: 1,
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(
-                            programFieldAndTitleMap[selectedProgramField]!,
-                            index);
+                        return dataTile(programFieldAndTitleMap[selectedProgramField]!, index, context);
                       },
                     )),
     );
@@ -94,18 +94,14 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
           ),
           Text(
             'No Program Data',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: 40,
-                fontFamily: 'korean'),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'korean'),
           ),
         ],
       ),
     );
   }
 
-  Widget dataTile(ProgramField programField, int index) {
+  Widget dataTile(ProgramField programField, int index, BuildContext context) {
     return buildListTile(
       titleText: programField.title,
 //      subtitleText: "평균성공률: $average%",

@@ -11,9 +11,7 @@ import 'package:aba_analysis_local/components/build_list_tile.dart';
 class SelectAreaScreen extends StatefulWidget {
   final Child child;
   final ProgramField programField;
-  const SelectAreaScreen(
-      {Key? key, required this.child, required this.programField})
-      : super(key: key);
+  const SelectAreaScreen({Key? key, required this.child, required this.programField}) : super(key: key);
   static String routeName = '/select_area';
 
   @override
@@ -28,11 +26,9 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
   void initState() {
     super.initState();
 
-
-
-    for (SubField s in widget.programField.subFieldList) {
-      subFieldAndNameMap.addAll({s.subFieldName: s});
-    }
+    // for (SubField s in widget.programField.subFieldList) {
+    //   subFieldAndNameMap.addAll({s.subFieldName: s});
+    // }
   }
 
   @override
@@ -41,36 +37,34 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
       // 검색버튼
       icon: Icon(Icons.search),
       onPressed: () async {
-        final finalResult = await showSearch(
-            context: context,
-            delegate: Search(subFieldAndNameMap.keys.toList()));
+        final finalResult = await showSearch(context: context, delegate: Search(subFieldAndNameMap.keys.toList()));
         setState(() {
           selectedSubField = finalResult;
         });
       },
     );
     return Scaffold(
-        appBar: selectAppBar(context, (widget.child.name + "의 하위영역 선택"),
-            searchButton: searchButton),
-        body: widget.programField.subFieldList.length == 0
-            ? noTestData()
-            : selectedSubField == ""
-                ? ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: widget.programField.subFieldList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return dataTile(
-                          widget.programField.subFieldList[index], index);
-                    },
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      return dataTile(
-                          subFieldAndNameMap[selectedSubField]!, index);
-                    },
-                  ));
+      appBar: selectAppBar(context, (widget.child.name + "의 하위영역 선택"), searchButton: searchButton),
+      // body: widget.programField.subFieldList.length == 0
+      //     ? noTestData()
+      //     : selectedSubField == ""
+      //         ? ListView.builder(
+      //             padding: const EdgeInsets.all(16),
+      //             itemCount: widget.programField.subFieldList.length,
+      //             itemBuilder: (BuildContext context, int index) {
+      //               return dataTile(
+      //                   widget.programField.subFieldList[index], index);
+      //             },
+      //           )
+      //         : ListView.builder(
+      //             padding: const EdgeInsets.all(16),
+      //             itemCount: 1,
+      //             itemBuilder: (BuildContext context, int index) {
+      //               return dataTile(
+      //                   subFieldAndNameMap[selectedSubField]!, index);
+      //             },
+      //           )
+    );
   }
 
   Widget noTestData() {
@@ -85,11 +79,7 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
           ),
           Text(
             'No Sub Field',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: 40,
-                fontFamily: 'korean'),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'korean'),
           ),
         ],
       ),
@@ -99,7 +89,7 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
   Widget dataTile(SubField subField, int index) {
     return buildListTile(
       titleSize: 20,
-      titleText: subField.subFieldName,
+      // titleText: subField.subFieldName,
 //      subtitleText: "평균성공률: $average%",z
       onTap: () {
         setState(() {

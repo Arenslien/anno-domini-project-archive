@@ -1,8 +1,9 @@
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/components/search_bar.dart';
-import 'package:aba_analysis_local/provider/child_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/components/build_no_list_widget.dart';
 import 'package:aba_analysis_local/components/build_floating_action_button.dart';
@@ -18,12 +19,25 @@ class ChildMainScreen extends StatefulWidget {
 }
 
 class _ChildMainScreenState extends State<ChildMainScreen> {
+  late DBService db;
+
+  late List<Child> children;
+
   List<Child> searchResult = [];
   TextEditingController searchTextEditingController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(Duration(seconds: 0), () async {
+      db = DBService(
+        db: await openDatabase(
+          join(await getDatabasesPath(), 'doggie_database.db'),
+        ),
+      );
+      children = await db.readAllChild();
+    });
   }
 
   @override
@@ -37,12 +51,13 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                 setState(() {
                   searchResult.clear();
                 });
-                for (int i = 0; i < context.read<ChildNotifier>().children.length; i++) {
+
+                for (int i = 0; i < children.length; i++) {
                   bool flag = false;
-                  if (context.read<ChildNotifier>().children[i].name.contains(str)) flag = true;
+                  if (children[i].name.contains(str)) flag = true;
                   if (flag) {
                     setState(() {
-                      searchResult.add(context.read<ChildNotifier>().children[i]);
+                      searchResult.add(children[i]);
                     });
                   }
                 }
@@ -52,18 +67,13 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                   searchTextEditingController.clear();
                 });
               }),
-          body: context.read<ChildNotifier>().children.length == 0
+          body: children.length == 0
               ? noListData(Icons.group, '아동 추가')
               : searchTextEditingController.text.isEmpty
                   ? ListView.separated(
-                      itemCount:
-                          context.watch<ChildNotifier>().children.length + 1,
+                      itemCount: children.length + 1,
                       itemBuilder: (BuildContext context, int index) {
-                        return index <
-                                context.watch<ChildNotifier>().children.length
-                            ? bulidChildListTile(
-                                context.watch<ChildNotifier>().children[index])
-                            : buildListTile(titleText: '');
+                        return index < children.length ? bulidChildListTile(context, children[index]) : buildListTile(titleText: '');
                       },
                       separatorBuilder: (BuildContext context, int index) {
                         return const Divider(color: Colors.black);
@@ -72,9 +82,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                   : ListView.separated(
                       itemCount: searchResult.length + 1,
                       itemBuilder: (BuildContext context, int index) {
-                        return index < searchResult.length
-                            ? bulidChildListTile(searchResult[index])
-                            : buildListTile(titleText: '');
+                        return index < searchResult.length ? bulidChildListTile(context, searchResult[index]) : buildListTile(titleText: '');
                       },
                       separatorBuilder: (BuildContext context, int index) {
                         return const Divider(color: Colors.black);
@@ -91,15 +99,14 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
     );
   }
 
-  Widget bulidChildListTile(Child child) {
+  Widget bulidChildListTile(BuildContext context, Child child) {
     return buildListTile(
         titleText: child.name,
         subtitleText: '${child.age.toString()}세',
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => ChildTestScreen(child: child)),
+            MaterialPageRoute(builder: (context) => ChildTestScreen(child: child)),
           );
           setState(() {
             searchTextEditingController.clear();
@@ -110,8 +117,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) => ChildModifyScreen(child: child)),
+              MaterialPageRoute(builder: (context) => ChildModifyScreen(child: child)),
             );
           },
           color: Colors.black,

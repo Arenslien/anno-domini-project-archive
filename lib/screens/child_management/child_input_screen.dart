@@ -1,9 +1,10 @@
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/provider/child_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
@@ -17,13 +18,33 @@ class ChildInputScreen extends StatefulWidget {
 
 class _ChildInputScreenState extends State<ChildInputScreen> {
   _ChildInputScreenState();
+  late DBService db;
+
   late String name;
+
   DateTime? birth;
+  bool? isBirthSelected;
+
   late String gender;
   final List<bool> genderSelected = [false, false];
   bool? isGenderSelected;
-  bool? isBirthSelected;
+
   final formkey = GlobalKey<FormState>();
+
+  bool flag = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(seconds: 0), () async {
+      db = DBService(
+        db: await openDatabase(
+          join(await getDatabasesPath(), 'doggie_database.db'),
+        ),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,30 +75,22 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                   color: Colors.black,
                 ),
                 onPressed: () async {
+                  // 성별 선택 여부 확인
                   if (isGenderSelected != true)
                     setState(() {
                       isGenderSelected = false;
                     });
+                  // 생년월일 선택 여부 확인
                   if (isBirthSelected != true)
                     setState(() {
                       isBirthSelected = false;
                     });
-                  if (formkey.currentState!.validate() &&
-                      isGenderSelected! &&
-                      isBirthSelected!) {
-                    // Child child = Child(
-                    //     childId: await _store.updateId(AutoID.child),
-                    //     teacherEmail:
-                    //         context.read<UserNotifier>().abaUser!.email,
-                    //     name: name,
-                    //     birthday: birth!,
-                    //     gender: gender);
+                  if (formkey.currentState!.validate() && isGenderSelected! && isBirthSelected! && !flag) {
+                    flag = true;
 
-                    // Firestore에 아동 추가
-                    // await _store.createChild(child);
+                    Child child = Child(name: name, birthday: birth!, gender: gender);
 
-                    // Provider ChildNotifier 수정
-                    // context.read<ChildNotifier>().addChild(child);
+                    db.createChild(child);
 
                     Navigator.pop(context);
                   }
@@ -116,18 +129,17 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                           children: [
                             OutlinedButton(
                               onPressed: () async {
-                                birth = await getDate(
+                                DateTime? temp = await getDate(
                                   context: context,
                                   initialDate: birth,
                                 );
+                                birth = temp == null ? birth : temp;
                                 setState(() {
                                   isBirthSelected = true;
                                 });
                               },
                               child: Text(
-                                birth == null
-                                    ? '생년월일 선택'
-                                    : DateFormat('yyyyMMdd').format(birth!),
+                                birth == null ? '생년월일 선택' : DateFormat('yyyyMMdd').format(birth!),
                                 style: TextStyle(color: Colors.black),
                               ),
                               style: OutlinedButton.styleFrom(
@@ -141,9 +153,7 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                                 '생년월일을 선택해 주세요.',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: isBirthSelected == false
-                                      ? Colors.redAccent[700]
-                                      : Colors.white,
+                                  color: isBirthSelected == false ? Colors.redAccent[700] : Colors.white,
                                 ),
                               ),
                             ),
@@ -162,9 +172,7 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                                       gender = '남자';
                                     else
                                       gender = '여자';
-                                    for (int buttonIndex = 0;
-                                        buttonIndex < genderSelected.length;
-                                        buttonIndex++) {
+                                    for (int buttonIndex = 0; buttonIndex < genderSelected.length; buttonIndex++) {
                                       if (buttonIndex == index) {
                                         genderSelected[buttonIndex] = true;
                                       } else {
@@ -180,9 +188,7 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                                 '성별을 선택해 주세요.',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: isGenderSelected == false
-                                      ? Colors.redAccent[700]
-                                      : Colors.white,
+                                  color: isGenderSelected == false ? Colors.redAccent[700] : Colors.white,
                                 ),
                               ),
                             ),

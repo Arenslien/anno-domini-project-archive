@@ -1,3 +1,4 @@
+import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -21,6 +22,18 @@ final Map<String, String> korToEngAboutPF = {
   "쓰기": "write",
 };
 
+final List<ProgramField> programFieldList = [
+  ProgramField(id: 0, title: "수용 언어"),
+  ProgramField(id: 1, title: "동적 모방"),
+  ProgramField(id: 2, title: "표현 언어"),
+  ProgramField(id: 3, title: "매칭"),
+  ProgramField(id: 4, title: "수학"),
+  ProgramField(id: 5, title: "놀이 기술"),
+  ProgramField(id: 6, title: "자조 기술"),
+  ProgramField(id: 7, title: "사회성 기술"),
+  ProgramField(id: 8, title: "쓰기"),
+];
+
 String? convertProgramFieldTitle(String title) {
   String? docTitle = korToEngAboutPF[title];
   return docTitle;
@@ -29,28 +42,20 @@ String? convertProgramFieldTitle(String title) {
 SnackBar makeSnackBar(String text, bool success) {
   final snackBar = SnackBar(
     content: Text(text),
-    backgroundColor: success? Colors.green[400] : Colors.red[400],
+    backgroundColor: success ? Colors.green[400] : Colors.red[400],
     duration: Duration(milliseconds: 1500),
   );
   return snackBar;
 }
 
 void makeToast(String text) {
-  Fluttertoast.showToast(
-    msg: text,
-    toastLength: Toast.LENGTH_LONG,
-    backgroundColor: Colors.green[400],
-    fontSize: 16.0
-  );
+  Fluttertoast.showToast(msg: text, toastLength: Toast.LENGTH_LONG, backgroundColor: Colors.green[400], fontSize: 16.0);
 }
 
 double padding = 0.1;
 
-
-
 // 폼 에러
-final RegExp emailValidatorRegExp =
-    RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+final RegExp emailValidatorRegExp = RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 const String kEmailNullError = "이메일을 입력해 주세요";
 const String kInvalidEmailError = "이메일이 올바르지 않습니다";
 const String kExistedEmailError = "이미 존재하는 이메일입니다.";
