@@ -59,11 +59,7 @@ class _DateGraphState extends State<DateGraph> {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
+      await db.initDatabase();
       _child = (await db.readChild(widget.test.childId))!;
       _childName = _child.name;
       _graphType = '날짜';

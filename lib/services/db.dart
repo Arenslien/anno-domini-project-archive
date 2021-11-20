@@ -2,11 +2,12 @@ import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DBService {
-  final Database db;
-  DBService({required this.db});
+  late Database db;
+  // DBService({required this.db});
 
   //=======================================================================================
   //                          Firebase 연동 - 사용자 관련 함수들
@@ -15,6 +16,12 @@ class DBService {
   //=======================================================================================
   //                          Firebase 연동 - 아이들 관련 함수들
   //=======================================================================================
+
+  Future initDatabase() async {
+    this.db = await openDatabase(
+      join(await getDatabasesPath(), 'aba_analysis.db'),
+    );
+  }
 
   Future<void> createChild(Child child) async {
     await db.insert(
@@ -34,8 +41,8 @@ class DBService {
       return Child(
         id: maps[i]['id'],
         name: maps[i]['name'],
-        birthday: DateTime(maps[i]['birthday']),
-        gender: maps[i]['namgendere'],
+        birthday: DateTime.parse(maps[i]['birthday']),
+        gender: maps[i]['gender'],
       );
     });
   }
@@ -50,7 +57,7 @@ class DBService {
       return Child(
         id: maps[i]['id'],
         name: maps[i]['name'],
-        birthday: DateTime(maps[i]['birthday']),
+        birthday: DateTime.parse(maps[i]['birthday']),
         gender: maps[i]['namgendere'],
       );
     })[0];

@@ -38,11 +38,7 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
     super.initState();
 
     Future.delayed(Duration(seconds: 0), () async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
+      await db.initDatabase();
     });
 
     name = widget.child.name;

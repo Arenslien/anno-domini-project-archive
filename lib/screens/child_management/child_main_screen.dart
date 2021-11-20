@@ -1,5 +1,5 @@
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/child.dart';
@@ -10,6 +10,7 @@ import 'package:aba_analysis_local/components/build_floating_action_button.dart'
 import 'package:aba_analysis_local/screens/child_management/child_test_screen.dart';
 import 'package:aba_analysis_local/screens/child_management/child_input_screen.dart';
 import 'package:aba_analysis_local/screens/child_management/child_modify_screen.dart';
+import 'package:provider/provider.dart';
 
 class ChildMainScreen extends StatefulWidget {
   const ChildMainScreen({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class ChildMainScreen extends StatefulWidget {
 class _ChildMainScreenState extends State<ChildMainScreen> {
   late DBService db;
 
-  late List<Child> children;
+  List<Child> children = [];
 
   List<Child> searchResult = [];
   TextEditingController searchTextEditingController = TextEditingController();
@@ -29,16 +30,9 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(Duration(seconds: 0), () async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
-      children = await db.readAllChild();
-    });
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -67,10 +61,16 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                   searchTextEditingController.clear();
                 });
               }),
-          body: children.length == 0
-              ? noListData(Icons.group, '아동 추가')
-              : searchTextEditingController.text.isEmpty
-                  ? ListView.separated(
+          body: FutureBuilder<List<Child>>(
+            future: context.read<DBNotifier>().database!.readAllChild(),
+            builder: (BuildContext context, AsyncSnapshot<List<Child>> snapshot) {
+              if (snapshot.hasData) {
+                children = snapshot.data!;
+                if (children.length == 0) {
+                  return noListData(Icons.group, '아동 추가');
+                } else {
+                  if (searchTextEditingController.text.isEmpty) {
+                    return ListView.separated(
                       itemCount: children.length + 1,
                       itemBuilder: (BuildContext context, int index) {
                         return index < children.length ? bulidChildListTile(context, children[index]) : buildListTile(titleText: '');
@@ -78,8 +78,9 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                       separatorBuilder: (BuildContext context, int index) {
                         return const Divider(color: Colors.black);
                       },
-                    )
-                  : ListView.separated(
+                    );
+                  } else {
+                    return ListView.separated(
                       itemCount: searchResult.length + 1,
                       itemBuilder: (BuildContext context, int index) {
                         return index < searchResult.length ? bulidChildListTile(context, searchResult[index]) : buildListTile(titleText: '');
@@ -87,7 +88,16 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                       separatorBuilder: (BuildContext context, int index) {
                         return const Divider(color: Colors.black);
                       },
-                    ),
+                    );
+                  }
+                }
+              } else if (snapshot.hasError) {
+                return Text('ERROR');
+              } else {
+                return CircularProgressIndicator();
+              }
+            }
+          ),
           floatingActionButton: bulidFloatingActionButton(
             onPressed: () {
               Navigator.push(

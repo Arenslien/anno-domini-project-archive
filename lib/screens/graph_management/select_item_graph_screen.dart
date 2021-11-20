@@ -36,11 +36,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
     super.initState();
 
     Future.delayed(Duration(seconds: 0), () async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
+      await db.initDatabase();
       allTest = await db.readTestList(widget.child.id!);
     });
   }
