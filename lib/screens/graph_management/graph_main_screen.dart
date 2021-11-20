@@ -1,6 +1,7 @@
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/services/db.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as Path;
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/components/search_bar.dart';
@@ -9,7 +10,7 @@ import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 import 'package:aba_analysis_local/components/build_no_list_widget.dart';
 import 'package:aba_analysis_local/screens/graph_management/select_program_screen.dart';
 import 'package:aba_analysis_local/screens/graph_management/select_date_graph_screen.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:provider/provider.dart';
 
 class GraphScreen extends StatefulWidget {
   const GraphScreen({Key? key}) : super(key: key);
@@ -28,11 +29,7 @@ class _GraphScreenState extends State<GraphScreen> {
     super.initState();
 
     Future.delayed(Duration(seconds: 0), () async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
+      db = context.read<DBNotifier>().database!;
       //children = await db.readAllChild();
     });
   }

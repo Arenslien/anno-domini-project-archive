@@ -35,11 +35,7 @@ class _TestInputScreenState extends State<TestModifyScreen> {
     super.initState();
 
     Future.delayed(Duration(seconds: 0), () async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
+      await db.initDatabase();
       testItemList = await db.readTestItemList(widget.test.id!);
     });
 

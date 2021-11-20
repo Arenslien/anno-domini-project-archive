@@ -38,11 +38,7 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
     super.initState();
 
     Future.delayed(Duration(seconds: 0), () async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
+      await db.initDatabase();
     });
   }
 

@@ -29,11 +29,7 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
     super.initState();
 
     Future.delayed(Duration(seconds: 0), () async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
+      await db.initDatabase();
     });
   }
 

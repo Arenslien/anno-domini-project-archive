@@ -36,11 +36,7 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
     super.initState();
 
     Future.delayed(Duration(seconds: 0), () async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
+      await db.initDatabase();
       test = await db.readAllTest();
     });
   }

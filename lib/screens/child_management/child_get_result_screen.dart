@@ -39,11 +39,7 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
     super.initState();
 
     Future.delayed(Duration(seconds: 0), () async {
-      db = DBService(
-        db: await openDatabase(
-          join(await getDatabasesPath(), 'doggie_database.db'),
-        ),
-      );
+      await db.initDatabase();
       testItem = (await db.readTestItemList(widget.test.id!));
     });
 
