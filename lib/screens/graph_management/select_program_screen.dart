@@ -1,13 +1,11 @@
 import 'package:aba_analysis_local/components/search_delegate.dart';
+import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/screens/graph_management/select_area_screen.dart';
-import 'package:aba_analysis_local/services/db.dart';
-import 'package:path/path.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class SelectProgramScreen extends StatefulWidget {
   final Child child;
@@ -19,18 +17,12 @@ class SelectProgramScreen extends StatefulWidget {
 }
 
 class _SelectProgramScreenState extends State<SelectProgramScreen> {
-  late DBService db;
   // 전역변수
   late Map<String, ProgramField> programFieldAndTitleMap = {};
   String selectedProgramField = "";
 
-  get programFieldList => null;
   void initState() {
     super.initState();
-
-    Future.delayed(Duration(seconds: 0), () async {
-      await db.initDatabase();
-    });
   }
 
   @override
@@ -100,7 +92,6 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
   Widget dataTile(ProgramField programField, int index, BuildContext context) {
     return buildListTile(
       titleText: programField.title,
-//      subtitleText: "평균성공률: $average%",
       onTap: () {
         setState(() {
           selectedProgramField = "";

@@ -225,7 +225,7 @@ class DBService {
       return Test(
         id: maps[i]['id'],
         childId: maps[i]['childId'],
-        date: maps[i]['date'],
+        date: DateTime.parse(maps[i]['date']),
         title: maps[i]['title'],
         isInput: maps[i]['isInput'] == 0 ? false : true,
       );

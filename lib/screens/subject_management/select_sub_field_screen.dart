@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
-import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:aba_analysis_local/provider/db_notifier.dart';
@@ -20,8 +19,6 @@ class SelectSubfieldScreen extends StatefulWidget {
 }
 
 class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
-  late List<SubField> subFieldList;
-
   @override
   void initState() {
     super.initState();
@@ -50,16 +47,16 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount: subFieldList.length,
+        itemCount: context.watch<DBNotifier>().readSubFieldList(widget.program.id).length,
         itemBuilder: (BuildContext context, int index) {
           return buildListTile(
-              titleText: subFieldList[index].title,
+              titleText: context.watch<DBNotifier>().readSubFieldList(widget.program.id)[index].title,
               titleSize: 20,
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SelectSubitemScreen(subField: subFieldList[index]),
+                    builder: (context) => SelectSubitemScreen(subField: context.watch<DBNotifier>().readSubFieldList(widget.program.id)[index]),
                   ),
                 );
               },
@@ -75,12 +72,16 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                           text: '정말 삭제하시겠습니까?',
                           onPressed: () async {
                             // DB에서 삭제한 서브필드의 테스트 아이템 삭제
-                            List<TestItem> testItemList = await context.read<DBNotifier>().database!.readTestItemListBySubField(subFieldList[index]);
+                            List<TestItem> testItemList = await context.read<DBNotifier>().database!.readTestItemListBySubField(context.read<DBNotifier>().readSubFieldList(widget.program.id)[index]);
                             for (TestItem testItem in testItemList) {
                               await context.read<DBNotifier>().database!.deleteTestItem(testItem.id!);
                             }
 
-                            await context.read<DBNotifier>().database!.deleteSubField(subFieldList[index].id);
+                            // 서브필드 삭제
+                            await context.read<DBNotifier>().database!.deleteSubField(context.read<DBNotifier>().readSubFieldList(widget.program.id)[index].id!);
+
+                            context.read<DBNotifier>().refreshDB();
+
                             Navigator.pop(context);
                           });
                     },

@@ -74,20 +74,17 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                 onPressed: () async {
                   print(subitemList);
                   if (formkey.currentState!.validate()) {
-                    // SubField addSub = SubField(
-                    //   subFieldName: subFieldName,
-                    //   subItemList: subitemList,
-                    // );
-                    // DB에 서브필드 추가
-//                    await store.create
-                    // await store.addSubField(
-                    //     convertProgramFieldTitle(widget.program.title)!,
-                    //     addSub);
-                    // Subfield를 Notifier에 추가
-                    // context
-                    //     .read<ProgramFieldNotifier>()
-                    //     .updateProgramFieldList(await store.readProgramField());
-                    subitemList = List<String>.generate(10, (index) => "");
+                    SubField addSub = SubField(
+                      title: subFieldName,
+                      subItemList: subitemList,
+                      programFieldId: widget.program.id,
+                    );
+
+                    //DB에 서브필드 추가
+                    context.read<DBNotifier>().database!.addSubField(addSub);
+
+                    context.read<DBNotifier>().refreshDB();
+
                     Navigator.pop(context);
                   }
                 },
