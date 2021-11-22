@@ -9,10 +9,10 @@ class Test {
 
   Map<String, dynamic> toMap() {
     return {
-      'child-id': childId,
+      'childId': childId,
       'date': date.toString(),
       'title': title,
-      'is-input': isInput ? 1 : 0,
+      'isInput': isInput ? 1 : 0,
     };
   }
 

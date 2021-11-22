@@ -1,10 +1,9 @@
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
-import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
@@ -17,9 +16,6 @@ class ChildInputScreen extends StatefulWidget {
 }
 
 class _ChildInputScreenState extends State<ChildInputScreen> {
-  _ChildInputScreenState();
-  late DBService db;
-
   late String name;
 
   DateTime? birth;
@@ -36,10 +32,6 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(Duration(seconds: 0), () async {
-      await db.initDatabase();
-    });
   }
 
   @override
@@ -85,8 +77,10 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                     flag = true;
 
                     Child child = Child(name: name, birthday: birth!, gender: gender);
+                    Child newChild = await context.read<DBNotifier>().database!.createChild(child);
 
-                    db.createChild(child);
+                    // Provider ChildNotifier 수정
+                    context.read<DBNotifier>().addChild(newChild);
 
                     Navigator.pop(context);
                   }

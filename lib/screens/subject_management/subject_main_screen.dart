@@ -11,8 +11,6 @@ class SubjectMainScreen extends StatefulWidget {
 }
 
 class _SubjectMainScreenState extends State<SubjectMainScreen> {
-  _SubjectMainScreenState();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

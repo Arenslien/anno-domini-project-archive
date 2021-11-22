@@ -1,11 +1,10 @@
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
-import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/components/show_dialog_delete.dart';
 import 'package:aba_analysis_local/components/build_floating_action_button.dart';
@@ -13,24 +12,19 @@ import 'package:aba_analysis_local/screens/subject_management/sub_field_view_scr
 import 'package:aba_analysis_local/screens/subject_management/sub_field_input_screen.dart';
 
 class SelectSubfieldScreen extends StatefulWidget {
-  final ProgramField program;
   const SelectSubfieldScreen({Key? key, required this.program}) : super(key: key);
+  final ProgramField program;
+
   @override
   _SelectSubfieldScreenState createState() => _SelectSubfieldScreenState();
 }
 
 class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
-  late DBService db;
   late List<SubField> subFieldList;
-  _SelectSubfieldScreenState();
+
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(Duration(seconds: 0), () async {
-      await db.initDatabase();
-      subFieldList = await db.readSubFieldList(widget.program.id);
-    });
   }
 
   @override
@@ -81,12 +75,12 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                           text: '정말 삭제하시겠습니까?',
                           onPressed: () async {
                             // DB에서 삭제한 서브필드의 테스트 아이템 삭제
-                            List<TestItem> testItemList = await db.readTestItemListBySubField(subFieldList[index]);
+                            List<TestItem> testItemList = await context.read<DBNotifier>().database!.readTestItemListBySubField(subFieldList[index]);
                             for (TestItem testItem in testItemList) {
-                              await db.deleteTestItem(testItem.id!);
+                              await context.read<DBNotifier>().database!.deleteTestItem(testItem.id!);
                             }
 
-                            await db.deleteSubField(subFieldList[index].id);
+                            await context.read<DBNotifier>().database!.deleteSubField(subFieldList[index].id);
                             Navigator.pop(context);
                           });
                     },

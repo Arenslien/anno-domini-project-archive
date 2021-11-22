@@ -1,27 +1,24 @@
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
-import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 
 class ChildGetResultScreen extends StatefulWidget {
+  const ChildGetResultScreen({Key? key, required this.child, required this.test}) : super(key: key);
   final Child child;
   final Test test;
-  const ChildGetResultScreen({Key? key, required this.child, required this.test}) : super(key: key);
 
   @override
   _ChildGetResultScreenState createState() => _ChildGetResultScreenState();
 }
 
 class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
-  late DBService db;
-
-  late List<TestItem> testItem;
+  late List<TestItem> testItemList;
 
   List<String?> result = [];
   List<List<bool>> resultSelected = [];
@@ -35,20 +32,20 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
   }
 
   @override
-  Future<void> initState() async {
+  void initState() {
     super.initState();
 
-    Future.delayed(Duration(seconds: 0), () async {
-      await db.initDatabase();
-      testItem = (await db.readTestItemList(widget.test.id!));
-    });
+    testItemList = context.read<DBNotifier>().getTestItemList(widget.test.id!, true);
 
-    for (int i = 0; i < testItem.length; i++) {
+    // 아이가 갖고 있는 모든 테스트의 동일 아이템 결과값 카운트
+    for (int i = 0; i < testItemList.length; i++) {
       countResult.add([0, 0, 0]);
-      for (TestItem temp in await db.readTestItemListByChild(widget.child.id!)) {
+      // 아이가 가진 모든 테스트 아이템을 가져옴
+      for (TestItem temp in context.read<DBNotifier>().getTestItemListFromChildId(widget.child.id!, true)) {
         // 테스트 진행중인 테스트 아이템은 무시한다
-        if (temp.testId == testItem[i].testId) continue;
-        if (temp.subItem == testItem[i].subItem) {
+        if (temp.testId == testItemList[i].testId) continue;
+        // 카운팅할 하위목록과 일치하면 결과값에 따라 카운트 증가
+        if (temp.subItem == testItemList[i].subItem) {
           if (temp.result == '+') {
             countResult[countResult.length - 1][0]++;
           } else if (temp.result == '-') {
@@ -59,26 +56,25 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
         }
       }
 
-      if (testItem[i].result == null) {
-        result.add(null);
-        resultSelected.add([false, false, false]);
-        continue;
-      } else if (testItem[i].result == '+') {
+      // 현재 테스트의 결과값 상태 표시
+      if (testItemList[i].result == '+') {
         result.add('+');
         resultSelected.add([true, false, false]);
-      } else if (testItem[i].result == '-') {
+      } else if (testItemList[i].result == '-') {
         result.add('-');
         resultSelected.add([false, true, false]);
-      } else if (testItem[i].result == 'P') {
+      } else if (testItemList[i].result == 'P') {
         result.add('P');
         resultSelected.add([false, false, true]);
+      } else {
+        result.add(null);
+        resultSelected.add([false, false, false]);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // FireStoreService store = FireStoreService();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -103,10 +99,12 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
             ),
             onPressed: () async {
               if (checkResultList()) {
-                for (int i = 0; i < testItem.length; i++) {
-                  db.updateTestItem(testItem[i].id!, result[i]!);
+                for (int i = 0; i < testItemList.length; i++) {
+                  await context.read<DBNotifier>().database!.updateTestItem(testItemList[i].id!, result[i]!);
+                  context.read<DBNotifier>().updateTestItem(testItemList[i].id!, result[i]!);
                 }
-                db.updateTest(widget.test);
+                await context.read<DBNotifier>().database!.updateTest(widget.test);
+                context.read<DBNotifier>().updateTest(widget.test.id!, widget.test.date, widget.test.title, true);
 
                 Navigator.pop(context);
               } else {
@@ -118,21 +116,25 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount: testItem.length,
+        itemCount: testItemList.length,
         itemBuilder: (BuildContext context, int index) {
           return Column(
             children: [
               buildListTile(
-                titleText: testItem[index].subItem,
+                titleText: testItemList[index].subItem,
                 trailing: buildToggleButtons(
                   text: ['+', '-', 'P'],
                   onPressed: (buttonIndex) {
+                    // + 누르면
                     if (buttonIndex == 0)
                       result[index] = '+';
+                    // - 누르면
                     else if (buttonIndex == 1)
                       result[index] = '-';
+                    // P 누르면
                     else if (buttonIndex == 2) result[index] = 'P';
 
+                    // 기존 누른값 초기화 후 현재 누른값만 표시
                     setState(() {
                       for (int i = 0; i < 3; i++) {
                         resultSelected[index][i] = false;

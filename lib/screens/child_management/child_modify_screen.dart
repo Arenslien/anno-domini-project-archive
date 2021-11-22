@@ -1,12 +1,11 @@
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
-import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
 import 'package:aba_analysis_local/components/show_dialog_delete.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
@@ -20,10 +19,6 @@ class ChildModifyScreen extends StatefulWidget {
 }
 
 class _ChildModifyScreenState extends State<ChildModifyScreen> {
-  _ChildModifyScreenState();
-
-  late DBService db;
-
   late String name;
   late DateTime birth;
   late String gender;
@@ -36,10 +31,6 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(Duration(seconds: 0), () async {
-      await db.initDatabase();
-    });
 
     name = widget.child.name;
     birth = widget.child.birthday;
@@ -86,25 +77,32 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                     context: context,
                     title: '아동 삭제',
                     text: '해당 아동에 데이터를 삭제 하시겠습니까?',
-                    onPressed: () async {
-                      // 아이에 대한 test
-                      List<Test> testList = await db.readTestList(widget.child.id!);
+                    onPressed: () {
+                      if (!flag) {
+                        flag = true;
 
-                      for (Test test in testList) {
-                        List<TestItem> testItemList = await db.readTestItemList(test.id!);
-                        for (TestItem testItem in testItemList) {
-                          // DB 에서 TestItem 제거
-                          db.deleteTestItem(testItem.id!);
+                        // 아이에 대한 test
+                        List<Test> testList = context.read<DBNotifier>().getAllTestListOf(widget.child.id!, false);
+
+                        for (Test test in testList) {
+                          List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.id!, true);
+                          for (TestItem testItem in testItemList) {
+                            context.read<DBNotifier>().database!.deleteTestItem(testItem.id!);
+                            // Provider에서 TestItem 제거
+                            context.read<DBNotifier>().removeTestItem(testItem);
+                          }
+                          context.read<DBNotifier>().database!.deleteTest(test.id!);
+                          // Provider에서 테스트 제거
+                          context.read<DBNotifier>().removeTest(test);
                         }
-                        // DB 에서 Test 제거
-                        db.deleteTest(test.id!);
+
+                        context.read<DBNotifier>().database!.deleteChild(widget.child.id!);
+                        // Provider에서 Child 제거
+                        context.read<DBNotifier>().removeChild(widget.child);
+
+                        Navigator.pop(context);
+                        Navigator.pop(context);
                       }
-
-                      // DB 에서 Child 제거
-                      db.deleteChild(widget.child.id!);
-
-                      Navigator.pop(context);
-                      Navigator.pop(context);
                     },
                   );
                 },
@@ -115,7 +113,9 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                   color: Colors.black,
                 ),
                 onPressed: () async {
-                  if (formkey.currentState!.validate()) {
+                  if (formkey.currentState!.validate() && !flag) {
+                    flag = true;
+
                     // 수정된 child 생성
                     Child newChild = Child(
                       id: widget.child.id,
@@ -124,8 +124,11 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                       gender: gender,
                     );
 
-                    // 기존의 child 수정
-                    db.updateChild(newChild);
+                    // 기존의 child 제거
+                    context.read<DBNotifier>().removeChild(widget.child);
+
+                    // ChildNotifier 수정
+                    context.read<DBNotifier>().addChild(newChild);
 
                     Navigator.pop(context);
                   }

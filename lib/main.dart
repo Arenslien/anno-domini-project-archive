@@ -1,7 +1,7 @@
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/provider/db_notifier.dart';
-import 'package:path/path.dart' as Path;
 import 'package:provider/provider.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
 import 'package:aba_analysis_local/theme.dart';
 import 'package:aba_analysis_local/routes.dart';
@@ -25,23 +25,15 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) async {
-      final db = openDatabase(
-        Path.join(await getDatabasesPath(), 'aba_analysis.db'),
-        onCreate: (db, version) async {
-          await db.execute(
-              "CREATE TABLE child(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, birthday TEXT, gender TEXT)");
-          await db.execute(
-              "CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT, childId INTEGER, date TEXT, title TEXT, isInput INTEGER)");
-          await db.execute(
-              "CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT, testId INTEGER, childId INTEGER, programField TEXT, subField TEXT, subItem TEXT)");
-          await db.execute(
-              "CREATE TABLE programField(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT)");
-          await db.execute(
-              "CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, programFieldId INTEGER, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
-        },
-        version: 1,
-      );
-      context.read<DBNotifier>().initDB();
+      await context.read<DBNotifier>().connectDB();
+      // Default SubField 값 확인
+      List<SubField> subFieldList = await context.read<DBNotifier>().database!.readAllSubFieldList();
+
+      if (subFieldList.isEmpty) {
+        for (SubField subField in defaultSubFieldList) {
+          context.read<DBNotifier>().database!.addSubField(subField);
+        }
+      }
     });
   }
 
