@@ -33,14 +33,14 @@ class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          // title: Text(
-          //   widget.subField.subFieldName,
-          //   style: TextStyle(
-          //     color: Colors.black,
-          //     fontSize: 16,
-          //     fontFamily: 'KoreanGothic',
-          //   ),
-          // ),
+          title: Text(
+            widget.subField.title,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontFamily: 'KoreanGothic',
+            ),
+          ),
           centerTitle: true,
           leading: IconButton(
             icon: Icon(

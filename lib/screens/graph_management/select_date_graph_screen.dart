@@ -1,3 +1,5 @@
+import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/components/search_delegate.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
@@ -5,12 +7,9 @@ import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:aba_analysis_local/screens/graph_management/date_graph_screen.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
-import 'package:aba_analysis_local/services/db.dart';
 import 'package:flutter/material.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 
 import 'no_test_data_screen.dart';
 
@@ -25,7 +24,6 @@ class SelectDateScreen extends StatefulWidget {
 }
 
 class _SelectDateScreenState extends State<SelectDateScreen> {
-  late DBService db;
   late Map<String, Test> testAndDateMap = {};
   String selectedDate = "";
   // 검색 관련 변수
@@ -37,9 +35,6 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
       print(test.toString());
     }
 
-    Future.delayed(Duration(seconds: 0), () async {
-      await db.initDatabase();
-    });
     genTestAndDateMap();
   }
 
@@ -121,7 +116,7 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
         });
         bool notNull = true;
 
-        List<TestItem> testItemListNotNull = await db.readAllTestItemNotNull();
+        List<TestItem> testItemListNotNull = await context.read<DBNotifier>().database!.readAllTestItemNotNull();
 
         List<TestItem> testItemList = [];
         for (TestItem testItem in testItemListNotNull) {
@@ -140,6 +135,7 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) => DateGraph(
+                        child: widget.child,
                         test: test,
                       )));
         } else {
@@ -150,8 +146,8 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
     );
   }
 
-  Future<int> getAvg(Test test) async {
-    List<TestItem> testItemList = await db.readAllTestItemNotNull();
+  int getAvg(Test test) {
+    List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.id!, false);
     int cnt = 0;
     int length = 0;
 
@@ -161,6 +157,8 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
         if (testItem.result == '+') cnt++;
       }
     }
+    if (length == 0) return 0;
+
     num average = (cnt / length * 100).toInt();
 
     return average.toInt();

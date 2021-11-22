@@ -126,14 +126,14 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                     }
                     // 새로 추가된 TestItem 추가
                     for (TestItemInfo testItemInfo in testItemInfoList) {
-                      TestItem testItem = (await context.read<DBNotifier>().database!.createTestItem(TestItem(
+                      await context.read<DBNotifier>().database!.createTestItem(TestItem(
                             testId: widget.test.id!,
                             childId: widget.test.childId,
                             programField: testItemInfo.programField,
                             subField: testItemInfo.subField,
                             subItem: testItemInfo.subItem,
                             result: null,
-                          )))!;
+                          ));
                     }
                     context.read<DBNotifier>().refreshDB();
 

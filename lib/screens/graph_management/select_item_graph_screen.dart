@@ -3,14 +3,13 @@ import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/screens/graph_management/item_graph_screen.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
 import 'package:aba_analysis_local/screens/graph_management/no_test_data_screen.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
-import 'package:aba_analysis_local/services/db.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:provider/provider.dart';
 
 // select_date 복붙한거라 select_item버전으로 다시 코딩 필요
 class SelectItemScreen extends StatefulWidget {
@@ -24,21 +23,13 @@ class SelectItemScreen extends StatefulWidget {
 }
 
 class _SelectItemScreenState extends State<SelectItemScreen> {
-  late DBService db;
-
   // 전역변수
   late Map<String, TestItem> testItemAndsubItemNameMap = {};
   String selectedSubItem = "";
   bool isNoTestData = false;
-  late List<Test> allTest;
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(Duration(seconds: 0), () async {
-      await db.initDatabase();
-      allTest = await db.readTestList(widget.child.id!);
-    });
   }
 
   @override
@@ -89,15 +80,15 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
       titleSize: 20,
       titleText: subItem,
       // subtitleText: "평균성공률: $average%",
-      onTap: () async {
+      onTap: () {
         List<SubItemAndDate> subItemList = [];
         // SubItemList 만들기
         // List<Test> allTest = context
         //     .read<TestNotifier>()
         //     .getAllTestListOf(widget.child.childId);
 
-        List<TestItem> testItemNotNullList = await db.readAllTestItemNotNull();
-        for (Test test in allTest) {
+        List<TestItem> testItemNotNullList = context.read<DBNotifier>().getTestItemListFromChildId(widget.child.id!, false);
+        for (Test test in context.read<DBNotifier>().testList) {
           List<TestItem> testItemList = [];
           for (TestItem testItem in testItemNotNullList) {
             if (test.id == testItem.testId) {
@@ -142,7 +133,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
             size: 150,
           ),
           Text(
-            'No Program Data',
+            '데이터가 없습니다.',
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'korean'),
           ),
         ],
