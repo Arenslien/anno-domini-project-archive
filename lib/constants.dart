@@ -49,13 +49,18 @@ SnackBar makeSnackBar(String text, bool success) {
 }
 
 void makeToast(String text) {
-  Fluttertoast.showToast(msg: text, toastLength: Toast.LENGTH_LONG, backgroundColor: Colors.green[400], fontSize: 16.0);
+  Fluttertoast.showToast(
+      msg: text,
+      toastLength: Toast.LENGTH_LONG,
+      backgroundColor: Colors.green[400],
+      fontSize: 16.0);
 }
 
 double padding = 0.1;
 
 // 폼 에러
-final RegExp emailValidatorRegExp = RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+final RegExp emailValidatorRegExp =
+    RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 const String kEmailNullError = "이메일을 입력해 주세요";
 const String kInvalidEmailError = "이메일이 올바르지 않습니다";
 const String kExistedEmailError = "이미 존재하는 이메일입니다.";
