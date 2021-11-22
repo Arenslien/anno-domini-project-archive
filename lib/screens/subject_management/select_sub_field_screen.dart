@@ -55,69 +55,98 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
             .length,
         itemBuilder: (BuildContext context, int index) {
           return buildListTile(
-              titleText: context
-                  .watch<DBNotifier>()
-                  .readSubFieldList(widget.program.id)[index]
-                  .title,
-              titleSize: 20,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SelectSubitemScreen(
-                      subField: context
-                          .watch<DBNotifier>()
-                          .readSubFieldList(widget.program.id)[index],
-                      index: index,
-                    ),
+            titleText: context
+                .watch<DBNotifier>()
+                .readSubFieldList(widget.program.id)[index]
+                .title,
+            titleSize: 20,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SelectSubitemScreen(
+                    subField: context
+                        .watch<DBNotifier>()
+                        .readSubFieldList(widget.program.id)[index],
+                    index: index,
                   ),
-                );
-              },
-              // 삭제 버튼
-              trailing: Visibility(
-                visible: index != 0,
-                child: IconButton(
-                    onPressed: () {
-                      // DB에서 SubField 가져와서 삭제
-                      showDialogYesOrNo(
-                          context: context,
-                          title: '하위영역 삭제',
-                          text: '정말 삭제하시겠습니까?',
-                          onPressed: () async {
-                            // DB에서 삭제한 서브필드의 테스트 아이템 삭제
-                            List<TestItem> testItemList = await context
-                                .read<DBNotifier>()
-                                .database!
-                                .readTestItemListBySubField(context
+                ),
+              );
+            },
+            // 삭제 버튼
+            trailing: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              children: <Widget>[
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: 44,
+                    minHeight: 48,
+                    maxWidth: 64,
+                    maxHeight: 64,
+                  ),
+                  child:
+                      Image.asset('asset/sub_field_icon.png', fit: BoxFit.fill),
+                ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: 44,
+                    minHeight: 48,
+                    maxWidth: 44,
+                    maxHeight: 48,
+                  ),
+                  child: index == 0
+                      ? Image.asset('asset/basic_icon.png', fit: BoxFit.fill)
+                      : Image.asset('asset/add_icon.png', fit: BoxFit.fill),
+                ),
+                Visibility(
+                  visible: index != 0,
+                  child: IconButton(
+                      onPressed: () {
+                        // DB에서 SubField 가져와서 삭제
+                        showDialogYesOrNo(
+                            context: context,
+                            title: '하위영역 삭제',
+                            text: '정말 삭제하시겠습니까?',
+                            onPressed: () async {
+                              // DB에서 삭제한 서브필드의 테스트 아이템 삭제
+                              List<TestItem> testItemList = await context
+                                  .read<DBNotifier>()
+                                  .database!
+                                  .readTestItemListBySubField(context
+                                      .read<DBNotifier>()
+                                      .readSubFieldList(
+                                          widget.program.id)[index]);
+                              for (TestItem testItem in testItemList) {
+                                await context
                                     .read<DBNotifier>()
-                                    .readSubFieldList(
-                                        widget.program.id)[index]);
-                            for (TestItem testItem in testItemList) {
+                                    .database!
+                                    .deleteTestItem(testItem.id!);
+                              }
+
+                              // 서브필드 삭제
                               await context
                                   .read<DBNotifier>()
                                   .database!
-                                  .deleteTestItem(testItem.id!);
-                            }
+                                  .deleteSubField(context
+                                      .read<DBNotifier>()
+                                      .readSubFieldList(
+                                          widget.program.id)[index]
+                                      .id!);
 
-                            // 서브필드 삭제
-                            await context
-                                .read<DBNotifier>()
-                                .database!
-                                .deleteSubField(context
-                                    .read<DBNotifier>()
-                                    .readSubFieldList(widget.program.id)[index]
-                                    .id!);
+                              context.read<DBNotifier>().refreshDB();
 
-                            context.read<DBNotifier>().refreshDB();
-
-                            Navigator.pop(context);
-                          });
-                    },
-                    icon: Icon(
-                      Icons.delete_rounded,
-                      color: Colors.black,
-                    )),
-              ));
+                              Navigator.pop(context);
+                            });
+                      },
+                      icon: Icon(
+                        Icons.delete_rounded,
+                        color: Colors.black,
+                      )),
+                ),
+              ],
+            ),
+          );
         },
       ),
       floatingActionButton: bulidFloatingActionButton(onPressed: () {
