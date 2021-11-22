@@ -3,15 +3,14 @@ import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 
 class SelectSubitemScreen extends StatefulWidget {
-  final SubField subField;
   const SelectSubitemScreen({Key? key, required this.subField}) : super(key: key);
+  final SubField subField;
 
   @override
   _SelectSubitemScreenState createState() => _SelectSubitemScreenState();
 }
 
 class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
-  _SelectSubitemScreenState();
   late String title;
 
   // 완료할 때 추가할 하위영역의 하위목록 리스트

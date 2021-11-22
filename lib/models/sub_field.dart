@@ -13,7 +13,7 @@ class SubField {
     };
 
     for (int i = 0; i < subItemList.length; i++) {
-      map['item$i'] = subItemList[i];
+      map['item${(i + 1)}'] = subItemList[i];
     }
 
     return map;
