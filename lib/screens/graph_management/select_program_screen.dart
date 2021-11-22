@@ -36,7 +36,9 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
       // 검색버튼
       icon: Icon(Icons.search),
       onPressed: () async {
-        final finalResult = await showSearch(context: context, delegate: Search(programFieldAndTitleMap.keys.toList()));
+        final finalResult = await showSearch(
+            context: context,
+            delegate: Search(programFieldAndTitleMap.keys.toList()));
         setState(() {
           selectedProgramField = finalResult;
         });
@@ -57,14 +59,18 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
                       padding: const EdgeInsets.all(16),
                       itemCount: programFieldList.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(programFieldList[index], index, context);
+                        return dataTile(
+                            programFieldList[index], index, context);
                       },
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.all(16),
                       itemCount: 1,
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(programFieldAndTitleMap[selectedProgramField]!, index, context);
+                        return dataTile(
+                            programFieldAndTitleMap[selectedProgramField]!,
+                            index,
+                            context);
                       },
                     )),
     );
@@ -81,8 +87,12 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
             size: 150,
           ),
           Text(
-            'No Program Data',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'korean'),
+            '프로그램 영역 데이터가 없습니다.',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 40,
+                fontFamily: 'korean'),
           ),
         ],
       ),
@@ -104,7 +114,30 @@ class _SelectProgramScreenState extends State<SelectProgramScreen> {
                       programField: programField,
                     ))); // 클릭시 회차별(날짜별) 그래프 스크린으로 이동. 회차마다 다른 그래프 스크린을 만들어야 함.
       },
-      trailing: Icon(Icons.keyboard_arrow_right),
+      trailing: Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 10,
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: 44,
+              minHeight: 48,
+              maxWidth: 64,
+              maxHeight: 64,
+            ),
+            child:
+                Image.asset('asset/program_field_icon.png', fit: BoxFit.fill),
+          ),
+          ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: 44,
+                minHeight: 48,
+                maxWidth: 44,
+                maxHeight: 48,
+              ),
+              child: Image.asset('asset/basic_icon.png', fit: BoxFit.fill)),
+        ],
+      ),
     );
   }
 }

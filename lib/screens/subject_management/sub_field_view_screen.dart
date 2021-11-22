@@ -3,8 +3,11 @@ import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 
 class SelectSubitemScreen extends StatefulWidget {
-  const SelectSubitemScreen({Key? key, required this.subField}) : super(key: key);
   final SubField subField;
+  final int index;
+  const SelectSubitemScreen(
+      {Key? key, required this.subField, required this.index})
+      : super(key: key);
 
   @override
   _SelectSubitemScreenState createState() => _SelectSubitemScreenState();
@@ -64,6 +67,35 @@ class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
                         fontSize: 20,
                         fontFamily: 'KoreanGothic',
                       ),
+                    ),
+                    trailing: Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 10,
+                      children: <Widget>[
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: 44,
+                            minHeight: 48,
+                            maxWidth: 64,
+                            maxHeight: 48,
+                          ),
+                          child: Image.asset('asset/sub_list_icon.png',
+                              fit: BoxFit.fill),
+                        ),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: 44,
+                            minHeight: 48,
+                            maxWidth: 64,
+                            maxHeight: 48,
+                          ),
+                          child: widget.index == 0
+                              ? Image.asset('asset/basic_icon.png',
+                                  fit: BoxFit.fill)
+                              : Image.asset('asset/add_icon.png',
+                                  fit: BoxFit.fill),
+                        ),
+                      ],
                     ),
                   );
                 },
