@@ -83,6 +83,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                         subItem: testItemInfo.subItem,
                         result: null,
                       );
+                      print("TesItemInfo: " + testItem.toString());
                       await context.read<DBNotifier>().database!.createTestItem(testItem);
                     }
                     context.read<DBNotifier>().refreshDB();

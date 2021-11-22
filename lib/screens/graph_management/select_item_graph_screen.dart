@@ -15,7 +15,13 @@ import 'package:provider/provider.dart';
 class SelectItemScreen extends StatefulWidget {
   final Child child;
   final SubField subField;
-  const SelectItemScreen({Key? key, required this.child, required this.subField}) : super(key: key);
+  final int index;
+  const SelectItemScreen(
+      {Key? key,
+      required this.child,
+      required this.subField,
+      required this.index})
+      : super(key: key);
   static String routeName = '/select_item';
 
   @override
@@ -47,7 +53,8 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
       // 검색버튼
       icon: Icon(Icons.search),
       onPressed: () async {
-        final finalResult = await showSearch(context: context, delegate: Search(widget.subField.subItemList));
+        final finalResult = await showSearch(
+            context: context, delegate: Search(widget.subField.subItemList));
         setState(() {
           selectedSubItem = finalResult;
         });
@@ -55,7 +62,8 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
     );
 
     return Scaffold(
-        appBar: selectAppBar(context, (widget.child.name + "의 하위목록 선택"), searchButton: searchButton),
+        appBar: selectAppBar(context, (widget.child.name + "의 하위목록 선택"),
+            searchButton: searchButton),
         body: isNoTestData
             ? noTestData()
             : selectedSubItem == ""
@@ -63,7 +71,8 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: widget.subField.subItemList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return dataTile(widget.subField.subItemList[index], index, context);
+                      return dataTile(
+                          widget.subField.subItemList[index], index, context);
                     },
                   )
                 : ListView.builder(
@@ -87,7 +96,9 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
         //     .read<TestNotifier>()
         //     .getAllTestListOf(widget.child.childId);
 
-        List<TestItem> testItemNotNullList = context.read<DBNotifier>().getTestItemListFromChildId(widget.child.id!, false);
+        List<TestItem> testItemNotNullList = context
+            .read<DBNotifier>()
+            .getTestItemListFromChildId(widget.child.id!, false);
         for (Test test in context.read<DBNotifier>().testList) {
           List<TestItem> testItemList = [];
           for (TestItem testItem in testItemNotNullList) {
@@ -98,7 +109,8 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
 
           for (TestItem testItem in testItemList) {
             if (testItem.subItem == subItem && testItem.result != null) {
-              subItemList.add(SubItemAndDate(testItem: testItem, date: test.date));
+              subItemList
+                  .add(SubItemAndDate(testItem: testItem, date: test.date));
               break;
             }
           }
@@ -107,7 +119,8 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
           selectedSubItem = "";
         });
         if (subItemList.isEmpty) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => NoTestData()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => NoTestData()));
         } else {
           Navigator.push(
               context,
@@ -118,7 +131,32 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                       )));
         }
       },
-      trailing: Icon(Icons.keyboard_arrow_right),
+      trailing: Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 10,
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: 44,
+              minHeight: 48,
+              maxWidth: 64,
+              maxHeight: 64,
+            ),
+            child: Image.asset('asset/sub_list_icon.png', fit: BoxFit.fill),
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: 44,
+              minHeight: 48,
+              maxWidth: 44,
+              maxHeight: 48,
+            ),
+            child: widget.index == 0
+                ? Image.asset('asset/basic_icon.png', fit: BoxFit.fill)
+                : Image.asset('asset/add_icon.png', fit: BoxFit.fill),
+          ),
+        ],
+      ),
     );
   }
 
@@ -134,7 +172,11 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
           ),
           Text(
             '데이터가 없습니다.',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'korean'),
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 40,
+                fontFamily: 'korean'),
           ),
         ],
       ),

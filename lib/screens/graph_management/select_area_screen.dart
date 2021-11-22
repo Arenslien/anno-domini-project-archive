@@ -13,7 +13,9 @@ import 'package:provider/provider.dart';
 class SelectAreaScreen extends StatefulWidget {
   final Child child;
   final ProgramField programField;
-  const SelectAreaScreen({Key? key, required this.child, required this.programField}) : super(key: key);
+  const SelectAreaScreen(
+      {Key? key, required this.child, required this.programField})
+      : super(key: key);
   static String routeName = '/select_area';
 
   @override
@@ -39,29 +41,44 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
       // 검색버튼
       icon: Icon(Icons.search),
       onPressed: () async {
-        final finalResult = await showSearch(context: context, delegate: Search(subFieldAndNameMap.keys.toList()));
+        final finalResult = await showSearch(
+            context: context,
+            delegate: Search(subFieldAndNameMap.keys.toList()));
         setState(() {
           selectedSubField = finalResult;
         });
       },
     );
     return Scaffold(
-        appBar: selectAppBar(context, (widget.child.name + "의 하위영역 선택"), searchButton: searchButton),
-        body: context.watch<DBNotifier>().readSubFieldList(widget.programField.id).length == 0
+        appBar: selectAppBar(context, (widget.child.name + "의 하위영역 선택"),
+            searchButton: searchButton),
+        body: context
+                    .watch<DBNotifier>()
+                    .readSubFieldList(widget.programField.id)
+                    .length ==
+                0
             ? noTestData()
             : selectedSubField == ""
                 ? ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: context.watch<DBNotifier>().readSubFieldList(widget.programField.id).length,
+                    itemCount: context
+                        .watch<DBNotifier>()
+                        .readSubFieldList(widget.programField.id)
+                        .length,
                     itemBuilder: (BuildContext context, int index) {
-                      return dataTile(context.watch<DBNotifier>().readSubFieldList(widget.programField.id)[index], index);
+                      return dataTile(
+                          context
+                              .watch<DBNotifier>()
+                              .readSubFieldList(widget.programField.id)[index],
+                          index);
                     },
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: 1,
                     itemBuilder: (BuildContext context, int index) {
-                      return dataTile(subFieldAndNameMap[selectedSubField]!, index);
+                      return dataTile(
+                          subFieldAndNameMap[selectedSubField]!, index);
                     },
                   ));
   }
@@ -77,8 +94,12 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
             size: 150,
           ),
           Text(
-            'No Sub Field',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'korean'),
+            '하위영역 데이터가 없습니다.',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 40,
+                fontFamily: 'korean'),
           ),
         ],
       ),
@@ -100,9 +121,35 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
                 builder: (context) => SelectItemScreen(
                       child: widget.child,
                       subField: subField,
+                      index: index,
                     )));
       },
-      trailing: Icon(Icons.keyboard_arrow_right),
+      trailing: Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 10,
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: 44,
+              minHeight: 48,
+              maxWidth: 64,
+              maxHeight: 64,
+            ),
+            child: Image.asset('asset/sub_field_icon.png', fit: BoxFit.fill),
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: 44,
+              minHeight: 48,
+              maxWidth: 44,
+              maxHeight: 48,
+            ),
+            child: index == 0
+                ? Image.asset('asset/basic_icon.png', fit: BoxFit.fill)
+                : Image.asset('asset/add_icon.png', fit: BoxFit.fill),
+          ),
+        ],
+      ),
     );
   }
 }
