@@ -307,17 +307,19 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                                                 onPressed: () async {
                                                   // 저장
                                                   // 리스트에 테스트 아이템 담기
-                                                  TestItemInfo testItemInfo = TestItemInfo(
-                                                    programField: programFieldList[selectedProgramFieldIndex].title,
-                                                    subField: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].title,
-                                                    subItem: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].subItemList[selectedSubItemIndex],
-                                                  );
+                                                  if (selectedSubItem != null) {
+                                                    TestItemInfo testItemInfo = TestItemInfo(
+                                                      programField: programFieldList[selectedProgramFieldIndex].title,
+                                                      subField: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].title,
+                                                      subItem: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].subItemList[selectedSubItemIndex],
+                                                    );
 
-                                                  // 리스트에 추가
-                                                  setState(() {
-                                                    testItemInfoList.add(testItemInfo);
-                                                  });
-                                                  Navigator.pop(context);
+                                                    // 리스트에 추가
+                                                    setState(() {
+                                                      testItemInfoList.add(testItemInfo);
+                                                    });
+                                                    Navigator.pop(context);
+                                                  }
                                                 },
                                               ),
                                             ],

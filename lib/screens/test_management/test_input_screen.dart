@@ -73,9 +73,6 @@ class _TestInputScreenState extends State<TestInputScreen> {
                           isInput: false,
                         ));
 
-                    // Test Notifier에 추가
-                    context.read<DBNotifier>().addTest(test);
-
                     // TestItem 추가
                     for (TestItemInfo testItemInfo in testItemInfoList) {
                       TestItem testItem = TestItem(
@@ -161,9 +158,9 @@ class _TestInputScreenState extends State<TestInputScreen> {
                               IconButton(
                                 icon: Icon(Icons.add_rounded),
                                 onPressed: () {
-                                  late int selectedProgramFieldIndex;
-                                  late int selectedSubFieldIndex;
-                                  late int selectedSubItemIndex;
+                                  int? selectedProgramFieldIndex;
+                                  int? selectedSubFieldIndex;
+                                  int? selectedSubItemIndex;
                                   String? selectedProgramField;
                                   String? selectedSubField;
                                   String? selectedSubItem;
@@ -207,11 +204,11 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     value: selectedSubField,
                                                     items: selectedProgramField == null
                                                         ? null
-                                                        : context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex).map((value) {
+                                                        : context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!).map((value) {
                                                             return DropdownMenuItem(value: value.title, child: Text(value.title));
                                                           }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedSubFieldIndex = context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex).indexWhere((element) => value == element.title);
+                                                      selectedSubFieldIndex = context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!).indexWhere((element) => value == element.title);
                                                       setState1(() {
                                                         selectedSubField = value;
                                                         selectedSubItem = null;
@@ -224,14 +221,14 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     value: selectedSubItem,
                                                     items: selectedProgramField == null || selectedSubField == null
                                                         ? null
-                                                        : (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].subItemList.map((value) {
+                                                        : (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].subItemList.map((value) {
                                                             return DropdownMenuItem(
                                                               value: value,
                                                               child: Text(value),
                                                             );
                                                           }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedSubItemIndex = (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].subItemList.indexWhere((element) => value == element);
+                                                      selectedSubItemIndex = (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].subItemList.indexWhere((element) => value == element);
                                                       setState1(() {
                                                         selectedSubItem = value;
                                                       });
@@ -259,17 +256,19 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                 onPressed: () async {
                                                   // 저장
                                                   // 리스트에 테스트 아이템 담기
-                                                  TestItemInfo testItemInfo = TestItemInfo(
-                                                    programField: programFieldList[selectedProgramFieldIndex].title,
-                                                    subField: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].title,
-                                                    subItem: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].subItemList[selectedSubItemIndex],
-                                                  );
+                                                  if (selectedSubItemIndex != null) {
+                                                    TestItemInfo testItemInfo = TestItemInfo(
+                                                      programField: programFieldList[selectedProgramFieldIndex!].title,
+                                                      subField: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].title,
+                                                      subItem: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].subItemList[selectedSubItemIndex!],
+                                                    );
 
-                                                  // 리스트에 추가
-                                                  setState(() {
-                                                    testItemInfoList.add(testItemInfo);
-                                                  });
-                                                  Navigator.pop(context);
+                                                    // 리스트에 추가
+                                                    setState(() {
+                                                      testItemInfoList.add(testItemInfo);
+                                                    });
+                                                    Navigator.pop(context);
+                                                  }
                                                 },
                                               ),
                                             ],
