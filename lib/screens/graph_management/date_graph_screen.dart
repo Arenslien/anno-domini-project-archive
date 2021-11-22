@@ -2,21 +2,20 @@ import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/screens/graph_management/generateExcel.dart';
 import 'package:aba_analysis_local/screens/graph_management/generatePDF.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
-import 'package:aba_analysis_local/services/db.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:line_icons/line_icons.dart';
 import 'dart:ui' as dart_ui;
+import 'package:provider/provider.dart';
 
 import 'dart:io';
 import 'package:pdf/widgets.dart' as pw;
@@ -26,20 +25,17 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xio;
 import 'generateChart.dart';
 
 class DateGraph extends StatefulWidget {
+  final Child child;
   final Test test;
-  const DateGraph({Key? key, required this.test}) : super(key: key);
+  const DateGraph({Key? key, required this.child, required this.test}) : super(key: key);
 
   @override
   _DateGraphState createState() => _DateGraphState();
 }
 
 class _DateGraphState extends State<DateGraph> {
-  late DBService db;
-
   final bool _isDate = true; // Date Graph인지 Item Graph인지
-  late String _childName; // 아이의 이름
   late ExportData exportData; // Export할 데이터
-  late Child _child; // 아이 데이터
 
   late List<GraphData> _chartData; // chart를 그릴 때 쓰이는 데이터
   late List<String> _tableColumn; // 내보내기할 때 테이블의 컬럼 이름들
@@ -58,29 +54,21 @@ class _DateGraphState extends State<DateGraph> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) async {
-      await db.initDatabase();
-      _child = (await db.readChild(widget.test.childId))!;
-      _childName = _child.name;
-      _graphType = '날짜';
-      _charTitleName = DateFormat(graphDateFormat).format(widget.test.date);
-      _tableColumn = ['날짜', '하위목록', '성공여부'];
-      exportData = ExportData("치료사", _childName, _averageRate, '', '');
-      _chartData = await getDateGraphData(_charTitleName, widget.test);
-    });
-
-    Future.delayed(Duration.zero, () async {});
+    _graphType = '날짜';
+    _charTitleName = DateFormat(graphDateFormat).format(widget.test.date);
+    _chartData = getDateGraphData(_charTitleName, widget.test);
+    _averageRate = _chartData[0].averageRate;
+    _tableColumn = ['날짜', '하위목록', '성공여부'];
+    exportData = ExportData("치료사", widget.child.name, _averageRate, '', '');
 
     _fileName = null;
     valueText = null;
-
-    _averageRate = _chartData[0].averageRate;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: selectAppBar(context, _childName + "의 " + _graphType + "별 그래프"),
+      appBar: selectAppBar(context, widget.child.name + "의 " + _graphType + "별 그래프"),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -263,11 +251,11 @@ class _DateGraphState extends State<DateGraph> {
         });
   }
 
-  Future<List<GraphData>> getDateGraphData(String _noChange, Test test) async {
+  List<GraphData> getDateGraphData(String _noChange, Test test) {
     // 통일된거
     List<GraphData> chartData = []; // 선택한 하위목록과 테스트한 날짜 리스트
     // get testItemList
-    List<TestItem> testItemList = await db.readAllTestItemNotNull();
+    List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.id!, false);
     int cnt = 0;
     int length = 0;
 

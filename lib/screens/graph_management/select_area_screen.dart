@@ -3,9 +3,11 @@ import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/screens/graph_management/select_item_graph_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:provider/provider.dart';
 
 // 선택한 프로그램 영역의 하위영역을 선택하는 스크린
 class SelectAreaScreen extends StatefulWidget {
@@ -44,27 +46,24 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
       },
     );
     return Scaffold(
-      appBar: selectAppBar(context, (widget.child.name + "의 하위영역 선택"), searchButton: searchButton),
-      // body: widget.programField.subFieldList.length == 0
-      //     ? noTestData()
-      //     : selectedSubField == ""
-      //         ? ListView.builder(
-      //             padding: const EdgeInsets.all(16),
-      //             itemCount: widget.programField.subFieldList.length,
-      //             itemBuilder: (BuildContext context, int index) {
-      //               return dataTile(
-      //                   widget.programField.subFieldList[index], index);
-      //             },
-      //           )
-      //         : ListView.builder(
-      //             padding: const EdgeInsets.all(16),
-      //             itemCount: 1,
-      //             itemBuilder: (BuildContext context, int index) {
-      //               return dataTile(
-      //                   subFieldAndNameMap[selectedSubField]!, index);
-      //             },
-      //           )
-    );
+        appBar: selectAppBar(context, (widget.child.name + "의 하위영역 선택"), searchButton: searchButton),
+        body: context.watch<DBNotifier>().readSubFieldList(widget.programField.id).length == 0
+            ? noTestData()
+            : selectedSubField == ""
+                ? ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: context.watch<DBNotifier>().readSubFieldList(widget.programField.id).length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return dataTile(context.watch<DBNotifier>().readSubFieldList(widget.programField.id)[index], index);
+                    },
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      return dataTile(subFieldAndNameMap[selectedSubField]!, index);
+                    },
+                  ));
   }
 
   Widget noTestData() {
@@ -89,8 +88,7 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
   Widget dataTile(SubField subField, int index) {
     return buildListTile(
       titleSize: 20,
-      // titleText: subField.subFieldName,
-//      subtitleText: "평균성공률: $average%",z
+      titleText: subField.title,
       onTap: () {
         setState(() {
           selectedSubField = "";

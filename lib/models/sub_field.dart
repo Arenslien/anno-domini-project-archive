@@ -1,10 +1,10 @@
 class SubField {
-  final int id;
+  int? id;
   final int programFieldId;
   final String title;
   final List<String> subItemList;
 
-  SubField({required this.id, required this.programFieldId, required this.title, required this.subItemList});
+  SubField({this.id, required this.programFieldId, required this.title, required this.subItemList});
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
