@@ -66,18 +66,12 @@ class _TestInputScreenState extends State<TestInputScreen> {
                     flag = true;
 
                     // Test 추가
-                    Test test = await context
-                        .read<DBNotifier>()
-                        .database!
-                        .createTest(Test(
+                    Test test = await context.read<DBNotifier>().database!.createTest(Test(
                           childId: widget.child.id!,
                           date: date,
                           title: title,
                           isInput: false,
                         ));
-
-                    // Test Notifier에 추가
-                    context.read<DBNotifier>().addTest(test);
 
                     // TestItem 추가
                     for (TestItemInfo testItemInfo in testItemInfoList) {
@@ -90,10 +84,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                         result: null,
                       );
                       print("TesItemInfo: " + testItem.toString());
-                      await context
-                          .read<DBNotifier>()
-                          .database!
-                          .createTestItem(testItem);
+                      await context.read<DBNotifier>().database!.createTestItem(testItem);
                     }
                     context.read<DBNotifier>().refreshDB();
 
@@ -168,9 +159,9 @@ class _TestInputScreenState extends State<TestInputScreen> {
                               IconButton(
                                 icon: Icon(Icons.add_rounded),
                                 onPressed: () {
-                                  late int selectedProgramFieldIndex;
-                                  late int selectedSubFieldIndex;
-                                  late int selectedSubItemIndex;
+                                  int? selectedProgramFieldIndex;
+                                  int? selectedSubFieldIndex;
+                                  int? selectedSubItemIndex;
                                   String? selectedProgramField;
                                   String? selectedSubField;
                                   String? selectedSubItem;
@@ -188,32 +179,21 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                               height: 180,
                                               width: 300,
                                               child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   DropdownButton(
                                                     hint: Text('프로그램 영역 선택'),
                                                     value: selectedProgramField,
-                                                    items: programFieldList
-                                                        .map((value) {
+                                                    items: programFieldList.map((value) {
                                                       return DropdownMenuItem(
                                                         value: value.title,
-                                                        child:
-                                                            Text(value.title),
+                                                        child: Text(value.title),
                                                       );
                                                     }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedProgramFieldIndex =
-                                                          programFieldList
-                                                              .indexWhere(
-                                                                  (element) =>
-                                                                      value ==
-                                                                      element
-                                                                          .title);
+                                                      selectedProgramFieldIndex = programFieldList.indexWhere((element) => value == element.title);
                                                       setState1(() {
-                                                        selectedProgramField =
-                                                            value;
+                                                        selectedProgramField = value;
                                                         selectedSubField = null;
                                                         selectedSubItem = null;
                                                       });
@@ -223,33 +203,15 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                   DropdownButton(
                                                     hint: Text('하위 영역 선택'),
                                                     value: selectedSubField,
-                                                    items: selectedProgramField ==
-                                                            null
+                                                    items: selectedProgramField == null
                                                         ? null
-                                                        : context
-                                                            .read<DBNotifier>()
-                                                            .readSubFieldList(
-                                                                selectedProgramFieldIndex)
-                                                            .map((value) {
-                                                            return DropdownMenuItem(
-                                                                value:
-                                                                    value.title,
-                                                                child: Text(value
-                                                                    .title));
+                                                        : context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!).map((value) {
+                                                            return DropdownMenuItem(value: value.title, child: Text(value.title));
                                                           }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedSubFieldIndex = context
-                                                          .read<DBNotifier>()
-                                                          .readSubFieldList(
-                                                              selectedProgramFieldIndex)
-                                                          .indexWhere(
-                                                              (element) =>
-                                                                  value ==
-                                                                  element
-                                                                      .title);
+                                                      selectedSubFieldIndex = context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!).indexWhere((element) => value == element.title);
                                                       setState1(() {
-                                                        selectedSubField =
-                                                            value;
+                                                        selectedSubField = value;
                                                         selectedSubItem = null;
                                                       });
                                                     },
@@ -258,37 +220,16 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                   DropdownButton(
                                                     hint: Text('하위 목록 선택'),
                                                     value: selectedSubItem,
-                                                    items: selectedProgramField ==
-                                                                null ||
-                                                            selectedSubField ==
-                                                                null
+                                                    items: selectedProgramField == null || selectedSubField == null
                                                         ? null
-                                                        : (context
-                                                                    .read<
-                                                                        DBNotifier>()
-                                                                    .readSubFieldList(
-                                                                        selectedProgramFieldIndex))[
-                                                                selectedSubFieldIndex]
-                                                            .subItemList
-                                                            .map((value) {
+                                                        : (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].subItemList.map((value) {
                                                             return DropdownMenuItem(
                                                               value: value,
-                                                              child:
-                                                                  Text(value),
+                                                              child: Text(value),
                                                             );
                                                           }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedSubItemIndex = (context
-                                                                  .read<
-                                                                      DBNotifier>()
-                                                                  .readSubFieldList(
-                                                                      selectedProgramFieldIndex))[
-                                                              selectedSubFieldIndex]
-                                                          .subItemList
-                                                          .indexWhere(
-                                                              (element) =>
-                                                                  value ==
-                                                                  element);
+                                                      selectedSubItemIndex = (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].subItemList.indexWhere((element) => value == element);
                                                       setState1(() {
                                                         selectedSubItem = value;
                                                       });
@@ -302,8 +243,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                               TextButton(
                                                 child: Text(
                                                   "취소",
-                                                  style: TextStyle(
-                                                      color: Colors.red),
+                                                  style: TextStyle(color: Colors.red),
                                                 ),
                                                 onPressed: () {
                                                   Navigator.pop(context);
@@ -312,39 +252,24 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                               TextButton(
                                                 child: Text(
                                                   "확인",
-                                                  style: TextStyle(
-                                                      color: Colors.blue),
+                                                  style: TextStyle(color: Colors.blue),
                                                 ),
                                                 onPressed: () async {
                                                   // 저장
                                                   // 리스트에 테스트 아이템 담기
-                                                  TestItemInfo testItemInfo =
-                                                      TestItemInfo(
-                                                    programField: programFieldList[
-                                                            selectedProgramFieldIndex]
-                                                        .title,
-                                                    subField: (await context
-                                                                .read<DBNotifier>()
-                                                                .database!
-                                                                .readSubFieldList(
-                                                                    selectedProgramFieldIndex))[
-                                                            selectedSubFieldIndex]
-                                                        .title,
-                                                    subItem: (await context
-                                                                .read<DBNotifier>()
-                                                                .database!
-                                                                .readSubFieldList(
-                                                                    selectedProgramFieldIndex))[
-                                                            selectedSubFieldIndex]
-                                                        .subItemList[selectedSubItemIndex],
-                                                  );
+                                                  if (selectedSubItemIndex != null) {
+                                                    TestItemInfo testItemInfo = TestItemInfo(
+                                                      programField: programFieldList[selectedProgramFieldIndex!].title,
+                                                      subField: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].title,
+                                                      subItem: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].subItemList[selectedSubItemIndex!],
+                                                    );
 
-                                                  // 리스트에 추가
-                                                  setState(() {
-                                                    testItemInfoList
-                                                        .add(testItemInfo);
-                                                  });
-                                                  Navigator.pop(context);
+                                                    // 리스트에 추가
+                                                    setState(() {
+                                                      testItemInfoList.add(testItemInfo);
+                                                    });
+                                                    Navigator.pop(context);
+                                                  }
                                                 },
                                               ),
                                             ],
@@ -388,8 +313,5 @@ class TestItemInfo {
   final String subField;
   final String subItem;
 
-  TestItemInfo(
-      {required this.programField,
-      required this.subField,
-      required this.subItem});
+  TestItemInfo({required this.programField, required this.subField, required this.subItem});
 }

@@ -22,8 +22,6 @@ class ChildTestScreen extends StatefulWidget {
 }
 
 class _ChildTestScreenState extends State<ChildTestScreen> {
-  late List<Test> test;
-
   List<Test> searchResult = [];
   TextEditingController searchTextEditingController = TextEditingController();
 
@@ -97,12 +95,12 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
             setState(() {
               searchResult.clear();
             });
-            for (int i = 0; i < test.length; i++) {
+            for (int i = 0; i < context.read<DBNotifier>().getAllTestListOf(widget.child.id!, false).length; i++) {
               bool flag = false;
-              if (test[i].title.contains(str)) flag = true;
+              if (context.read<DBNotifier>().getAllTestListOf(widget.child.id!, false)[i].title.contains(str)) flag = true;
               if (flag) {
                 setState(() {
-                  searchResult.add(test[i]);
+                  searchResult.add(context.read<DBNotifier>().getAllTestListOf(widget.child.id!, false)[i]);
                 });
               }
             }
