@@ -2,7 +2,7 @@ import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as Path;
 import 'package:sqflite/sqflite.dart';
 
 class DBService {
@@ -19,16 +19,26 @@ class DBService {
 
   Future initDatabase() async {
     this.db = await openDatabase(
-      join(await getDatabasesPath(), 'aba_analysis.db'),
+      Path.join(await getDatabasesPath(), 'aba_analysis.db'),
+      onCreate: (db, version) async {
+        await db.execute("CREATE TABLE child(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, birthday TEXT, gender TEXT)");
+        await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT, childId INTEGER, date TEXT, title TEXT, isInput INTEGER)");
+        await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT, testId INTEGER, childId INTEGER, programField TEXT, subField TEXT, subItem TEXT, result TEXT)");
+        await db.execute("CREATE TABLE programField(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT)");
+        await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, programFieldId INTEGER, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
+      },
+      version: 1,
     );
   }
 
-  Future<void> createChild(Child child) async {
-    await db.insert(
+  Future<Child> createChild(Child child) async {
+    int id = await db.insert(
       'child',
       child.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+
+    return (await readChild(id))!;
   }
 
   // 교사가 맡고 있는 모든 아이들 데이터 가져오기
@@ -58,7 +68,7 @@ class DBService {
         id: maps[i]['id'],
         name: maps[i]['name'],
         birthday: DateTime.parse(maps[i]['birthday']),
-        gender: maps[i]['namgendere'],
+        gender: maps[i]['gender'],
       );
     })[0];
   }
@@ -104,8 +114,8 @@ class DBService {
 
     return List.generate(maps.length, (i) {
       List<String> subItemList = [];
-      for (int i = 0; i < 10; i++) {
-        subItemList.add(maps[i]['item${i + 1}']);
+      for (int j = 0; j < 10; j++) {
+        subItemList.add(maps[i]['item${j + 1}']);
       }
 
       return SubField(
@@ -122,8 +132,8 @@ class DBService {
 
     return List.generate(maps.length, (i) {
       List<String> subItemList = [];
-      for (int i = 0; i < 10; i++) {
-        subItemList.add(maps[i]['item${i + 1}']);
+      for (int j = 0; j < 10; j++) {
+        subItemList.add(maps[i]['item${j + 1}']);
       }
 
       return SubField(
@@ -158,9 +168,18 @@ class DBService {
 
   // Test 복사
   Future copyTest(Test test) async {
-    createTest(test);
+    Test newTest = Test(
+      childId: test.childId,
+      title: "${test.title}_복사본",
+      date: DateTime.now(),
+      isInput: false,
+    );
+    Test copiedTest = await createTest(newTest);
+
+    List<TestItem> testItemList = [];
     for (TestItem testItem in await readTestItemList(test.id!)) {
-      copyTestItem(testItem);
+      copyTestItem(testItem, copiedTest.id!);
+      testItemList.add(testItem);
     }
   }
 
@@ -175,7 +194,7 @@ class DBService {
       return Test(
         id: maps[i]['id'],
         childId: maps[i]['childId'],
-        date: maps[i]['date'],
+        date: DateTime.parse(maps[i]['date']),
         title: maps[i]['title'],
         isInput: maps[i]['isInput'] == 0 ? false : true,
       );
@@ -189,7 +208,7 @@ class DBService {
       return Test(
         id: maps[i]['id'],
         childId: maps[i]['childId'],
-        date: maps[i]['date'],
+        date: DateTime.parse(maps[i]['date']),
         title: maps[i]['title'],
         isInput: maps[i]['isInput'] == 0 ? false : true,
       );
@@ -239,16 +258,26 @@ class DBService {
   //=======================================================================================
 
   // TestItem 추가
-  Future createTestItem(TestItem testItem) async {
-    await db.insert(
-      'test',
+  Future<TestItem?> createTestItem(TestItem testItem) async {
+    int testItemId = await db.insert(
+      'testItem',
       testItem.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    print(await readTestItem(testItemId));
+    return await readTestItem(testItemId);
   }
 
-  Future copyTestItem(TestItem testItem) async {
-    createTestItem(testItem);
+  Future copyTestItem(TestItem testItem, int testId) async {
+    TestItem newTestItem = TestItem(
+      testId: testId,
+      childId: testItem.childId,
+      programField: testItem.programField,
+      subField: testItem.subField,
+      subItem: testItem.subItem,
+      result: null,
+    );
+    createTestItem(newTestItem);
   }
 
   // TestItem 열람

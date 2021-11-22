@@ -1,24 +1,20 @@
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
-import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class SubFieldInputScreen extends StatefulWidget {
-  final ProgramField program;
   const SubFieldInputScreen({Key? key, required this.program}) : super(key: key);
+  final ProgramField program;
 
   @override
   _SubFieldInputScreenState createState() => _SubFieldInputScreenState();
 }
 
 class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
-  _SubFieldInputScreenState();
-  late DBService db;
-
   late String title;
 
   // 완료할 때 추가할 하위영역의 하위목록 리스트
@@ -27,18 +23,15 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
   late String subFieldName;
   final formkey = GlobalKey<FormState>();
   final textController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(Duration(seconds: 0), () async {
-      await db.initDatabase();
-    });
   }
 
   Future<bool> isCheckDup(String checkDup) async {
     List<String> s = [];
-    for (SubField subField in (await db.readAllSubFieldList())) {
+    for (SubField subField in (await context.read<DBNotifier>().database!.readAllSubFieldList())) {
       for (String item in subField.subItemList) {
         s.add(item);
       }
@@ -117,7 +110,7 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       return '하위영역 이름을 입력해주세요.';
                     }
                     Future.delayed(Duration.zero, () async {
-                      for (SubField subField in await db.readAllSubFieldList()) {
+                      for (SubField subField in await context.read<DBNotifier>().database!.readAllSubFieldList()) {
                         if (subField.title == val) {
                           return '중복된 하위영역 이름입니다.';
                         }

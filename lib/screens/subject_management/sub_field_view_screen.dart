@@ -14,7 +14,6 @@ class SelectSubitemScreen extends StatefulWidget {
 }
 
 class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
-  _SelectSubitemScreenState();
   late String title;
 
   // 완료할 때 추가할 하위영역의 하위목록 리스트

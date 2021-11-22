@@ -1,11 +1,11 @@
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:flutter/material.dart';
-import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/services/db.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/components/show_dialog_delete.dart';
 import 'package:aba_analysis_local/components/build_floating_action_button.dart';
@@ -21,21 +21,16 @@ class SelectSubfieldScreen extends StatefulWidget {
 }
 
 class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
-  late DBService db;
   late List<SubField> subFieldList;
-  _SelectSubfieldScreenState();
+
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(Duration(seconds: 0), () async {
-      await db.initDatabase();
-      subFieldList = await db.readSubFieldList(widget.program.id);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    DBService db = new DBService();
     return Scaffold(
       appBar: AppBar(
         title: Text(
