@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class Search extends SearchDelegate {
   final List<String> toSearchList;
   // List<String> toSearchStringList = [];
-  late final List<String> resultList;
+  List<String> resultList = [];
   Search(this.toSearchList);
   List<String> recentList = []; // 시간 되면 최근 검색목록 구현.
-  
+
   @override
   List<Widget> buildActions(BuildContext context) {
     // 취소버튼
@@ -27,7 +27,7 @@ class Search extends SearchDelegate {
     return IconButton(
       icon: Icon(Icons.arrow_back_rounded),
       onPressed: () {
-        close(context, query); // pop과 비슷한 느낌. 결과인 query를 갖고 나갈 수 있다.
+        close(context, ""); // pop과 비슷한 느낌. 결과인 query를 갖고 나갈 수 있다.
       },
       color: Colors.black,
     );

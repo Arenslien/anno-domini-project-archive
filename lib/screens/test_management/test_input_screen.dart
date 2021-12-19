@@ -1,3 +1,4 @@
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -5,9 +6,11 @@ import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/provider/test_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/provider/field_management_notifier.dart';
 
 class TestInputScreen extends StatefulWidget {
   const TestInputScreen({required this.child, Key? key}) : super(key: key);
@@ -18,19 +21,15 @@ class TestInputScreen extends StatefulWidget {
 }
 
 class _TestInputScreenState extends State<TestInputScreen> {
+  _TestInputScreenState();
   late String title;
-  DateTime date = DateTime.now();
+  DateTime? date = DateTime.now();
 
   List<TestItemInfo> testItemInfoList = [];
-
   final formkey = GlobalKey<FormState>();
+  DBService db = DBService();
 
   bool flag = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +40,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(
-              '테스트 추가',
+              '${widget.child.name} 테스트 추가',
               style: TextStyle(color: Colors.black),
             ),
             centerTitle: true,
@@ -64,30 +63,34 @@ class _TestInputScreenState extends State<TestInputScreen> {
                   // 완료 버튼 누르면 실행
                   if (formkey.currentState!.validate() && !flag) {
                     flag = true;
+                    Test test = Test(
+                      testId: await db.updateId(AutoID.test),
+                      childId: widget.child.childId,
+                      title: title,
+                      date: date!,
+                      isInput: false,
+                    );
+                    // DB에 테스트 추가
+                    await db.createTest(test);
 
-                    // Test 추가
-                    Test test = await context.read<DBNotifier>().database!.createTest(Test(
-                          childId: widget.child.id!,
-                          date: date,
-                          title: title,
-                          isInput: false,
-                        ));
+                    // Test Notifier에 추가
+                    context.read<TestNotifier>().addTest(test);
 
-                    // TestItem 추가
+                    // DB에 테스트 아이템 추가 & TestItem Notifier에 테스트 아이템 추가
                     for (TestItemInfo testItemInfo in testItemInfoList) {
                       TestItem testItem = TestItem(
-                        testId: test.id!,
-                        childId: test.childId,
+                        testItemId: await db.updateId(AutoID.testItem),
+                        testId: test.testId,
+                        childId: widget.child.childId,
                         programField: testItemInfo.programField,
                         subField: testItemInfo.subField,
                         subItem: testItemInfo.subItem,
-                        result: null,
                       );
-                      print("TesItemInfo: " + testItem.toString());
-                      await context.read<DBNotifier>().database!.createTestItem(testItem);
-                    }
-                    context.read<DBNotifier>().refreshDB();
 
+                      await db.createTestItem(testItem);
+
+                      context.read<TestItemNotifier>().addTestItem(testItem);
+                    }
                     Navigator.pop(context);
                   }
                 },
@@ -123,16 +126,17 @@ class _TestInputScreenState extends State<TestInputScreen> {
                               padding: const EdgeInsets.all(16.0),
                               child: OutlinedButton(
                                 onPressed: () async {
-                                  date = await getDate(
+                                  DateTime? temp = await getDate(
                                     context: context,
                                     initialDate: date,
                                   );
+                                  date = temp == null ? date : temp;
                                   setState(() {});
                                 },
                                 child: Row(
                                   children: [
                                     Text(
-                                      DateFormat('yyyyMMdd').format(date),
+                                      DateFormat('yyyyMMdd').format(date!),
                                       style: TextStyle(color: Colors.black),
                                     ),
                                     SizedBox(width: 10),
@@ -159,9 +163,6 @@ class _TestInputScreenState extends State<TestInputScreen> {
                               IconButton(
                                 icon: Icon(Icons.add_rounded),
                                 onPressed: () {
-                                  int? selectedProgramFieldIndex;
-                                  int? selectedSubFieldIndex;
-                                  int? selectedSubItemIndex;
                                   String? selectedProgramField;
                                   String? selectedSubField;
                                   String? selectedSubItem;
@@ -184,14 +185,13 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                   DropdownButton(
                                                     hint: Text('프로그램 영역 선택'),
                                                     value: selectedProgramField,
-                                                    items: programFieldList.map((value) {
+                                                    items: context.read<FieldManagementNotifier>().programFieldList.map((value) {
                                                       return DropdownMenuItem(
                                                         value: value.title,
                                                         child: Text(value.title),
                                                       );
                                                     }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedProgramFieldIndex = programFieldList.indexWhere((element) => value == element.title);
                                                       setState1(() {
                                                         selectedProgramField = value;
                                                         selectedSubField = null;
@@ -205,11 +205,10 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     value: selectedSubField,
                                                     items: selectedProgramField == null
                                                         ? null
-                                                        : context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!).map((value) {
-                                                            return DropdownMenuItem(value: value.title, child: Text(value.title));
+                                                        : context.read<FieldManagementNotifier>().readSubFieldList(selectedProgramField!).map((value) {
+                                                            return DropdownMenuItem(value: value.subFieldName, child: Text(value.subFieldName));
                                                           }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedSubFieldIndex = context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!).indexWhere((element) => value == element.title);
                                                       setState1(() {
                                                         selectedSubField = value;
                                                         selectedSubItem = null;
@@ -222,14 +221,13 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     value: selectedSubItem,
                                                     items: selectedProgramField == null || selectedSubField == null
                                                         ? null
-                                                        : (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].subItemList.map((value) {
+                                                        : context.read<FieldManagementNotifier>().readSubItem(selectedSubField!).subItemList.map((value) {
                                                             return DropdownMenuItem(
                                                               value: value,
                                                               child: Text(value),
                                                             );
                                                           }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedSubItemIndex = (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].subItemList.indexWhere((element) => value == element);
                                                       setState1(() {
                                                         selectedSubItem = value;
                                                       });
@@ -254,14 +252,14 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                   "확인",
                                                   style: TextStyle(color: Colors.blue),
                                                 ),
-                                                onPressed: () async {
-                                                  // 저장
-                                                  // 리스트에 테스트 아이템 담기
-                                                  if (selectedSubItemIndex != null) {
+                                                onPressed: () {
+                                                  if (selectedSubItem != null) {
+                                                    // 저장
+                                                    // 리스트에 테스트 아이템 담기
                                                     TestItemInfo testItemInfo = TestItemInfo(
-                                                      programField: programFieldList[selectedProgramFieldIndex!].title,
-                                                      subField: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].title,
-                                                      subItem: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex!))[selectedSubFieldIndex!].subItemList[selectedSubItemIndex!],
+                                                      programField: selectedProgramField!,
+                                                      subField: selectedSubField!,
+                                                      subItem: selectedSubItem!,
                                                     );
 
                                                     // 리스트에 추가

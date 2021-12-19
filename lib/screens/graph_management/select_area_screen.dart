@@ -1,20 +1,19 @@
 import 'package:aba_analysis_local/components/search_delegate.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
-import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/provider/field_management_notifier.dart';
 import 'package:aba_analysis_local/screens/graph_management/select_item_graph_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // 선택한 프로그램 영역의 하위영역을 선택하는 스크린
 class SelectAreaScreen extends StatefulWidget {
   final Child child;
-  final ProgramField programField;
+  final List<SubField> subFieldList;
   const SelectAreaScreen(
-      {Key? key, required this.child, required this.programField})
+      {Key? key, required this.child, required this.subFieldList})
       : super(key: key);
   static String routeName = '/select_area';
 
@@ -27,12 +26,12 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
   // 전역변수
   late Map<String, SubField> subFieldAndNameMap = {};
   String selectedSubField = "";
+
   void initState() {
     super.initState();
-
-    // for (SubField s in widget.programField.subFieldList) {
-    //   subFieldAndNameMap.addAll({s.subFieldName: s});
-    // }
+    for (SubField s in widget.subFieldList) {
+      subFieldAndNameMap.addAll({s.subFieldName: s});
+    }
   }
 
   @override
@@ -52,25 +51,14 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
     return Scaffold(
         appBar: selectAppBar(context, (widget.child.name + "의 하위영역 선택"),
             searchButton: searchButton),
-        body: context
-                    .watch<DBNotifier>()
-                    .readSubFieldList(widget.programField.id)
-                    .length ==
-                0
+        body: widget.subFieldList.length == 0
             ? noTestData()
             : selectedSubField == ""
                 ? ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: context
-                        .watch<DBNotifier>()
-                        .readSubFieldList(widget.programField.id)
-                        .length,
+                    itemCount: widget.subFieldList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return dataTile(
-                          context
-                              .watch<DBNotifier>()
-                              .readSubFieldList(widget.programField.id)[index],
-                          index);
+                      return dataTile(widget.subFieldList[index], index);
                     },
                   )
                 : ListView.builder(
@@ -94,7 +82,7 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
             size: 150,
           ),
           Text(
-            '하위영역 데이터가 없습니다.',
+            'No Sub Field',
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w500,
@@ -109,7 +97,8 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
   Widget dataTile(SubField subField, int index) {
     return buildListTile(
       titleSize: 20,
-      titleText: subField.title,
+      titleText: subField.subFieldName,
+//      subtitleText: "평균성공률: $average%",z
       onTap: () {
         setState(() {
           selectedSubField = "";
@@ -120,7 +109,9 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
             MaterialPageRoute(
                 builder: (context) => SelectItemScreen(
                       child: widget.child,
-                      subField: subField,
+                      subItem: context
+                          .read<FieldManagementNotifier>()
+                          .readSubItem(subField.subFieldName),
                       index: index,
                     )));
       },

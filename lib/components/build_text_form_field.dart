@@ -13,11 +13,10 @@ Widget buildTextFormField({
   String? inputType,
   Widget? icon,
   bool? search,
+  bool? autofocus,
 }) {
   return Padding(
-    padding: search == null
-        ? const EdgeInsets.all(16)
-        : const EdgeInsets.fromLTRB(16, 0, 16, 3),
+    padding: search == null ? const EdgeInsets.all(16) : const EdgeInsets.fromLTRB(16, 0, 16, 3),
     child: TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -40,9 +39,8 @@ Widget buildTextFormField({
       onTap: onTap,
       validator: validator,
       keyboardType: inputType == 'number' ? TextInputType.number : null,
-      inputFormatters: inputType == 'number'
-          ? [FilteringTextInputFormatter.allow(RegExp('[0-9]'))]
-          : null,
+      inputFormatters: inputType == 'number' ? [FilteringTextInputFormatter.allow(RegExp('[0-9]'))] : null,
+      autofocus: autofocus != null,
       cursorColor: Colors.black,
     ),
   );

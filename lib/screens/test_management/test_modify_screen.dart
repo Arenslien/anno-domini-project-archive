@@ -1,16 +1,21 @@
-import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/test.dart';
+import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/test_notifier.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
 import 'package:aba_analysis_local/components/show_dialog_delete.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/provider/field_management_notifier.dart';
 
 class TestModifyScreen extends StatefulWidget {
-  const TestModifyScreen({required this.test, Key? key}) : super(key: key);
+  const TestModifyScreen({required this.test, required this.child, Key? key}) : super(key: key);
+  final Child child;
   final Test test;
 
   @override
@@ -18,32 +23,32 @@ class TestModifyScreen extends StatefulWidget {
 }
 
 class _TestInputScreenState extends State<TestModifyScreen> {
-  List<TestItem> testItemList = [];
-
+  _TestInputScreenState();
   late String title;
   late DateTime date;
-
-  List<TestItemInfo> testItemInfoList = [];
-
   final formkey = GlobalKey<FormState>();
-
+  List<TestItem> testItemList = [];
+  List<TestItemInfo> testItemInfoList = [];
+  DBService db = DBService();
   bool flag = false;
 
   void initState() {
     super.initState();
 
-    title = widget.test.title;
-    date = widget.test.date;
-    testItemList = context.read<DBNotifier>().getTestItemList(widget.test.id!, true);
+    setState(() {
+      title = widget.test.title;
+      date = widget.test.date;
+      testItemList = context.read<TestItemNotifier>().getTestItemList(widget.test.testId, true);
 
-    for (TestItem testItem in testItemList) {
-      TestItemInfo testItemInfo = TestItemInfo(
-        programField: testItem.programField,
-        subField: testItem.subField,
-        subItem: testItem.subItem,
-      );
-      testItemInfoList.add(testItemInfo);
-    }
+      for (TestItem testItem in testItemList) {
+        TestItemInfo testItemInfo = TestItemInfo(
+          programField: testItem.programField,
+          subField: testItem.subField,
+          subItem: testItem.subItem,
+        );
+        testItemInfoList.add(testItemInfo);
+      }
+    });
   }
 
   @override
@@ -55,7 +60,7 @@ class _TestInputScreenState extends State<TestModifyScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(
-              '테스트 수정',
+              '${widget.child.name} 테스트 수정',
               style: TextStyle(color: Colors.black),
             ),
             centerTitle: true,
@@ -82,17 +87,18 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                     onPressed: () async {
                       if (!flag) {
                         flag = true;
-
-                        List<TestItem> testItemList1 = context.read<DBNotifier>().getTestItemList(widget.test.id!, true);
+                        List<TestItem> testItemList1 = context.read<TestItemNotifier>().getTestItemList(widget.test.testId, true);
 
                         for (TestItem testItem in testItemList1) {
-                          await context.read<DBNotifier>().database!.deleteTestItem(testItem.id!);
+                          // DB 에서 TestItem 제거
+                          await db.deleteTestItem(testItem.testItemId);
                           // Provider에서 testItem 제거
-                          context.read<DBNotifier>().removeTestItem(testItem);
+                          context.read<TestItemNotifier>().removeTestItem(testItem);
                         }
-                        await context.read<DBNotifier>().database!.deleteTest(widget.test.id!);
+                        // DB에서 Test 제거
+                        await db.deleteTest(widget.test.testId);
                         // Provider에서 Test 제거
-                        context.read<DBNotifier>().removeTest(widget.test);
+                        context.read<TestNotifier>().removeTest(widget.test);
 
                         Navigator.pop(context);
                         Navigator.pop(context);
@@ -107,37 +113,38 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                   color: Colors.black,
                 ),
                 onPressed: () async {
-                  // 완료 버튼 누르면 실행
-                  if (formkey.currentState!.validate() && !flag) {
+                  if (!flag) {
                     flag = true;
-                    // 테스트의 날짜와 테스트 제목 수정
-                    await context.read<DBNotifier>().database!.updateTest(Test(
-                          id: widget.test.id!,
+                    // 완료 버튼 누르면 실행
+                    if (formkey.currentState!.validate()) {
+                      // 테스트의 날짜와 테스트 제목 수정
+                      db.updateTest(widget.test.testId, date, title, widget.test.isInput);
+                      context.read<TestNotifier>().updateTest(widget.test.testId, date, title, widget.test.isInput);
+
+                      // 기존의 테스트에 대한 테스트 아이템 모두 제거
+                      List<TestItem> testItemList1 = context.read<TestItemNotifier>().getTestItemList(widget.test.testId, true);
+                      for (TestItem testItem in testItemList1) {
+                        // DB 에서 TestItem 제거
+                        await db.deleteTestItem(testItem.testItemId);
+                        // Provider에서 testItem 제거
+                        context.read<TestItemNotifier>().removeTestItem(testItem);
+                      }
+                      // 테스트 만들기
+                      for (TestItemInfo testItemInfo in testItemInfoList) {
+                        TestItem testItem = TestItem(
+                          testItemId: await db.updateId(AutoID.testItem),
+                          testId: widget.test.testId,
                           childId: widget.test.childId,
-                          date: date,
-                          title: title,
-                          isInput: widget.test.isInput,
-                        ));
+                          programField: testItemInfo.programField,
+                          subField: testItemInfo.subField,
+                          subItem: testItemInfo.subItem,
+                        );
+                        await db.createTestItem(testItem);
+                        context.read<TestItemNotifier>().addTestItem(testItem);
+                      }
 
-                    // 삭제된 TestItem 삭제
-                    List<TestItem> testItemList = await context.read<DBNotifier>().database!.readTestItemList(widget.test.id!);
-                    for (TestItem testItem in testItemList) {
-                      context.read<DBNotifier>().database!.deleteTestItem(testItem.id!);
+                      Navigator.pop(context);
                     }
-                    // 새로 추가된 TestItem 추가
-                    for (TestItemInfo testItemInfo in testItemInfoList) {
-                      await context.read<DBNotifier>().database!.createTestItem(TestItem(
-                            testId: widget.test.id!,
-                            childId: widget.test.childId,
-                            programField: testItemInfo.programField,
-                            subField: testItemInfo.subField,
-                            subItem: testItemInfo.subItem,
-                            result: null,
-                          ));
-                    }
-                    context.read<DBNotifier>().refreshDB();
-
-                    Navigator.pop(context);
                   }
                 },
               ),
@@ -173,10 +180,11 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                               padding: const EdgeInsets.all(16.0),
                               child: OutlinedButton(
                                 onPressed: () async {
-                                  date = await getDate(
+                                  DateTime? temp = await getDate(
                                     context: context,
                                     initialDate: date,
                                   );
+                                  date = temp == null ? date : temp;
                                   setState(() {});
                                 },
                                 child: Row(
@@ -209,9 +217,6 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                               IconButton(
                                 icon: Icon(Icons.add_rounded),
                                 onPressed: () {
-                                  late int selectedProgramFieldIndex;
-                                  late int selectedSubFieldIndex;
-                                  late int selectedSubItemIndex;
                                   String? selectedProgramField;
                                   String? selectedSubField;
                                   String? selectedSubItem;
@@ -234,14 +239,13 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                                                   DropdownButton(
                                                     hint: Text('프로그램 영역 선택'),
                                                     value: selectedProgramField,
-                                                    items: programFieldList.map((value) {
+                                                    items: context.read<FieldManagementNotifier>().programFieldList.map((value) {
                                                       return DropdownMenuItem(
                                                         value: value.title,
                                                         child: Text(value.title),
                                                       );
                                                     }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedProgramFieldIndex = programFieldList.indexWhere((element) => value == element.title);
                                                       setState1(() {
                                                         selectedProgramField = value;
                                                         selectedSubField = null;
@@ -255,11 +259,10 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                                                     value: selectedSubField,
                                                     items: selectedProgramField == null
                                                         ? null
-                                                        : context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex).map((value) {
-                                                            return DropdownMenuItem(value: value.title, child: Text(value.title));
+                                                        : context.read<FieldManagementNotifier>().readSubFieldList(selectedProgramField!).map((value) {
+                                                            return DropdownMenuItem(value: value.subFieldName, child: Text(value.subFieldName));
                                                           }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedSubFieldIndex = context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex).indexWhere((element) => value == element.title);
                                                       setState1(() {
                                                         selectedSubField = value;
                                                         selectedSubItem = null;
@@ -272,14 +275,13 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                                                     value: selectedSubItem,
                                                     items: selectedProgramField == null || selectedSubField == null
                                                         ? null
-                                                        : (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].subItemList.map((value) {
+                                                        : context.read<FieldManagementNotifier>().readSubItem(selectedSubField!).subItemList.map((value) {
                                                             return DropdownMenuItem(
                                                               value: value,
                                                               child: Text(value),
                                                             );
                                                           }).toList(),
                                                     onChanged: (String? value) {
-                                                      selectedSubItemIndex = (context.read<DBNotifier>().readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].subItemList.indexWhere((element) => value == element);
                                                       setState1(() {
                                                         selectedSubItem = value;
                                                       });
@@ -304,14 +306,14 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                                                   "확인",
                                                   style: TextStyle(color: Colors.blue),
                                                 ),
-                                                onPressed: () async {
-                                                  // 저장
-                                                  // 리스트에 테스트 아이템 담기
+                                                onPressed: () {
                                                   if (selectedSubItem != null) {
+                                                    // 저장
+                                                    // 리스트에 테스트 아이템 담기
                                                     TestItemInfo testItemInfo = TestItemInfo(
-                                                      programField: programFieldList[selectedProgramFieldIndex].title,
-                                                      subField: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].title,
-                                                      subItem: (await context.read<DBNotifier>().database!.readSubFieldList(selectedProgramFieldIndex))[selectedSubFieldIndex].subItemList[selectedSubItemIndex],
+                                                      programField: selectedProgramField!,
+                                                      subField: selectedSubField!,
+                                                      subItem: selectedSubItem!,
                                                     );
 
                                                     // 리스트에 추가

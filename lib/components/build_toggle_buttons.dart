@@ -1,12 +1,13 @@
-import 'package:aba_analysis_local/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:aba_analysis_local/constants.dart';
 
-ToggleButtons buildToggleButtons(
-    {required List<String> text,
-    List<bool>? isSelected,
-    Function(int)? onPressed,
-    double minWidth = 80,
-    double minHeight = 50}) {
+ToggleButtons buildToggleButtons({
+  required List<String> text,
+  List<bool>? isSelected,
+  Function(int)? onPressed,
+  double minWidth = 80,
+  double minHeight = 50,
+}) {
   List<Text> textList = [];
   List<bool> selecte = [];
 

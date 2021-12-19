@@ -12,7 +12,7 @@ Widget buildListTile({
 }) {
   return Padding(
     padding: EdgeInsets.fromLTRB(
-        16, top == null ? 16 : top, 16, bottom == null ? 16 : bottom),
+        16, top == null ? 8 : top, 16, bottom == null ? 8 : bottom),
     child: ListTile(
       leading: icon == null
           ? null
@@ -20,12 +20,23 @@ Widget buildListTile({
               Icons.person,
               size: 50,
             ),
-      title: Text(
-        titleText!,
-        style: TextStyle(
-            fontSize: titleSize ?? 25,
-            fontFamily: 'KoreanGothic',
-            fontWeight: FontWeight.bold),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 0,
+          ),
+          Text(
+            titleText!,
+            style: TextStyle(
+                fontSize: titleSize ?? 25,
+                fontFamily: 'KoreanGothic',
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+        ],
       ),
       subtitle: subtitleText == null
           ? null

@@ -6,6 +6,7 @@ showDialogYesOrNo({
   required String text,
   void Function()? onPressed,
 }) {
+  bool flag = false;
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -22,7 +23,10 @@ showDialogYesOrNo({
               style: TextStyle(color: Colors.blue),
             ),
             onPressed: () {
-              Navigator.pop(context);
+              if (!flag) {
+                flag = true;
+                Navigator.pop(context);
+              }
             },
           ),
           TextButton(
