@@ -5,6 +5,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 PdfColor _darkColor = PdfColor.fromInt(0xff242424); // 까만색
+PdfColor _lightColor = PdfColor.fromInt(0xff9D9D9D);
 PdfColor baseColor = PdfColor.fromInt(0xffD32D2D);
 PdfColor _baseTextColor = PdfColor.fromInt(0xffffffff); //흰색
 PdfColor accentColor = PdfColor.fromInt(0xfff1c0c0);
@@ -25,26 +26,26 @@ pw.Document genPDF(
   List<String> extraData = [];
   if (isDate) {
     // 날짜그래프
-    extraColumns = ['담당 선생님', '아동', '평균 성공률'];
+    extraColumns = ['담당 선생님', '아동'];
     extraData = [
       exportData.teacherName,
       exportData.childName,
-      exportData.averageRate.toString() + '%',
     ];
   } else if (isDate == false) {
     // 아이템그래프
-    extraColumns = ['담당 선생님', '아동', '프로그램 영역', '하위 영역', '평균 성공률'];
+    extraColumns = ['담당 선생님', '아동', '프로그램 영역', '하위 영역', '전체 평균 성공률'];
     extraData = [
       exportData.teacherName,
       exportData.childName,
-      exportData.programField!,
-      exportData.subArea!,
-      exportData.averageRate.toString() + '%',
+      exportData.programField,
+      exportData.subArea,
+      exportData.allSuccessRate.toInt().toString() + '%',
     ];
   }
 
   pw.PageTheme pageTheme = _myPageTheme(PdfPageFormat.a4); // PDF theme 받아옴
-  pw.Widget headerWidget = pdfHeader(ttf, graphType, graphTypeValue, exportData.childName); // PDF header 받아옴
+  pw.Widget headerWidget = pdfHeader(
+      ttf, graphType, graphTypeValue, exportData.childName); // PDF header 받아옴
   final pdf = pw.Document();
   pdf.addPage(pw.MultiPage(
       pageTheme: pageTheme,
@@ -55,6 +56,7 @@ pw.Document genPDF(
             level: 2,
           ),
           pw.Image(chartImg),
+          pw.SizedBox(height: 10),
           pw.Table.fromTextArray(
             context: context,
             border: null,
@@ -148,7 +150,11 @@ pw.Document genPDF(
 
 pw.PageTheme _myPageTheme(PdfPageFormat format) {
   return pw.PageTheme(
-    pageFormat: format.applyMargin(left: 2.0 * PdfPageFormat.cm, top: 4.0 * PdfPageFormat.cm, right: 2.0 * PdfPageFormat.cm, bottom: 2.0 * PdfPageFormat.cm),
+    pageFormat: format.applyMargin(
+        left: 2.0 * PdfPageFormat.cm,
+        top: 4.0 * PdfPageFormat.cm,
+        right: 2.0 * PdfPageFormat.cm,
+        bottom: 2.0 * PdfPageFormat.cm),
     theme: pw.ThemeData.withFont(
 //      base: pw.Font.ttf(await rootBundle.load('assets/fonts/nexa_bold.otf')),
 //      bold:
@@ -198,8 +204,8 @@ pw.PageTheme _myPageTheme(PdfPageFormat format) {
 }
 
 //pdf header body
-pw.Widget pdfHeader(ByteData ttf, String graphType, String graphTypeValue, String _childName) {
-  print(ttf);
+pw.Widget pdfHeader(
+    ByteData ttf, String graphType, String graphTypeValue, String _childName) {
   return pw.Container(
       decoration: pw.BoxDecoration(
         color: PdfColor.fromInt(0xffffffff),
@@ -207,16 +213,19 @@ pw.Widget pdfHeader(ByteData ttf, String graphType, String graphTypeValue, Strin
       ),
       margin: const pw.EdgeInsets.only(bottom: 8, top: 8),
       padding: const pw.EdgeInsets.fromLTRB(10, 7, 10, 4),
-      child: pw.Column(mainAxisAlignment: pw.MainAxisAlignment.center, crossAxisAlignment: pw.CrossAxisAlignment.center, children: [
-        pw.Text(
-          "< " + _childName + "의 " + graphType + "별 그래프 >",
-          style: pw.TextStyle(
-            fontSize: 32,
-            color: _darkColor,
-            fontWeight: pw.FontWeight.bold,
-            font: pw.TtfFont(ttf),
-          ),
-        ),
-        pw.Divider(color: accentColor, thickness: 2),
-      ]));
+      child: pw.Column(
+          mainAxisAlignment: pw.MainAxisAlignment.center,
+          crossAxisAlignment: pw.CrossAxisAlignment.center,
+          children: [
+            pw.Text(
+              "< " + _childName + "의 " + graphType + "별 그래프 >",
+              style: pw.TextStyle(
+                fontSize: 28,
+                color: _darkColor,
+                fontWeight: pw.FontWeight.bold,
+                font: pw.TtfFont(ttf),
+              ),
+            ),
+            pw.Divider(color: accentColor, thickness: 2),
+          ]));
 }

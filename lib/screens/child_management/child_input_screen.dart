@@ -1,9 +1,10 @@
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/provider/child_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
@@ -16,23 +17,18 @@ class ChildInputScreen extends StatefulWidget {
 }
 
 class _ChildInputScreenState extends State<ChildInputScreen> {
+  _ChildInputScreenState();
   late String name;
-
   DateTime? birth;
-  bool? isBirthSelected;
-
   late String gender;
   final List<bool> genderSelected = [false, false];
   bool? isGenderSelected;
+  bool? isBirthSelected;
+  DBService db = DBService();
 
   final formkey = GlobalKey<FormState>();
 
   bool flag = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,24 +59,23 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                   color: Colors.black,
                 ),
                 onPressed: () async {
-                  // 성별 선택 여부 확인
                   if (isGenderSelected != true)
                     setState(() {
                       isGenderSelected = false;
                     });
-                  // 생년월일 선택 여부 확인
                   if (isBirthSelected != true)
                     setState(() {
                       isBirthSelected = false;
                     });
                   if (formkey.currentState!.validate() && isGenderSelected! && isBirthSelected! && !flag) {
                     flag = true;
+                    Child child = Child(childId: await db.updateId(AutoID.child), name: name, birthday: birth!, gender: gender);
 
-                    Child child = Child(name: name, birthday: birth!, gender: gender);
-                    Child newChild = await context.read<DBNotifier>().database!.createChild(child);
+                    // Firestore에 아동 추가
+                    await db.createChild(child);
 
                     // Provider ChildNotifier 수정
-                    context.read<DBNotifier>().addChild(newChild);
+                    context.read<ChildNotifier>().addChild(child);
 
                     Navigator.pop(context);
                   }

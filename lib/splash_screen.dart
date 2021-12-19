@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
       nextScreen: Wrapper(),
       splashTransition: SplashTransition.fadeTransition,
       pageTransitionType: PageTransitionType.scale,
-      backgroundColor: Color(0xff90DAD9),
+      backgroundColor: Color(0xffffffff),
       splashIconSize: 660.0,
     );
   }

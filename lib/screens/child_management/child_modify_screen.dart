@@ -1,3 +1,4 @@
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -5,7 +6,9 @@ import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/provider/test_notifier.dart';
+import 'package:aba_analysis_local/provider/child_notifier.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
 import 'package:aba_analysis_local/components/show_dialog_delete.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
@@ -19,19 +22,18 @@ class ChildModifyScreen extends StatefulWidget {
 }
 
 class _ChildModifyScreenState extends State<ChildModifyScreen> {
+  _ChildModifyScreenState();
   late String name;
-  late DateTime birth;
+  late DateTime? birth;
   late String gender;
   List<bool> genderSelected = [];
-
   final formkey = GlobalKey<FormState>();
-
+  DBService db = DBService();
   bool flag = false;
 
   @override
   void initState() {
     super.initState();
-
     name = widget.child.name;
     birth = widget.child.birthday;
     gender = widget.child.gender;
@@ -53,7 +55,7 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(
-              '아동 설정',
+              '${widget.child.name} 설정',
               style: TextStyle(color: Colors.black),
             ),
             centerTitle: true,
@@ -77,28 +79,38 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                     context: context,
                     title: '아동 삭제',
                     text: '해당 아동에 데이터를 삭제 하시겠습니까?',
-                    onPressed: () {
+                    onPressed: () async {
                       if (!flag) {
                         flag = true;
-
                         // 아이에 대한 test
-                        List<Test> testList = context.read<DBNotifier>().getAllTestListOf(widget.child.id!, false);
+                        List<Test> testList = context
+                            .read<TestNotifier>()
+                            .getAllTestListOf(widget.child.childId, false);
 
                         for (Test test in testList) {
-                          List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.id!, true);
+                          // Child의 TestItem 제거
+                          List<TestItem> testItemList = context
+                              .read<TestItemNotifier>()
+                              .getTestItemList(test.testId, true);
                           for (TestItem testItem in testItemList) {
-                            context.read<DBNotifier>().database!.deleteTestItem(testItem.id!);
+                            // DB에서 TestItem 제거
+                            await db.deleteTestItem(testItem.testItemId);
                             // Provider에서 TestItem 제거
-                            context.read<DBNotifier>().removeTestItem(testItem);
+                            context
+                                .read<TestItemNotifier>()
+                                .removeTestItem(testItem);
                           }
-                          context.read<DBNotifier>().database!.deleteTest(test.id!);
+
+                          // DB에서 TestItem 제거
+                          await db.deleteTest(test.testId);
                           // Provider에서 테스트 제거
-                          context.read<DBNotifier>().removeTest(test);
+                          context.read<TestNotifier>().removeTest(test);
                         }
 
-                        context.read<DBNotifier>().database!.deleteChild(widget.child.id!);
+                        // DB 에서 Child 제거
+                        await db.deleteChild(widget.child.childId);
                         // Provider에서 Child 제거
-                        context.read<DBNotifier>().removeChild(widget.child);
+                        context.read<ChildNotifier>().removeChild(widget.child);
 
                         Navigator.pop(context);
                         Navigator.pop(context);
@@ -113,24 +125,28 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                   color: Colors.black,
                 ),
                 onPressed: () async {
-                  if (formkey.currentState!.validate() && !flag) {
-                    flag = true;
+                  if (formkey.currentState!.validate()) {
+                    if (!flag) {
+                      flag = true;
+                      // 기존의 child 제거
+                      context.read<ChildNotifier>().removeChild(widget.child);
 
-                    // 수정된 child 생성
-                    Child newChild = Child(
-                      id: widget.child.id,
-                      name: name,
-                      birthday: birth,
-                      gender: gender,
-                    );
+                      // child 생성
+                      Child updatedChild = Child(
+                          childId: widget.child.childId,
+                          name: name,
+                          birthday: birth!,
+                          gender: gender);
 
-                    // 기존의 child 제거
-                    context.read<DBNotifier>().removeChild(widget.child);
+                      // ChildNotifier 수정
+                      context.read<ChildNotifier>().addChild(updatedChild);
 
-                    // ChildNotifier 수정
-                    context.read<DBNotifier>().addChild(newChild);
+                      // DB 수정
+                      await db.updateChild(updatedChild);
 
-                    Navigator.pop(context);
+                      // 화면 전환
+                      Navigator.pop(context);
+                    }
                   }
                 },
               ),
@@ -166,14 +182,15 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                       children: [
                         OutlinedButton(
                           onPressed: () async {
-                            birth = await getDate(
+                            DateTime? temp = await getDate(
                               context: context,
                               initialDate: birth,
                             );
+                            birth = temp == null ? birth : temp;
                             setState(() {});
                           },
                           child: Text(
-                            DateFormat('yyyyMMdd').format(birth),
+                            DateFormat('yyyyMMdd').format(birth!),
                             style: TextStyle(color: Colors.black),
                           ),
                           style: OutlinedButton.styleFrom(
@@ -191,7 +208,9 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                                   gender = '남자';
                                 else
                                   gender = '여자';
-                                for (int buttonIndex = 0; buttonIndex < genderSelected.length; buttonIndex++) {
+                                for (int buttonIndex = 0;
+                                    buttonIndex < genderSelected.length;
+                                    buttonIndex++) {
                                   if (buttonIndex == index) {
                                     genderSelected[buttonIndex] = true;
                                   } else {

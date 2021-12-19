@@ -41,15 +41,18 @@ xio.Workbook genExcel(
   dataStyle.hAlign = xio.HAlignType.center;
   // 필요한 스타일 추가
 
-  sheet.getRangeByName('B1').columnWidth = 17;
+  sheet.getRangeByName('B1').columnWidth = 20;
   if (excelTableColumns[0] == '하위목록') {
-    sheet.getRangeByName('I1').columnWidth = 22.5;
-    sheet.getRangeByName('J1').columnWidth = 17;
+    // 아이템그래프일 경우
+    sheet.getRangeByName('I1').columnWidth = 22.5; // 하위 목록
+    sheet.getRangeByName('J1').columnWidth = 17; // 날짜
+    sheet.getRangeByName('K1').columnWidth = 22.5; // 하루 평균 성공률
   } else if (excelTableColumns[0] == '날짜') {
-    sheet.getRangeByName('I1').columnWidth = 17;
-    sheet.getRangeByName('J1').columnWidth = 22.5;
+    // 날짜그래프일 경우
+    sheet.getRangeByName('I1').columnWidth = 17; // 날짜
+    sheet.getRangeByName('J1').columnWidth = 22.5; // 하위목록
+    sheet.getRangeByName('K1').columnWidth = 22.5; // 하루 평균 성공률
   }
-  sheet.getRangeByName('K1').columnWidth = 13;
   sheet.getRangeByName('L1').setText(''); // 마지막 column을 비워둔다.
   // 기본 Column Width 설정
 
@@ -93,15 +96,16 @@ xio.Workbook genExcel(
   tableDataRange.cellStyle = dataStyle;
   // 차트데이터 스타일 지정 ( 일단 폰트사이즈 9 )
 
-  List<String> extraColumns = ['담당 선생님', '아동', '평균 성공률'];
+  List<String> extraColumns = ['담당 선생님', '아동'];
   String teacherName = exportData.teacherName;
   String childName = exportData.childName;
-  num averageRate = exportData.averageRate;
+  num allSuccessRate = exportData.allSuccessRate;
   int lastColumn = 27;
   if (isDate == false) {
-    extraColumns = ['담당 선생님', '아동', '프로그램 영역', '하위 영역', '평균 성공률'];
-    String programField = exportData.programField!;
-    String subArea = exportData.subArea!;
+    // 아이템 그래프
+    extraColumns = ['담당 선생님', '아동', '프로그램 영역', '하위 영역', '전체 평균 성공률'];
+    String programField = exportData.programField;
+    String subArea = exportData.subArea;
     sheet.getRangeByName('B23').setText(extraColumns[0]);
     sheet.getRangeByName('B24').setText(extraColumns[1]);
     sheet.getRangeByName('B25').setText(extraColumns[2]);
@@ -113,7 +117,9 @@ xio.Workbook genExcel(
     sheet.getRangeByName('C24').setText(childName);
     sheet.getRangeByName('C25').setText(programField);
     sheet.getRangeByName('C26').setText(subArea);
-    sheet.getRangeByName('C27').setText(averageRate.toString() + '%');
+    sheet
+        .getRangeByName('C27')
+        .setText(allSuccessRate.toInt().toString() + '%');
     sheet.getRangeByName('C23:C27').cellStyle = dataStyle;
     sheet.getRangeByName('C23:C27').cellStyle.hAlign = xio.HAlignType.left;
 
@@ -123,22 +129,20 @@ xio.Workbook genExcel(
     sheet.getRangeByName('C26:G26').merge();
     sheet.getRangeByName('C27:G27').merge();
   } else if (isDate == true) {
+    // 날짜그래프일 경우
     sheet.getRangeByName('B23').setText(extraColumns[0]);
     sheet.getRangeByName('B24').setText(extraColumns[1]);
-    sheet.getRangeByName('B25').setText(extraColumns[2]);
-    sheet.getRangeByName('B23:B25').cellStyle = extraDataStyle;
+    sheet.getRangeByName('B23:B24').cellStyle = extraDataStyle;
 
     sheet.getRangeByName('C23').setText(teacherName);
     sheet.getRangeByName('C24').setText(childName);
-    sheet.getRangeByName('C25').setText(averageRate.toString() + '%');
-    sheet.getRangeByName('C23:C25').cellStyle = dataStyle;
-    sheet.getRangeByName('C23:C25').cellStyle.hAlign = xio.HAlignType.left;
+    sheet.getRangeByName('C23:C24').cellStyle = dataStyle;
+    sheet.getRangeByName('C23:C24').cellStyle.hAlign = xio.HAlignType.left;
 
     sheet.getRangeByName('C23:G23').merge();
     sheet.getRangeByName('C24:G24').merge();
-    sheet.getRangeByName('C25:G25').merge();
 
-    lastColumn = 25;
+    lastColumn = 24;
   }
   // 기타 데이터 삽입
 
@@ -152,11 +156,24 @@ xio.Workbook genExcel(
 }
 
 class ExportData {
+  // 공통
   String teacherName;
   String childName;
-  num averageRate;
-  String? programField;
-  String? subArea;
-  ExportData(this.teacherName, this.childName, this.averageRate,
-      this.programField, this.subArea);
+//  num averageRate;
+
+  // 날짜 그래프
+
+  // 아이템 그래프
+  num daySuccessRate; // 하루 평균 성공률
+  num allSuccessRate; // 전체 평균 성공률
+  String programField;
+  String subArea;
+  ExportData(
+    this.teacherName,
+    this.childName, {
+    this.daySuccessRate = 0,
+    this.allSuccessRate = 0,
+    this.programField = "",
+    this.subArea = "",
+  });
 }

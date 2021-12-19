@@ -1,3 +1,4 @@
+import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test.dart';
@@ -49,7 +50,7 @@ class DBService {
     // List<Map<String, dynamic>를 List<Dog>으로 변환합니다.
     return List.generate(maps.length, (i) {
       return Child(
-        id: maps[i]['id'],
+        childId: maps[i]['id'],
         name: maps[i]['name'],
         birthday: DateTime.parse(maps[i]['birthday']),
         gender: maps[i]['gender'],
@@ -65,7 +66,7 @@ class DBService {
     );
     return List.generate(maps.length, (i) {
       return Child(
-        id: maps[i]['id'],
+        childId: maps[i]['id'],
         name: maps[i]['name'],
         birthday: DateTime.parse(maps[i]['birthday']),
         gender: maps[i]['gender'],
@@ -80,7 +81,7 @@ class DBService {
       // Dog의 id가 일치하는 지 확인합니다.
       where: "id = ?",
       // Dog의 id를 whereArg로 넘겨 SQL injection을 방지합니다.
-      whereArgs: [child.id],
+      whereArgs: [child.childId],
     );
   }
 
@@ -121,8 +122,7 @@ class DBService {
       return SubField(
         id: maps[i]['id'],
         programFieldId: maps[i]['programFieldId'],
-        title: maps[i]['title'],
-        subItemList: subItemList,
+        subFieldName: maps[i]['subFieldName'],
       );
     });
   }
@@ -139,8 +139,7 @@ class DBService {
       return SubField(
         id: maps[i]['id'],
         programFieldId: maps[i]['programFieldId'],
-        title: maps[i]['title'],
-        subItemList: subItemList,
+        subFieldName: maps[i]['subFieldName'],
       );
     });
   }
@@ -169,6 +168,7 @@ class DBService {
   // Test 복사
   Future copyTest(Test test) async {
     Test newTest = Test(
+      testId: test.testId,
       childId: test.childId,
       title: "${test.title}_복사본",
       date: DateTime.now(),
@@ -177,8 +177,8 @@ class DBService {
     Test copiedTest = await createTest(newTest);
 
     List<TestItem> testItemList = [];
-    for (TestItem testItem in await readTestItemList(test.id!)) {
-      copyTestItem(testItem, copiedTest.id!);
+    for (TestItem testItem in await readTestItemList(test.testId)) {
+      copyTestItem(testItem, copiedTest.testId);
       testItemList.add(testItem);
     }
   }
@@ -192,7 +192,7 @@ class DBService {
     );
     return List.generate(maps.length, (i) {
       return Test(
-        id: maps[i]['id'],
+        testId: maps[i]['id'],
         childId: maps[i]['childId'],
         date: DateTime.parse(maps[i]['date']),
         title: maps[i]['title'],
@@ -206,7 +206,7 @@ class DBService {
 
     return List.generate(maps.length, (i) {
       return Test(
-        id: maps[i]['id'],
+        testId: maps[i]['id'],
         childId: maps[i]['childId'],
         date: DateTime.parse(maps[i]['date']),
         title: maps[i]['title'],
@@ -223,7 +223,7 @@ class DBService {
     );
     return List.generate(maps.length, (i) {
       return Test(
-        id: maps[i]['id'],
+        testId: maps[i]['id'],
         childId: maps[i]['childId'],
         date: DateTime.parse(maps[i]['date']),
         title: maps[i]['title'],
@@ -240,7 +240,7 @@ class DBService {
       // test의 id가 일치하는 지 확인합니다.
       where: "id = ?",
       // test의 id를 whereArg로 넘겨 SQL injection을 방지합니다.
-      whereArgs: [test.id],
+      whereArgs: [test.testId],
     );
   }
 
@@ -270,12 +270,12 @@ class DBService {
 
   Future copyTestItem(TestItem testItem, int testId) async {
     TestItem newTestItem = TestItem(
+      testItemId: testItem.testItemId,
       testId: testId,
       childId: testItem.childId,
       programField: testItem.programField,
       subField: testItem.subField,
       subItem: testItem.subItem,
-      result: null,
     );
     createTestItem(newTestItem);
   }
@@ -289,13 +289,12 @@ class DBService {
     );
     return List.generate(maps.length, (i) {
       return TestItem(
-        id: maps[i]['id'],
+        testItemId: maps[i]['id'],
         testId: maps[i]['testId'],
         childId: maps[i]['childId'],
         programField: maps[i]['programField'],
         subField: maps[i]['subField'],
         subItem: maps[i]['subItem'],
-        result: maps[i]['result'],
       );
     })[0];
   }
@@ -305,13 +304,12 @@ class DBService {
 
     return List.generate(maps.length, (i) {
       return TestItem(
-        id: maps[i]['id'],
+        testItemId: maps[i]['id'],
         testId: maps[i]['testId'],
         childId: maps[i]['childId'],
         programField: maps[i]['programField'],
         subField: maps[i]['subField'],
         subItem: maps[i]['subItem'],
-        result: maps[i]['result'],
       );
     });
   }
@@ -325,13 +323,12 @@ class DBService {
 
     return List.generate(maps.length, (i) {
       return TestItem(
-        id: maps[i]['id'],
+        testItemId: maps[i]['id'],
         testId: maps[i]['testId'],
         childId: maps[i]['childId'],
         programField: maps[i]['programField'],
         subField: maps[i]['subField'],
         subItem: maps[i]['subItem'],
-        result: maps[i]['result'],
       );
     });
   }
@@ -344,13 +341,12 @@ class DBService {
     );
     return List.generate(maps.length, (i) {
       return TestItem(
-        id: maps[i]['id'],
+        testItemId: maps[i]['id'],
         testId: maps[i]['testId'],
         childId: maps[i]['childId'],
         programField: maps[i]['programField'],
         subField: maps[i]['subField'],
         subItem: maps[i]['subItem'],
-        result: maps[i]['result'],
       );
     });
   }
@@ -363,13 +359,12 @@ class DBService {
     );
     return List.generate(maps.length, (i) {
       return TestItem(
-        id: maps[i]['id'],
+        testItemId: maps[i]['id'],
         testId: maps[i]['testId'],
         childId: maps[i]['childId'],
         programField: maps[i]['programField'],
         subField: maps[i]['subField'],
         subItem: maps[i]['subItem'],
-        result: maps[i]['result'],
       );
     });
   }
@@ -378,17 +373,16 @@ class DBService {
     final List<Map<String, dynamic>> maps = await db.query(
       'testItem',
       where: 'subField = ?',
-      whereArgs: [subField.title],
+      whereArgs: [subField.subFieldName],
     );
     return List.generate(maps.length, (i) {
       return TestItem(
-        id: maps[i]['id'],
+        testItemId: maps[i]['id'],
         testId: maps[i]['testId'],
         childId: maps[i]['childId'],
         programField: maps[i]['programField'],
         subField: maps[i]['subField'],
         subItem: maps[i]['subItem'],
-        result: maps[i]['result'],
       );
     });
   }
