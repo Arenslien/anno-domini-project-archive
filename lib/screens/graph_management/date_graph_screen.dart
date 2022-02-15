@@ -46,7 +46,7 @@ class _DateGraphState extends State<DateGraph> {
   late ExportData exportData; // Export할 데이터
   late Child _child; // 아이 데이터
 
-  late List<GraphData> _chartData; // chart를 그릴 때 쓰이는 데이터
+  late List<GraphDataLocal> _chartData; // chart를 그릴 때 쓰이는 데이터
   late List<String> _tableColumn; // 내보내기할 때 테이블의 컬럼 이름들
   late String _graphType; // 날짜 그래프인지 하위목록 그래프인지
   late String _charTitleName; // test_date 이거나 subItem
@@ -184,7 +184,7 @@ class _DateGraphState extends State<DateGraph> {
     }
   }
 
-  List<List<String>> genTableData(List<GraphData> chartData) {
+  List<List<String>> genTableData(List<GraphDataLocal> chartData) {
     List<List<String>> tableData = [];
 
     // 날짜그래프라면 날짜, 하위목록, 하루평균 성공률 순으로
