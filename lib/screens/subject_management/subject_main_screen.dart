@@ -22,18 +22,18 @@ class _SubjectMainScreenState extends State<SubjectMainScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount: programFieldList.length,
+        // itemCount: programFieldList.length,
         itemBuilder: (BuildContext context, int index) {
           return buildListTile(
-            titleText: programFieldList[index].title,
+            // titleText: programFieldList[index].title,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      SelectSubfieldScreen(program: programFieldList[index]),
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) =>
+              //         // SelectSubfieldScreen(program: programFieldList[index]),
+              //   ),
+              // );
             },
             trailing: Wrap(
               alignment: WrapAlignment.center,
@@ -46,8 +46,7 @@ class _SubjectMainScreenState extends State<SubjectMainScreen> {
                     maxWidth: 64,
                     maxHeight: 64,
                   ),
-                  child: Image.asset('asset/program_field_icon.png',
-                      fit: BoxFit.fill),
+                  child: Image.asset('asset/program_field_icon.png', fit: BoxFit.fill),
                 ),
                 ConstrainedBox(
                   constraints: BoxConstraints(

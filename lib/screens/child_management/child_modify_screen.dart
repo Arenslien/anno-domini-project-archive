@@ -83,32 +83,32 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                       if (!flag) {
                         flag = true;
                         // 아이에 대한 test
-                        List<Test> testList = context
-                            .read<TestNotifier>()
-                            .getAllTestListOf(widget.child.childId, false);
+                        // List<Test> testList = context
+                        //     .read<TestNotifier>()
+                        //     .getAllTestListOf(widget.child.childId, false);
 
-                        for (Test test in testList) {
-                          // Child의 TestItem 제거
-                          List<TestItem> testItemList = context
-                              .read<TestItemNotifier>()
-                              .getTestItemList(test.testId, true);
-                          for (TestItem testItem in testItemList) {
-                            // DB에서 TestItem 제거
-                            await db.deleteTestItem(testItem.testItemId);
-                            // Provider에서 TestItem 제거
-                            context
-                                .read<TestItemNotifier>()
-                                .removeTestItem(testItem);
-                          }
+                        // for (Test test in testList) {
+                        //   // Child의 TestItem 제거
+                        //   List<TestItem> testItemList = context
+                        //       .read<TestItemNotifier>()
+                        //       .getTestItemList(test.testId, true);
+                        //   for (TestItem testItem in testItemList) {
+                        //     // DB에서 TestItem 제거
+                        //     await db.deleteTestItem(testItem.testItemId);
+                        //     // Provider에서 TestItem 제거
+                        //     context
+                        //         .read<TestItemNotifier>()
+                        //         .removeTestItem(testItem);
+                        //   }
 
-                          // DB에서 TestItem 제거
-                          await db.deleteTest(test.testId);
-                          // Provider에서 테스트 제거
-                          context.read<TestNotifier>().removeTest(test);
-                        }
+                        //   // DB에서 TestItem 제거
+                        //   await db.deleteTest(test.testId);
+                        //   // Provider에서 테스트 제거
+                        //   context.read<TestNotifier>().removeTest(test);
+                        // }
 
                         // DB 에서 Child 제거
-                        await db.deleteChild(widget.child.childId);
+                        // await db.deleteChild(widget.child.childId);
                         // Provider에서 Child 제거
                         context.read<ChildNotifier>().removeChild(widget.child);
 
@@ -132,17 +132,17 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                       context.read<ChildNotifier>().removeChild(widget.child);
 
                       // child 생성
-                      Child updatedChild = Child(
-                          childId: widget.child.childId,
-                          name: name,
-                          birthday: birth!,
-                          gender: gender);
+                      // Child updatedChild = Child(
+                      //     childId: widget.child.childId,
+                      //     name: name,
+                      //     birthday: birth!,
+                      //     gender: gender);
 
                       // ChildNotifier 수정
-                      context.read<ChildNotifier>().addChild(updatedChild);
+                      // context.read<ChildNotifier>().addChild(updatedChild);
 
                       // DB 수정
-                      await db.updateChild(updatedChild);
+                      // await db.updateChild(updatedChild);
 
                       // 화면 전환
                       Navigator.pop(context);
@@ -208,9 +208,7 @@ class _ChildModifyScreenState extends State<ChildModifyScreen> {
                                   gender = '남자';
                                 else
                                   gender = '여자';
-                                for (int buttonIndex = 0;
-                                    buttonIndex < genderSelected.length;
-                                    buttonIndex++) {
+                                for (int buttonIndex = 0; buttonIndex < genderSelected.length; buttonIndex++) {
                                   if (buttonIndex == index) {
                                     genderSelected[buttonIndex] = true;
                                   } else {

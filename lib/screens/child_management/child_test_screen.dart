@@ -84,28 +84,28 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
             ),
           ),
         ),
-        body: context.watch<TestNotifier>().getAllTestListOf(widget.child.childId, false).length == 0
-            ? noListData(Icons.library_add_outlined, '테스트 추가')
-            : searchTextEditingController.text.isEmpty
-                ? ListView.separated(
-                    // 검색한 결과가 없으면 다 출력
-                    itemCount: context.watch<TestNotifier>().getAllTestListOf(widget.child.childId, false).length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      return index < context.watch<TestNotifier>().getAllTestListOf(widget.child.childId, false).length ? buildTestListTile(context.watch<TestNotifier>().getAllTestListOf(widget.child.childId, false)[index]) : buildListTile(titleText: '');
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const Divider(color: Colors.black);
-                    },
-                  )
-                : ListView.separated(
-                    itemCount: searchResult.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      return index < searchResult.length ? buildTestListTile(searchResult[index]) : buildListTile(titleText: '');
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const Divider(color: Colors.black);
-                    },
-                  ),
+        // body: context.watch<TestNotifier>().getAllTestListOf(widget.child.childId, false).length == 0
+        //     ? noListData(Icons.library_add_outlined, '테스트 추가')
+        //     : searchTextEditingController.text.isEmpty
+        //         ? ListView.separated(
+        //             // 검색한 결과가 없으면 다 출력
+        //             itemCount: context.watch<TestNotifier>().getAllTestListOf(widget.child.childId, false).length + 1,
+        //             itemBuilder: (BuildContext context, int index) {
+        //               return index < context.watch<TestNotifier>().getAllTestListOf(widget.child.childId, false).length ? buildTestListTile(context.watch<TestNotifier>().getAllTestListOf(widget.child.childId, false)[index]) : buildListTile(titleText: '');
+        //             },
+        //             separatorBuilder: (BuildContext context, int index) {
+        //               return const Divider(color: Colors.black);
+        //             },
+        //           )
+        //         : ListView.separated(
+        //             itemCount: searchResult.length + 1,
+        //             itemBuilder: (BuildContext context, int index) {
+        //               return index < searchResult.length ? buildTestListTile(searchResult[index]) : buildListTile(titleText: '');
+        //             },
+        //             separatorBuilder: (BuildContext context, int index) {
+        //               return const Divider(color: Colors.black);
+        //             },
+        //           ),
         floatingActionButton: bulidFloatingActionButton(onPressed: () {
           Navigator.push(
             context,
@@ -127,15 +127,15 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
             setState(() {
               searchResult.clear();
             });
-            for (int i = 0; i < context.read<TestNotifier>().getAllTestListOf(widget.child.childId, false).length; i++) {
-              bool flag = false;
-              if (context.read<TestNotifier>().getAllTestListOf(widget.child.childId, false)[i].title.contains(str)) flag = true;
-              if (flag) {
-                setState(() {
-                  searchResult.add(context.read<TestNotifier>().getAllTestListOf(widget.child.childId, false)[i]);
-                });
-              }
-            }
+            // for (int i = 0; i < context.read<TestNotifier>().getAllTestListOf(widget.child.childId, false).length; i++) {
+            //   bool flag = false;
+            //   if (context.read<TestNotifier>().getAllTestListOf(widget.child.childId, false)[i].title.contains(str)) flag = true;
+            //   if (flag) {
+            //     setState(() {
+            //       searchResult.add(context.read<TestNotifier>().getAllTestListOf(widget.child.childId, false)[i]);
+            //     });
+            //   }
+            // }
           },
           search: true,
         ),

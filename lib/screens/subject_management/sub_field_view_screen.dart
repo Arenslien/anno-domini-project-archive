@@ -5,9 +5,7 @@ import 'package:aba_analysis_local/models/sub_field.dart';
 class SelectSubitemScreen extends StatefulWidget {
   final SubField subField;
   final int index;
-  const SelectSubitemScreen(
-      {Key? key, required this.subField, required this.index})
-      : super(key: key);
+  const SelectSubitemScreen({Key? key, required this.subField, required this.index}) : super(key: key);
 
   @override
   _SelectSubitemScreenState createState() => _SelectSubitemScreenState();
@@ -24,7 +22,7 @@ class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
   @override
   void initState() {
     super.initState();
-    subitemList = widget.subField.subItemList;
+    // subitemList = widget.subField.subItemList;
   }
 
   @override
@@ -33,14 +31,14 @@ class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            widget.subField.title,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontFamily: 'KoreanGothic',
-            ),
-          ),
+          // title: Text(
+          //   widget.subField.title,
+          //   style: TextStyle(
+          //     color: Colors.black,
+          //     fontSize: 16,
+          //     fontFamily: 'KoreanGothic',
+          //   ),
+          // ),
           centerTitle: true,
           leading: IconButton(
             icon: Icon(
@@ -79,8 +77,7 @@ class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
                             maxWidth: 64,
                             maxHeight: 48,
                           ),
-                          child: Image.asset('asset/sub_list_icon.png',
-                              fit: BoxFit.fill),
+                          child: Image.asset('asset/sub_list_icon.png', fit: BoxFit.fill),
                         ),
                         ConstrainedBox(
                           constraints: BoxConstraints(
@@ -89,11 +86,7 @@ class _SelectSubitemScreenState extends State<SelectSubitemScreen> {
                             maxWidth: 64,
                             maxHeight: 48,
                           ),
-                          child: widget.index == 0
-                              ? Image.asset('asset/basic_icon.png',
-                                  fit: BoxFit.fill)
-                              : Image.asset('asset/add_icon.png',
-                                  fit: BoxFit.fill),
+                          child: widget.index == 0 ? Image.asset('asset/basic_icon.png', fit: BoxFit.fill) : Image.asset('asset/add_icon.png', fit: BoxFit.fill),
                         ),
                       ],
                     ),

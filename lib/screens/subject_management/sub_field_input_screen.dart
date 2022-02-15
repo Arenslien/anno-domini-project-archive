@@ -32,9 +32,9 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
   Future<bool> isCheckDup(String checkDup) async {
     List<String> s = [];
     for (SubField subField in (await context.read<DBNotifier>().database!.readAllSubFieldList())) {
-      for (String item in subField.subItemList) {
-        s.add(item);
-      }
+      // for (String item in subField.subItemList) {
+      //   s.add(item);
+      // }
     }
     if (s.contains(checkDup)) {
       return true;
@@ -74,14 +74,14 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                 onPressed: () async {
                   print(subitemList);
                   if (formkey.currentState!.validate()) {
-                    SubField addSub = SubField(
-                      title: subFieldName,
-                      subItemList: subitemList,
-                      programFieldId: widget.program.id,
-                    );
+                    // SubField addSub = SubField(
+                    //   title: subFieldName,
+                    //   subItemList: subitemList,
+                    //   programFieldId: widget.program.id,
+                    // );
 
                     //DB에 서브필드 추가
-                    context.read<DBNotifier>().database!.addSubField(addSub);
+                    // context.read<DBNotifier>().database!.addSubField(addSub);
 
                     context.read<DBNotifier>().refreshDB();
 
@@ -108,9 +108,9 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                     }
                     Future.delayed(Duration.zero, () async {
                       for (SubField subField in await context.read<DBNotifier>().database!.readAllSubFieldList()) {
-                        if (subField.title == val) {
-                          return '중복된 하위영역 이름입니다.';
-                        }
+                        // if (subField.title == val) {
+                        //   return '중복된 하위영역 이름입니다.';
+                        // }
                       }
                     });
                     return null;

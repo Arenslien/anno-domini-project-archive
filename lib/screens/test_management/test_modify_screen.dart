@@ -118,7 +118,7 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                     // 완료 버튼 누르면 실행
                     if (formkey.currentState!.validate()) {
                       // 테스트의 날짜와 테스트 제목 수정
-                      db.updateTest(widget.test.testId, date, title, widget.test.isInput);
+                      // db.updateTest(widget.test.testId, date, title, widget.test.isInput);
                       context.read<TestNotifier>().updateTest(widget.test.testId, date, title, widget.test.isInput);
 
                       // 기존의 테스트에 대한 테스트 아이템 모두 제거
@@ -131,16 +131,16 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                       }
                       // 테스트 만들기
                       for (TestItemInfo testItemInfo in testItemInfoList) {
-                        TestItem testItem = TestItem(
-                          testItemId: await db.updateId(AutoID.testItem),
-                          testId: widget.test.testId,
-                          childId: widget.test.childId,
-                          programField: testItemInfo.programField,
-                          subField: testItemInfo.subField,
-                          subItem: testItemInfo.subItem,
-                        );
-                        await db.createTestItem(testItem);
-                        context.read<TestItemNotifier>().addTestItem(testItem);
+                        // TestItem testItem = TestItem(
+                        //   testItemId: await db.updateId(AutoID.testItem),
+                        //   testId: widget.test.testId,
+                        //   childId: widget.test.childId,
+                        //   programField: testItemInfo.programField,
+                        //   subField: testItemInfo.subField,
+                        //   subItem: testItemInfo.subItem,
+                        // );
+                        // await db.createTestItem(testItem);
+                        // context.read<TestItemNotifiser>().addTestItem(testItem);
                       }
 
                       Navigator.pop(context);
