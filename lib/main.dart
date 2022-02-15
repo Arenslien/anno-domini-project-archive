@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
       List<SubField> subFieldList = await context.read<DBNotifier>().database!.readAllSubFieldList();
 
       if (subFieldList.isEmpty) {
-        for (SubField subField in defaultSubFieldList) {
+        for (SubField subField in subFieldList) {
           context.read<DBNotifier>().database!.addSubField(subField);
         }
       }

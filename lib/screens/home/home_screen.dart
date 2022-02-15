@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:aba_analysis_local/screens/setting/setting_screen.dart';
 import 'package:aba_analysis_local/screens/graph_management/graph_main_screen.dart';
 import 'package:aba_analysis_local/screens/child_management/child_main_screen.dart';
 
@@ -69,10 +68,6 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             color: Colors.white,
             child: ProgramFieldScreen(),
-          ),
-          Container(
-            color: Colors.white,
-            child: SettingScreen(),
           ),
         ],
         controller: pageController,
