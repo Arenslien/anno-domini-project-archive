@@ -1,8 +1,7 @@
 import 'package:aba_analysis_local/components/build_floating_action_button.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
-import 'package:aba_analysis_local/provider/field_management_notifier.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/screens/field_management/sub_field_screen.dart';
-import 'package:aba_analysis_local/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
@@ -20,8 +19,6 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
 
   String? title;
 
-  FireStoreService store = FireStoreService();
-
   final formkey = GlobalKey<FormState>();
 
   bool flag = false;
@@ -38,23 +35,23 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
       ),
       body: ListView.builder(
         itemCount:
-            context.watch<FieldManagementNotifier>().programFieldList.length,
+            context.watch<DBNotifier>().programFieldList.length,
         itemBuilder: (BuildContext context, int index) {
           return buildListTile(
             titleText: context
-                .read<FieldManagementNotifier>()
+                .read<DBNotifier>()
                 .programFieldList[index]
                 .title,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SubFieldScreen(
-                      program: context
-                          .read<FieldManagementNotifier>()
-                          .programFieldList[index]),
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => SubFieldScreen(
+              //         program: context
+              //             .read<FieldManagementNotifier>()
+              //             .programFieldList[index]),
+              //   ),
+              // );
             },
             trailing: Wrap(
               alignment: WrapAlignment.center,
@@ -129,11 +126,11 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
                           flag = true;
 
                           //DB추가
-                          await store.addProgramField(title!);
-                          context
-                              .read<FieldManagementNotifier>()
-                              .updateProgramFieldList(
-                                  await store.readAllProgramField());
+                          // await store.addProgramField(title!);
+                          // context
+                          //     .read<FieldManagementNotifier>()
+                          //     .updateProgramFieldList(
+                          //         await store.readAllProgramField());
 
                           Navigator.pop(context);
                           title = null;

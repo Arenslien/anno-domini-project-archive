@@ -1,3 +1,4 @@
+import 'package:aba_analysis_local/models/sub_item.dart';
 import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
@@ -5,16 +6,22 @@ import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:flutter/foundation.dart';
 
+import '../models/program_field.dart';
+
 class DBNotifier extends ChangeNotifier {
   DBService _db = DBService();
 
   List<Child> _children = [];
   List<Test> _testList = [];
   List<TestItem> _testItemList = [];
+
+  // 전역 관리하는 program field list
+  List<ProgramField> _programFieldList = [];
   List<SubField> _subFieldList = [];
+  List<SubItem> _subItemList = [];
 
   Future connectDB() async {
-    await _db.initDatabase();
+    await _db.initializeDB();
     refreshDB();
     notifyListeners();
   }
@@ -110,9 +117,9 @@ class DBNotifier extends ChangeNotifier {
   void updateTestItem(int testItemId, String result) {
     for (TestItem testItem in _testItemList) {
       if (testItem.testItemId == testItemId) {
-        testItem.setP(p);
-        testItem.setPlus(plus);
-        testItem.setMinus(minus);
+        // testItem.setP(p);
+        // testItem.setPlus(plus);
+        // testItem.setMinus(minus);
 
       }
     }
@@ -137,9 +144,9 @@ class DBNotifier extends ChangeNotifier {
       });
     } else {
       _testItemList.forEach((TestItem testItem) {
-        if (testItem.testId == testId && testItem.result != null) {
-          testItemList.add(testItem);
-        }
+        // if (testItem.testId == testId && testItem.result != null) {
+        //   testItemList.add(testItem);
+        // }
       });
     }
 
@@ -158,9 +165,9 @@ class DBNotifier extends ChangeNotifier {
       });
     } else {
       _testItemList.forEach((TestItem testItem) {
-        if (testItem.childId == childId && testItem.result != null) {
-          testItemList.add(testItem);
-        }
+        // if (testItem.childId == childId && testItem.result != null) {
+        //   testItemList.add(testItem);
+        // }
       });
     }
 
@@ -174,18 +181,34 @@ class DBNotifier extends ChangeNotifier {
     }
     int cnt = 0;
     for (TestItem testItem in testItemList) {
-      if (testItem.result == '+') {
-        cnt += 1;
-      }
+      // if (testItem.result == '+') {
+      //   cnt += 1;
+      // }
     }
     return (cnt / testItemList.length * 100).toInt();
+  }
+
+  // 리스트 업데이트
+  void updateProgramFieldList(List<ProgramField> programFieldList) {
+    _programFieldList = programFieldList;
+    notifyListeners();
+  }
+
+  void updateSubFieldList(List<SubField> subFieldList) {
+    _subFieldList = subFieldList;
+    notifyListeners();
+  }
+
+  void updateSubItemList(List<SubItem> subItemList) {
+    _subItemList = subItemList;
+    notifyListeners();
   }
 
   List<String> readAllSubFieldName() {
     List<String> allSubFieldNameList = [];
 
-    for (SubField s in _subFieldList) {
-      allSubFieldNameList.add(s.title);
+    for (SubField subField in _subFieldList) {
+      allSubFieldNameList.add(subField.subFieldName);
     }
 
     return allSubFieldNameList;
@@ -194,19 +217,23 @@ class DBNotifier extends ChangeNotifier {
   List<String> readAllSubFieldItemList() {
     List<String> allSubFieldItemList = [];
 
-    for (SubField s in _subFieldList) {
-      for (String subItemName in s.subItemList) {
-        allSubFieldItemList.add(subItemName);
+    for (SubItem subItem in _subItemList) {
+      for (String item in subItem.subItemList) {
+        allSubFieldItemList.add(item);
       }
     }
+
     return allSubFieldItemList;
   }
 
-  List<SubField> readSubFieldList(int id) {
+  // 해당 title을 상위 영역으로 가지고 있는 SubFieldList 가져오기
+  List<SubField> readSubFieldList(String title) {
     List<SubField> subFieldList = [];
 
+    int programFieldId = convertProgramFieldTitleToId(title);
+
     for (SubField subField in _subFieldList) {
-      if (id == subField.programFieldId) {
+      if (subField.programFieldId == programFieldId) {
         subFieldList.add(subField);
       }
     }
@@ -214,9 +241,46 @@ class DBNotifier extends ChangeNotifier {
     return subFieldList;
   }
 
+  // 해당 title을 하위영역으로 가지고 있는 SubItemList 가져오기
+  SubItem readSubItem(String title) {
+    SubItem? subItem;
+    int subFieldId = convertSubFieldTitleToId(title);
+    for (SubItem sI in _subItemList) {
+      if (sI.subFieldId == subFieldId) {
+        subItem = sI;
+      }
+    }
+    return subItem!;
+  }
+
+  int convertProgramFieldTitleToId(String title) {
+    int? id;
+    for (ProgramField programField in _programFieldList) {
+      if (programField.title == title) {
+        id = programField.id;
+        break;
+      }
+    }
+    return id!;
+  }
+
+  int convertSubFieldTitleToId(String title) {
+    int? id;
+    for (SubField subField in _subFieldList) {
+      if (subField.subFieldName == title) {
+        id = subField.id;
+        break;
+      }
+    }
+    return id!;
+  }
+
+// Getter Function
+  List<ProgramField> get programFieldList => _programFieldList;
+  List<SubField> get subFieldList => _subFieldList;
+  List<SubItem> get subItemList => _subItemList;
   DBService? get database => _db;
   List<Child> get children => _children;
   List<Test> get testList => _testList;
   List<TestItem> get testItemList => _testItemList;
-  List<SubField> get subFieldList => _subFieldList;
 }
