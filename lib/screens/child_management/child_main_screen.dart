@@ -106,10 +106,10 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                   ),
         floatingActionButton: bulidFloatingActionButton(
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => ChildInputScreen()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChildInputScreen()),
+            );
           },
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as Path;
 import 'package:sqflite/sqflite.dart';
 
@@ -11,8 +12,8 @@ class DBService {
       Path.join(await getDatabasesPath(), 'aba_analysis.db'),
       onCreate: (db, version) async {
         await db.execute("CREATE TABLE child(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, birthday TEXT, gender TEXT)");
-        await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, id INTEGER, date TEXT, title TEXT, isInput INTEGER)");
-        await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, testId INTEGER, id INTEGER, programField TEXT, subField TEXT, subItem TEXT, result TEXT)");
+        await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, childId INTEGER, date TEXT, title TEXT, isInput INTEGER)");
+        await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, testId INTEGER, childId INTEGER, programField TEXT, subField TEXT, subItem TEXT, result TEXT)");
         await db.execute("CREATE TABLE programField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT)");
         await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, programFieldId INTEGER, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
       },
@@ -25,11 +26,8 @@ class DBService {
 
   Future<void> createChild(Child child) async {
     final db = await initializeDB();
-    await db.insert(
-      'child',
-      child.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.rawInsert(
+      'INSERT INTO child(name, birthday, gender) VALUES(?, ?, ?)', [child.name, DateFormat('yyyy-MM-dd').format(child.birthday), child.gender]);
   }
 
   // 교사가 맡고 있는 모든 아이들 데이터 가져오기
