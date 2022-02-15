@@ -2,7 +2,6 @@ import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/provider/child_notifier.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
 import 'package:aba_analysis_local/components/search_delegate.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';

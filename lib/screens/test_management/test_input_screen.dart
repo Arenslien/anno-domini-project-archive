@@ -1,3 +1,4 @@
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/services/db.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +7,8 @@ import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:aba_analysis_local/provider/test_notifier.dart';
 import 'package:aba_analysis_local/components/show_date_picker.dart';
-import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
-import 'package:aba_analysis_local/provider/field_management_notifier.dart';
 
 class TestInputScreen extends StatefulWidget {
   const TestInputScreen({required this.child, Key? key}) : super(key: key);
@@ -27,6 +25,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
 
   List<TestItemInfo> testItemInfoList = [];
   final formkey = GlobalKey<FormState>();
+  DBService db = DBService();
 
   bool flag = false;
 
@@ -62,34 +61,34 @@ class _TestInputScreenState extends State<TestInputScreen> {
                   // 완료 버튼 누르면 실행
                   if (formkey.currentState!.validate() && !flag) {
                     flag = true;
-                    // Test test = Test(
-                    //   testId: await store.updateId(AutoID.test),
-                    //   childId: widget.child.childId,
-                    //   title: title,
-                    //   date: date!,
-                    //   isInput: false,
-                    // );
+                    Test test = Test(
+                      testId: 0,
+                      childId: widget.child.id,
+                      title: title,
+                      date: date!,
+                      isInput: false,
+                    );
                     // DB에 테스트 추가
-                    // await store.createTest(test);
+                    await db.createTest(test);
 
                     // Test Notifier에 추가
-                    // context.read<TestNotifier>().addTest(test);
+                    context.read<DBNotifier>().addTest(test);
 
                     // DB에 테스트 아이템 추가 & TestItem Notifier에 테스트 아이템 추가
-                    // for (TestItemInfo testItemInfo in testItemInfoList) {
-                    //   TestItem testItem = TestItem(
-                    //     testItemId: await store.updateId(AutoID.testItem),
-                    //     testId: test.testId,
-                    //     childId: widget.child.childId,
-                    //     programField: testItemInfo.programField,
-                    //     subField: testItemInfo.subField,
-                    //     subItem: testItemInfo.subItem,
-                    //   );
+                    for (TestItemInfo testItemInfo in testItemInfoList) {
+                      TestItem testItem = TestItem(
+                        testItemId: 0,
+                        testId: test.testId,
+                        childId: widget.child.id,
+                        programField: testItemInfo.programField,
+                        subField: testItemInfo.subField,
+                        subItem: testItemInfo.subItem,
+                      );
 
-                    //   await store.createTestItem(testItem);
+                      await db.createTestItem(testItem);
 
-                    //   context.read<TestItemNotifier>().addTestItem(testItem);
-                    // }
+                      context.read<DBNotifier>().addTestItem(testItem);
+                    }
                     Navigator.pop(context);
                   }
                 },
@@ -184,7 +183,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                   DropdownButton(
                                                     hint: Text('프로그램 영역 선택'),
                                                     value: selectedProgramField,
-                                                    items: context.read<FieldManagementNotifier>().programFieldList.map((value) {
+                                                    items: context.read<DBNotifier>().programFieldList.map((value) {
                                                       return DropdownMenuItem(
                                                         value: value.title,
                                                         child: Text(value.title),
@@ -204,7 +203,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     value: selectedSubField,
                                                     items: selectedProgramField == null
                                                         ? null
-                                                        : context.read<FieldManagementNotifier>().readSubFieldList(selectedProgramField!).map((value) {
+                                                        : context.read<DBNotifier>().readSubFieldList(selectedProgramField!).map((value) {
                                                             return DropdownMenuItem(value: value.subFieldName, child: Text(value.subFieldName));
                                                           }).toList(),
                                                     onChanged: (String? value) {
@@ -220,7 +219,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     value: selectedSubItem,
                                                     items: selectedProgramField == null || selectedSubField == null
                                                         ? null
-                                                        : context.read<FieldManagementNotifier>().readSubItem(selectedSubField!).subItemList.map((value) {
+                                                        : context.read<DBNotifier>().readSubItem(selectedSubField!).subItemList.map((value) {
                                                             return DropdownMenuItem(
                                                               value: value,
                                                               child: Text(value),
