@@ -106,10 +106,10 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                   ),
         floatingActionButton: bulidFloatingActionButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ChildInputScreen()),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => ChildInputScreen()),
+            // );
           },
         ),
       ),
@@ -121,18 +121,18 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         titleText: child.name,
         subtitleText: '${child.age.toString()}세',
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ChildTestScreen(child: child)),
-          );
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => ChildTestScreen(child: child)),
+          // );
         },
         trailing: IconButton(
           icon: Icon(Icons.settings),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ChildModifyScreen(child: child)),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => ChildModifyScreen(child: child)),
+            // );
           },
           color: Colors.black,
         ));

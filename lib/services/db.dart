@@ -10,11 +10,11 @@ class DBService {
     return await openDatabase(
       Path.join(await getDatabasesPath(), 'aba_analysis.db'),
       onCreate: (db, version) async {
-        await db.execute("CREATE TABLE child(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, birthday TEXT, gender TEXT)");
-        await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT, id INTEGER, date TEXT, title TEXT, isInput INTEGER)");
-        await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT, testId INTEGER, id INTEGER, programField TEXT, subField TEXT, subItem TEXT, result TEXT)");
-        await db.execute("CREATE TABLE programField(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT)");
-        await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, programFieldId INTEGER, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
+        await db.execute("CREATE TABLE child(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, birthday TEXT, gender TEXT)");
+        await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, id INTEGER, date TEXT, title TEXT, isInput INTEGER)");
+        await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, testId INTEGER, id INTEGER, programField TEXT, subField TEXT, subItem TEXT, result TEXT)");
+        await db.execute("CREATE TABLE programField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT)");
+        await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, programFieldId INTEGER, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
       },
       version: 1,
     );

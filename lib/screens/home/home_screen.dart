@@ -22,12 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    //Firebase.initializeApp().then((_) {
 
     setState(() {
       firebaseInitialized = true;
     });
-    //});
 
     pageController = PageController();
 

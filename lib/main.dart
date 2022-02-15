@@ -1,4 +1,3 @@
-import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:provider/provider.dart';
