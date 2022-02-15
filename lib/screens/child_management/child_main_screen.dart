@@ -1,3 +1,4 @@
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/models/child.dart';
@@ -29,7 +30,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    for (Child c in context.read<ChildNotifier>().children) {
+    for (Child c in context.read<DBNotifier>().children) {
       childNameAndChildMap.addAll({c.name: c});
     }
     IconButton searchButton = IconButton(
@@ -61,18 +62,18 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         //         searchResult.clear();
         //       });
         //       for (int i = 0;
-        //           i < context.read<ChildNotifier>().children.length;
+        //           i < context.read<DBNotifier>().children.length;
         //           i++) {
         //         bool flag = false;
         //         if (context
-        //             .read<ChildNotifier>()
+        //             .read<DBNotifier>()
         //             .children[i]
         //             .name
         //             .contains(str)) flag = true;
         //         if (flag) {
         //           setState(() {
         //             searchResult
-        //                 .add(context.read<ChildNotifier>().children[i]);
+        //                 .add(context.read<DBNotifier>().children[i]);
         //           });
         //         }
         //       }
@@ -82,7 +83,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         //         searchTextEditingController.clear();
         //       });
         //     }),
-        body: context.watch<ChildNotifier>().children.length == 0
+        body: context.watch<DBNotifier>().children.length == 0
             ? noListData(Icons.group, '아동 추가')
             : selectedChildName == ""
                 ? ListView.separated(
