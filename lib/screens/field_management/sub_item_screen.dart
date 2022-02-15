@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:aba_analysis/constants.dart';
+import 'package:aba_analysis_local/constants.dart';
 
 class SubItemScreen extends StatefulWidget {
   final List<String> subItemList;
