@@ -13,7 +13,7 @@ AppBar selectAppBar(
       style: TextStyle(
         fontFamily: 'korean',
         color: Colors.black,
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
     ),

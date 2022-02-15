@@ -11,8 +11,7 @@ Widget buildListTile({
   double? bottom,
 }) {
   return Padding(
-    padding: EdgeInsets.fromLTRB(
-        16, top == null ? 8 : top, 16, bottom == null ? 8 : bottom),
+    padding: EdgeInsets.fromLTRB(16, top == null ? 24 : top, 16, bottom == null ? 8 : bottom),
     child: ListTile(
       leading: icon == null
           ? null
@@ -28,10 +27,7 @@ Widget buildListTile({
           ),
           Text(
             titleText!,
-            style: TextStyle(
-                fontSize: titleSize ?? 25,
-                fontFamily: 'KoreanGothic',
-                fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: titleSize ?? 25, fontFamily: 'KoreanGothic', fontWeight: FontWeight.bold),
           ),
           SizedBox(
             height: 7,

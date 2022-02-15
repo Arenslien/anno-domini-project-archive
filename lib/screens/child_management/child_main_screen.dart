@@ -34,6 +34,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
     for (Child c in context.read<DBNotifier>().children) {
       childNameAndChildMap.addAll({c.name: c});
     }
+
     IconButton searchButton = IconButton(
       // 검색버튼. 전역변수값을 변경해야되서 해당 스크린에서 정의했음.
       icon: Icon(Icons.search),
@@ -52,6 +53,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         });
       },
     );
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -61,34 +63,6 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
           searchButton: searchButton,
           isMain: true,
         ),
-        // searchBar(
-        //     controller: searchTextEditingController,
-        //     onChanged: (str) {
-        //       setState(() {
-        //         searchResult.clear();
-        //       });
-        //       for (int i = 0;
-        //           i < context.read<DBNotifier>().children.length;
-        //           i++) {
-        //         bool flag = false;
-        //         if (context
-        //             .read<DBNotifier>()
-        //             .children[i]
-        //             .name
-        //             .contains(str)) flag = true;
-        //         if (flag) {
-        //           setState(() {
-        //             searchResult
-        //                 .add(context.read<DBNotifier>().children[i]);
-        //           });
-        //         }
-        //       }
-        //     },
-        //     clear: () {
-        //       setState(() {
-        //         searchTextEditingController.clear();
-        //       });
-        //     }),
         body: context.watch<DBNotifier>().children.length == 0
             ? noListData(Icons.group, '아동 추가')
             : selectedChildName == ""
@@ -127,10 +101,10 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         titleText: child.name,
         subtitleText: '${child.age.toString()}세',
         onTap: () {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => ChildTestScreen(child: child)),
-          // );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChildTestScreen(child: child)),
+          );
         },
         trailing: IconButton(
           icon: Icon(Icons.settings),
