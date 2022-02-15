@@ -1,7 +1,6 @@
 import 'package:aba_analysis_local/components/search_delegate.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/sub_item.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
