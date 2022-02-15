@@ -198,7 +198,6 @@
 //                             minimumSize: Size(120, 50),
 //                           ),
 //                         ),
-//                         buildToggleButtons(
 //                           text: ['남자', '여자'],
 //                           isSelected: genderSelected,
 //                           onPressed: (index) {

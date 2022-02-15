@@ -26,13 +26,13 @@ class _MyAppState extends State<MyApp> {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) async {
       await context.read<DBNotifier>().connectDB();
       // Default SubField 값 확인
-      List<SubField> subFieldList = await context.read<DBNotifier>().database!.readAllSubFieldList();
+      // List<SubField> subFieldList = await context.read<DBNotifier>().database!.readAllSubFieldList();
 
-      if (subFieldList.isEmpty) {
-        for (SubField subField in subFieldList) {
-          context.read<DBNotifier>().database!.addSubField(subField);
-        }
-      }
+      // if (subFieldList.isEmpty) {
+      //   for (SubField subField in subFieldList) {
+      //     context.read<DBNotifier>().database!.addSubField(subField);
+      //   }
+      // }
     });
   }
 
