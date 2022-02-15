@@ -6,26 +6,23 @@ import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:flutter/foundation.dart';
 
 class DBNotifier extends ChangeNotifier {
-  DBService _db = DBService();
-
   List<Child> _children = [];
   List<Test> _testList = [];
   List<TestItem> _testItemList = [];
   List<SubField> _subFieldList = [];
 
   Future connectDB() async {
-    await _db.initDatabase();
-    refreshDB();
+    // refreshDB();
     notifyListeners();
   }
 
-  Future refreshDB() async {
-    _children = await _db.readAllChild();
-    _testList = await _db.readAllTest();
-    _testItemList = await _db.readAllTestItem();
-    _subFieldList = await _db.readAllSubFieldList();
-    notifyListeners();
-  }
+  // Future refreshDB() async {
+  //   _children = await _db.readAllChild();
+  //   _testList = await _db.readAllTest();
+  //   _testItemList = await _db.readAllTestItem();
+  //   _subFieldList = await _db.readAllSubFieldList();
+  //   notifyListeners();
+  // }
 
   // children 리스트 초기화
   void updateChildren(List<Child> children) {
@@ -110,9 +107,9 @@ class DBNotifier extends ChangeNotifier {
   void updateTestItem(int testItemId, String result) {
     for (TestItem testItem in _testItemList) {
       if (testItem.testItemId == testItemId) {
-        testItem.setP(p);
-        testItem.setPlus(plus);
-        testItem.setMinus(minus);
+        // testItem.setP(p);
+        // testItem.setPlus(plus);
+        // testItem.setMinus(minus);
 
       }
     }
@@ -137,9 +134,9 @@ class DBNotifier extends ChangeNotifier {
       });
     } else {
       _testItemList.forEach((TestItem testItem) {
-        if (testItem.testId == testId && testItem.result != null) {
-          testItemList.add(testItem);
-        }
+        // if (testItem.testId == testId && testItem.result != null) {
+        //   testItemList.add(testItem);
+        // }
       });
     }
 
@@ -158,9 +155,9 @@ class DBNotifier extends ChangeNotifier {
       });
     } else {
       _testItemList.forEach((TestItem testItem) {
-        if (testItem.childId == childId && testItem.result != null) {
-          testItemList.add(testItem);
-        }
+        // if (testItem.childId == childId && testItem.result != null) {
+        //   testItemList.add(testItem);
+        // }
       });
     }
 
@@ -174,9 +171,9 @@ class DBNotifier extends ChangeNotifier {
     }
     int cnt = 0;
     for (TestItem testItem in testItemList) {
-      if (testItem.result == '+') {
-        cnt += 1;
-      }
+      // if (testItem.result == '+') {
+      //   cnt += 1;
+      // }
     }
     return (cnt / testItemList.length * 100).toInt();
   }
@@ -185,7 +182,7 @@ class DBNotifier extends ChangeNotifier {
     List<String> allSubFieldNameList = [];
 
     for (SubField s in _subFieldList) {
-      allSubFieldNameList.add(s.title);
+      // allSubFieldNameList.add(s.title);
     }
 
     return allSubFieldNameList;
@@ -195,9 +192,9 @@ class DBNotifier extends ChangeNotifier {
     List<String> allSubFieldItemList = [];
 
     for (SubField s in _subFieldList) {
-      for (String subItemName in s.subItemList) {
-        allSubFieldItemList.add(subItemName);
-      }
+      // for (String subItemName in s.subItemList) {
+      //   allSubFieldItemList.add(subItemName);
+      // }
     }
     return allSubFieldItemList;
   }
@@ -214,7 +211,7 @@ class DBNotifier extends ChangeNotifier {
     return subFieldList;
   }
 
-  DBService? get database => _db;
+  // DBService? get database => _db;
   List<Child> get children => _children;
   List<Test> get testList => _testList;
   List<TestItem> get testItemList => _testItemList;
