@@ -1,17 +1,18 @@
-import 'package:aba_analysis/models/sub_field.dart';
-import 'package:aba_analysis/screens/field_management/sub_field_input_screen.dart';
-import 'package:aba_analysis/screens/field_management/sub_item_screen.dart';
+import 'package:aba_analysis_local/models/sub_field.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/screens/field_management/sub_field_input_screen.dart';
+import 'package:aba_analysis_local/screens/field_management/sub_item_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/test_item.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/models/program_field.dart';
-import 'package:aba_analysis/components/build_list_tile.dart';
-import 'package:aba_analysis/provider/test_item_notifier.dart';
-import 'package:aba_analysis/components/show_dialog_delete.dart';
-import 'package:aba_analysis/provider/field_management_notifier.dart';
-import 'package:aba_analysis/components/build_floating_action_button.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/test_item.dart';
+// import 'package:aba_analysis_local/services/firestore.dart';
+import 'package:aba_analysis_local/models/program_field.dart';
+import 'package:aba_analysis_local/components/build_list_tile.dart';
+// import 'package:aba_analysis_local/provider/test_item_notifier.dart';
+import 'package:aba_analysis_local/components/show_dialog_delete.dart';
+// import 'package:aba_analysis_local/provider/field_management_notifier.dart';
+import 'package:aba_analysis_local/components/build_floating_action_button.dart';
 
 class SubFieldScreen extends StatefulWidget {
   final ProgramField program;
@@ -22,7 +23,7 @@ class SubFieldScreen extends StatefulWidget {
 
 class _SubFieldScreenState extends State<SubFieldScreen> {
   _SubFieldScreenState();
-  FireStoreService store = FireStoreService();
+  // FireStoreService store = FireStoreService();
 
   bool flag = false;
 
@@ -49,9 +50,9 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount: context.watch<FieldManagementNotifier>().readSubFieldList(widget.program.title).length,
+        itemCount: context.watch<DBNotifier>().readSubFieldList(widget.program.title).length,
         itemBuilder: (BuildContext context, int index) {
-          String subFieldName = context.read<FieldManagementNotifier>().readSubFieldList(widget.program.title)[index].subFieldName;
+          String subFieldName = context.read<DBNotifier>().readSubFieldList(widget.program.title)[index].subFieldName;
           return buildListTile(
               titleText: subFieldName,
               titleSize: 20,
@@ -60,7 +61,7 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => SubItemScreen(
-                      subItemList: context.read<FieldManagementNotifier>().readSubItem(subFieldName).subItemList,
+                      subItemList: context.read<DBNotifier>().readSubItem(subFieldName).subItemList,
                       subFieldName: subFieldName,
                       index: index,
                     ),
@@ -91,26 +92,26 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
                           onPressed: () async {
                             if (!flag) {
                               flag = true;
-                              SubField subField = context.read<FieldManagementNotifier>().readSubFieldList(widget.program.title)[index];
+                              SubField subField = context.read<DBNotifier>().readSubFieldList(widget.program.title)[index];
 
                               // DB에서 삭제한 서브필드의 테스트 아이템 삭제
-                              List<TestItem> testItemList = context.read<TestItemNotifier>().testItemList;
-                              for (TestItem testItem in testItemList) {
-                                if (testItem.subField == subField.subFieldName) {
-                                  await store.deleteTestItem(testItem.testItemId);
-                                }
-                              }
-                              context.read<TestItemNotifier>().updateTestItemList(await store.readAllTestItem());
+                              // List<TestItem> testItemList = context.read<TestItemNotifier>().testItemList;
+                              // for (TestItem testItem in testItemList) {
+                              //   if (testItem.subField == subField.subFieldName) {
+                              //     await store.deleteTestItem(testItem.testItemId);
+                              //   }
+                              // }
+                              // context.read<TestItemNotifier>().updateTestItemList(await store.readAllTestItem());
 
-                              // DB에서 서브아이템 삭제
-                              await store.deleteSubItem(context.read<FieldManagementNotifier>().readSubItem(subField.subFieldName).id);
+                              // // DB에서 서브아이템 삭제
+                              // await store.deleteSubItem(context.read<DBNotifier>().readSubItem(subField.subFieldName).id);
 
-                              // DB에서 서브필드를 삭제한다.
-                              await store.deleteSubField(subField.id);
+                              // // DB에서 서브필드를 삭제한다.
+                              // await store.deleteSubField(subField.id);
 
-                              // 해당 서브필드를 삭제한다.
-                              context.read<FieldManagementNotifier>().updateSubFieldList(await store.readAllSubField());
-                              context.read<FieldManagementNotifier>().updateSubItemList(await store.readAllSubItem());
+                              // // 해당 서브필드를 삭제한다.
+                              // context.read<DBNotifier>().updateSubFieldList(await store.readAllSubField());
+                              // context.read<DBNotifier>().updateSubItemList(await store.readAllSubItem());
 
                               Navigator.pop(context);
                             }

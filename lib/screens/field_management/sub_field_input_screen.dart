@@ -1,12 +1,13 @@
-import 'package:aba_analysis/models/sub_item.dart';
+import 'package:aba_analysis_local/models/sub_item.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/models/sub_field.dart';
-import 'package:aba_analysis/services/firestore.dart';
-import 'package:aba_analysis/models/program_field.dart';
-import 'package:aba_analysis/provider/field_management_notifier.dart';
-import 'package:aba_analysis/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/models/sub_field.dart';
+// import 'package:aba_analysis_local/services/firestore.dart';
+import 'package:aba_analysis_local/models/program_field.dart';
+// import 'package:aba_analysis_local/provider/field_management_notifier.dart';
+import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class SubFieldInputScreen extends StatefulWidget {
   final ProgramField program;
@@ -25,7 +26,7 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
   Set<String> subItemSet = {};
   late String subFieldName;
   final formkey = GlobalKey<FormState>();
-  FireStoreService store = FireStoreService();
+  // FireStoreService store = FireStoreService();
   final textController = TextEditingController();
 
   bool flag = false;
@@ -36,7 +37,7 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
   }
 
   bool isCheckDup(String checkDup) {
-    List<String> s = context.read<FieldManagementNotifier>().readAllSubFieldItemList();
+    List<String> s = context.read<DBNotifier>().readAllSubFieldItemList();
     if (s.contains(checkDup)) {
       return true;
     } else {
@@ -74,32 +75,32 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                 ),
                 onPressed: () async {
                   print(subitemList);
-                  if (formkey.currentState!.validate() && !flag) {
-                    flag = true;
-                    SubField addSub = SubField(
-                      id: await store.updateId(AutoID.subField),
-                      programFieldId: widget.program.id,
-                      subFieldName: subFieldName,
-                    );
-                    // DB에 서브필드 추가
-                    await store.addSubField(addSub);
-                    // Subfield를 Notifier에 추가
-                    context.read<FieldManagementNotifier>().updateSubFieldList(await store.readAllSubField());
+                  // if (formkey.currentState!.validate() && !flag) {
+                  //   flag = true;
+                  //   SubField addSub = SubField(
+                  //     id: await store.updateId(AutoID.subField),
+                  //     programFieldId: widget.program.id,
+                  //     subFieldName: subFieldName,
+                  //   );
+                  //   // DB에 서브필드 추가
+                  //   await store.addSubField(addSub);
+                  //   // Subfield를 Notifier에 추가
+                  //   context.read<DBNotifier>().updateSubFieldList(await store.readAllSubField());
 
-                    // DB에 서브 아이템 추가
-                    SubItem subItem = SubItem(
-                      id: await store.updateId(AutoID.subItem),
-                      subFieldId: addSub.id,
-                      subItemList: subitemList,
-                    );
-                    await store.addSubItem(subItem);
-                    // Provider에 서브 아이템 추가
-                    context.read<FieldManagementNotifier>().updateSubItemList(await store.readAllSubItem());
-                    // 초기화
-                    subitemList = List<String>.generate(10, (index) => "");
+                  //   // DB에 서브 아이템 추가
+                  //   SubItem subItem = SubItem(
+                  //     id: await store.updateId(AutoID.subItem),
+                  //     subFieldId: addSub.id,
+                  //     subItemList: subitemList,
+                  //   );
+                  //   await store.addSubItem(subItem);
+                  //   // Provider에 서브 아이템 추가
+                  //   context.read<DBNotifier>().updateSubItemList(await store.readAllSubItem());
+                  //   // 초기화
+                  //   subitemList = List<String>.generate(10, (index) => "");
 
-                    Navigator.pop(context);
-                  }
+                  //   Navigator.pop(context);
+                  // }
                 },
               ),
             ],
@@ -120,7 +121,7 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       return '하위영역 이름을 입력해주세요.';
                     }
 
-                    for (String subFieldName in context.read<FieldManagementNotifier>().readAllSubFieldName()) {
+                    for (String subFieldName in context.read<DBNotifier>().readAllSubFieldName()) {
                       if (subFieldName == val) {
                         return '중복된 하위영역 이름입니다.';
                       }
