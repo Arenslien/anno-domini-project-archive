@@ -1,3 +1,4 @@
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/models/child.dart';
@@ -29,7 +30,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    for (Child c in context.read<ChildNotifier>().children) {
+    for (Child c in context.read<DBNotifier>().children) {
       childNameAndChildMap.addAll({c.name: c});
     }
     IconButton searchButton = IconButton(
@@ -82,7 +83,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         //         searchTextEditingController.clear();
         //       });
         //     }),
-        body: context.watch<ChildNotifier>().children.length == 0
+        body: context.watch<DBNotifier>().children.length == 0
             ? noListData(Icons.group, '아동 추가')
             : selectedChildName == ""
                 ? ListView.separated(
@@ -105,10 +106,10 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                   ),
         floatingActionButton: bulidFloatingActionButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ChildInputScreen()),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => ChildInputScreen()),
+            // );
           },
         ),
       ),
@@ -120,18 +121,18 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         titleText: child.name,
         subtitleText: '${child.age.toString()}세',
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ChildTestScreen(child: child)),
-          );
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => ChildTestScreen(child: child)),
+          // );
         },
         trailing: IconButton(
           icon: Icon(Icons.settings),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ChildModifyScreen(child: child)),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => ChildModifyScreen(child: child)),
+            // );
           },
           color: Colors.black,
         ));

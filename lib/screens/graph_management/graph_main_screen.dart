@@ -1,10 +1,10 @@
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/components/search_delegate.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/components/search_bar.dart';
 import 'package:aba_analysis_local/provider/test_notifier.dart';
 import 'package:aba_analysis_local/provider/child_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
@@ -31,7 +31,7 @@ class _GraphScreenState extends State<GraphScreen> {
 
   @override
   Widget build(BuildContext context) {
-    for (Child c in context.watch<ChildNotifier>().children) {
+    for (Child c in context.watch<DBNotifier>().children) {
       childNameAndChildMap.addAll({c.name: c});
     }
     IconButton searchButton = IconButton(
@@ -114,22 +114,23 @@ class _GraphScreenState extends State<GraphScreen> {
           onPressed: (index) {
             if (index == 0) {
               // Date Graph 클릭시
-              List<Test> testList =
-                  context.read<TestNotifier>().getAllTestListOf(child.id, true);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SelectDateScreen(child: child, testList: testList)));
+              List<Test> testList = context
+                  .read<DBNotifier>()
+                  .getAllTestListOf(child.id, true);
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) =>
+              //             SelectDateScreen(child: child, testList: testList)));
             } else if (index == 1) {
               // Item Graph 클릭시
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => SelectProgramScreen(
-                          child: child,
-                        )),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => SelectProgramScreen(
+              //             child: child,
+              //           )),
+              // );
             }
           },
         ));

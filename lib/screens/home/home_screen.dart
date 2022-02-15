@@ -22,12 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    //Firebase.initializeApp().then((_) {
 
     setState(() {
       firebaseInitialized = true;
     });
-    //});
 
     pageController = PageController();
 
@@ -95,13 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(
               Icons.library_books_outlined,
               color: (_page == 2) ? Colors.black : Colors.grey,
-            ),
-            backgroundColor: Colors.white,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-              color: (_page == 3) ? Colors.black : Colors.grey,
             ),
             backgroundColor: Colors.white,
           ),
