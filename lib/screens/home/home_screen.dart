@@ -98,13 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             backgroundColor: Colors.white,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
-              color: (_page == 3) ? Colors.black : Colors.grey,
-            ),
-            backgroundColor: Colors.white,
-          ),
         ],
         onTap: navigationTapped,
         currentIndex: _page,
