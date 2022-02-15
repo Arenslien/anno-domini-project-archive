@@ -21,7 +21,7 @@ class SubFieldScreen extends StatefulWidget {
 
 class _SubFieldScreenState extends State<SubFieldScreen> {
   _SubFieldScreenState();
-  DBService db =DBService();
+  DBService db = DBService();
 
   bool flag = false;
 

@@ -1,13 +1,14 @@
-import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:aba_analysis_local/services/db.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/scroll_view.dart' as scroll;
 import 'package:provider/provider.dart';
+import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
+// import 'package:aba_analysis_local/provider/test_notifier.dart';
+// import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/components/build_no_list_widget.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
@@ -27,9 +28,8 @@ class ChildTestScreen extends StatefulWidget {
 
 class _ChildTestScreenState extends State<ChildTestScreen> {
   _ChildTestScreenState();
-  List<Test> searchResult = [];
-  DBService db = DBService();
 
+  List<Test> searchResult = [];
 
   TextEditingController searchTextEditingController = TextEditingController();
 
@@ -163,18 +163,18 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
         onPressed: (idx) async {
           if (idx == 0) {
             // DB에 Test 추가
-            Test copiedTest = await db.copyTest(test);
+            // Test copiedTest = await db.copyTest(test);
             // TestNotifer에 추가
-            context.read<DBNotifier>().addTest(copiedTest);
+            // context.read<DBNotifier>().addTest(copiedTest);
 
             // 복사할 Test의 TestItemList 가져오기
             List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.testId, true);
 
             for (TestItem testItem in testItemList) {
               // DB에 TestItem 추가
-              TestItem copiedTestItem = await db.copyTestItem(testItem, copiedTest.testId);
+              // TestItem copiedTestItem = await db.copyTestItem(testItem, copiedTest.testId);
               // 복사된 테스트 아이템 TestItem Notifier에 추가
-              context.read<DBNotifier>().addTestItem(copiedTestItem);
+              // context.read<DBNotifier>().addTestItem(copiedTestItem);
             }
             setState(() {
               searchTextEditingController.text = '';

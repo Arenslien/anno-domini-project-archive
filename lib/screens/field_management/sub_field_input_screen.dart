@@ -99,7 +99,7 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                     // 초기화
                     subitemList = List<String>.generate(10, (index) => "");
 
-                    Navigator.pop(context);
+                    //   Navigator.pop(context);
                   }
                 },
               ),
