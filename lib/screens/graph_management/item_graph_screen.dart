@@ -35,7 +35,7 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
 
   late ExportData exportData; // Export할 데이터
 
-  late List<GraphData> _chartData; // chart를 그릴 때 쓰이는 데이터
+  late List<GraphDataLocal> _chartData; // chart를 그릴 때 쓰이는 데이터
   late List<String> _tableColumn; // 내보내기할 때 테이블의 컬럼 이름들
   late String _graphType; // 날짜별 그래프인지 하위목록별 그래프인지
   late String _charTitleName; // 차트의 제목
@@ -56,7 +56,7 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
     _charTitleName = widget.subItemList[0].testItem.subItem;
     _tableColumn = ['하위목록', '날짜', '하루 평균 성공률'];
 
-    _chartData = getItemGraphData(_charTitleName, widget.subItemList);
+    _chartData = getItemGraphDataLocal(_charTitleName, widget.subItemList);
 
     _allSuccessRate = _chartData[0].allSuccessRate;
   }
@@ -89,7 +89,7 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
     // _graphType = '하위목록';
     // _charTitleName = widget.subItemList[0].testItem.subItem;
     // _tableColumn = ['하위목록', '날짜', '성공여부'];
-    // _chartData = getItemGraphData(_charTitleName, widget.subItemList);
+    // _chartData = getItemGraphDataLocal(_charTitleName, widget.subItemList);
 
     exportData = ExportData(
         context.watch<UserNotifier>().abaUser!.nickname, widget.child.name,
@@ -199,7 +199,7 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
     }
   }
 
-  List<List<String>> genTableData(List<GraphData> chartData) {
+  List<List<String>> genTableData(List<GraphDataLocal> chartData) {
     List<List<String>> tableData = [];
 
     // 아이템그래프라면 하위목록, 날짜, 하루 평균 성공률 순으로
