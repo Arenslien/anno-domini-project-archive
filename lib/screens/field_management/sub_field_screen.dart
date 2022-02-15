@@ -22,7 +22,6 @@ class SubFieldScreen extends StatefulWidget {
 
 class _SubFieldScreenState extends State<SubFieldScreen> {
   _SubFieldScreenState();
-  FireStoreService store = FireStoreService();
 
   bool flag = false;
 

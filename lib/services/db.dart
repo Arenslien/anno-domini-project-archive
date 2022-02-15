@@ -1,4 +1,3 @@
-import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
 import 'package:aba_analysis_local/models/test.dart';
@@ -7,66 +6,51 @@ import 'package:path/path.dart' as Path;
 import 'package:sqflite/sqflite.dart';
 
 class DBService {
-  late Database db;
-  // DBService({required this.db});
-
-  //=======================================================================================
-  //                          Firebase 연동 - 사용자 관련 함수들
-  //=======================================================================================
-
-  //=======================================================================================
-  //                          Firebase 연동 - 아이들 관련 함수들
-  //=======================================================================================
-
-  Future initDatabase() async {
-    this.db = await openDatabase(
+  Future<Database> initializeDB() async {
+    return await openDatabase(
       Path.join(await getDatabasesPath(), 'aba_analysis.db'),
       onCreate: (db, version) async {
         await db.execute("CREATE TABLE child(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, birthday TEXT, gender TEXT)");
-        await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT, childId INTEGER, date TEXT, title TEXT, isInput INTEGER)");
-        await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT, testId INTEGER, childId INTEGER, programField TEXT, subField TEXT, subItem TEXT, result TEXT)");
+        await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT, id INTEGER, date TEXT, title TEXT, isInput INTEGER)");
+        await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT, testId INTEGER, id INTEGER, programField TEXT, subField TEXT, subItem TEXT, result TEXT)");
         await db.execute("CREATE TABLE programField(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT)");
         await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, programFieldId INTEGER, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
       },
       version: 1,
     );
   }
+  //=======================================================================================
+  //                          Firebase 연동 - 아이들 관련 함수들
+  //=======================================================================================
 
-  Future<Child> createChild(Child child) async {
-    int id = await db.insert(
+  Future<void> createChild(Child child) async {
+    final db = await initializeDB();
+    await db.insert(
       'child',
       child.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-
-    return (await readChild(id))!;
   }
 
   // 교사가 맡고 있는 모든 아이들 데이터 가져오기
   Future<List<Child>> readAllChild() async {
     // 모든 Child 얻기 위해 테이블에 질의합니다.
-    final List<Map<String, dynamic>> maps = await db.query('child');
-
-    // List<Map<String, dynamic>를 List<Dog>으로 변환합니다.
-    return List.generate(maps.length, (i) {
-      return Child(
-        childId: maps[i]['id'],
-        name: maps[i]['name'],
-        birthday: DateTime.parse(maps[i]['birthday']),
-        gender: maps[i]['gender'],
-      );
-    });
+    final db = await initializeDB();
+    final List<Map<String, dynamic>> queryResult = await db.query('child');
+    return queryResult.map((e) => Child.fromMap(e)).toList();
   }
 
-  Future<Child?> readChild(int childId) async {
+  Future<Child?> readChild(int id) async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query(
       'child',
       where: 'id = ?',
-      whereArgs: [childId],
+      whereArgs: [id],
     );
     return List.generate(maps.length, (i) {
       return Child(
-        childId: maps[i]['id'],
+        id: maps[i]['id'],
         name: maps[i]['name'],
         birthday: DateTime.parse(maps[i]['birthday']),
         gender: maps[i]['gender'],
@@ -75,23 +59,27 @@ class DBService {
   }
 
   Future updateChild(Child child) async {
+    final db = await initializeDB();
+
     await db.update(
       'child',
       child.toMap(),
       // Dog의 id가 일치하는 지 확인합니다.
       where: "id = ?",
       // Dog의 id를 whereArg로 넘겨 SQL injection을 방지합니다.
-      whereArgs: [child.childId],
+      whereArgs: [child.id],
     );
   }
 
-  Future deleteChild(int childId) async {
+  Future deleteChild(int id) async {
+    final db = await initializeDB();
+
     await db.delete(
       'child',
       // 특정 dog를 제거하기 위해 `where` 절을 사용하세요
       where: "id = ?",
       // Dog의 id를 where의 인자로 넘겨 SQL injection을 방지합니다.
-      whereArgs: [childId],
+      whereArgs: [id],
     );
   }
 
@@ -99,6 +87,8 @@ class DBService {
   //                          Firebase 연동 - 하위 영역 관련 함수들
   //=======================================================================================
   Future addSubField(SubField subField) async {
+    final db = await initializeDB();
+
     await db.insert(
       'subField',
       subField.toMap(),
@@ -107,6 +97,8 @@ class DBService {
   }
 
   Future<List<SubField>> readSubFieldList(int id) async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query(
       'subField',
       where: "programFieldId = ?",
@@ -128,6 +120,8 @@ class DBService {
   }
 
   Future<List<SubField>> readAllSubFieldList() async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query('subField');
 
     return List.generate(maps.length, (i) {
@@ -145,6 +139,8 @@ class DBService {
   }
 
   Future deleteSubField(int id) async {
+    final db = await initializeDB();
+
     await db.delete(
       'subField',
       where: "id = ?",
@@ -158,6 +154,8 @@ class DBService {
 
   // Test 추가
   Future<Test> createTest(Test test) async {
+    final db = await initializeDB();
+
     return (await readTest(await db.insert(
       'test',
       test.toMap(),
@@ -185,6 +183,8 @@ class DBService {
 
   // Test 열람
   Future<Test?> readTest(int testId) async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query(
       'test',
       where: 'id = ?',
@@ -202,6 +202,8 @@ class DBService {
   }
 
   Future<List<Test>> readAllTest() async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query('test');
 
     return List.generate(maps.length, (i) {
@@ -215,11 +217,13 @@ class DBService {
     });
   }
 
-  Future<List<Test>> readTestList(int childId) async {
+  Future<List<Test>> readTestList(int id) async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query(
       'test',
-      where: 'childId = ?',
-      whereArgs: [childId],
+      where: 'id = ?',
+      whereArgs: [id],
     );
     return List.generate(maps.length, (i) {
       return Test(
@@ -234,6 +238,8 @@ class DBService {
 
   // Test 수정
   Future updateTest(Test test) async {
+    final db = await initializeDB();
+
     await db.update(
       'test',
       test.toMap(),
@@ -246,6 +252,8 @@ class DBService {
 
   // Test 삭제
   Future deleteTest(int testId) async {
+    final db = await initializeDB();
+
     await db.delete(
       'test',
       where: "id = ?",
@@ -259,6 +267,8 @@ class DBService {
 
   // TestItem 추가
   Future<TestItem?> createTestItem(TestItem testItem) async {
+    final db = await initializeDB();
+
     int testItemId = await db.insert(
       'testItem',
       testItem.toMap(),
@@ -282,6 +292,8 @@ class DBService {
 
   // TestItem 열람
   Future<TestItem?> readTestItem(int testItemId) async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query(
       'testItem',
       where: 'id = ?',
@@ -300,6 +312,8 @@ class DBService {
   }
 
   Future readAllTestItem() async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query('testItem');
 
     return List.generate(maps.length, (i) {
@@ -315,6 +329,8 @@ class DBService {
   }
 
   Future readAllTestItemNotNull() async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query(
       'testItem',
       where: 'result = ?',
@@ -334,6 +350,8 @@ class DBService {
   }
 
   Future<List<TestItem>> readTestItemList(int testId) async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query(
       'testItem',
       where: 'testId = ?',
@@ -351,11 +369,13 @@ class DBService {
     });
   }
 
-  Future<List<TestItem>> readTestItemListByChild(int childId) async {
+  Future<List<TestItem>> readTestItemListByChild(int id) async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query(
       'testItem',
-      where: 'childId = ?',
-      whereArgs: [childId],
+      where: 'id = ?',
+      whereArgs: [id],
     );
     return List.generate(maps.length, (i) {
       return TestItem(
@@ -370,6 +390,8 @@ class DBService {
   }
 
   Future<List<TestItem>> readTestItemListBySubField(SubField subField) async {
+    final db = await initializeDB();
+
     final List<Map<String, dynamic>> maps = await db.query(
       'testItem',
       where: 'subField = ?',
@@ -389,6 +411,8 @@ class DBService {
 
   // TestItem 수정
   Future updateTestItem(int testItemId, String result) async {
+    final db = await initializeDB();
+
     await db.update(
       'testItem',
       {'result': result},
@@ -399,6 +423,8 @@ class DBService {
 
   // Test 삭제
   Future deleteTestItem(int testItemId) async {
+    final db = await initializeDB();
+
     await db.delete(
       'testItem',
       where: "id = ?",
