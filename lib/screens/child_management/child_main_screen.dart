@@ -23,6 +23,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
   String selectedChildName = "";
   Map<String, Child> childNameAndChildMap = {};
   late Child selectedChild;
+
   @override
   void initState() {
     super.initState();
@@ -54,7 +55,12 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: selectAppBar(context, "아동관리", searchButton: searchButton, isMain: true),
+        appBar: selectAppBar(
+          context,
+          "아동관리",
+          searchButton: searchButton,
+          isMain: true,
+        ),
         // searchBar(
         //     controller: searchTextEditingController,
         //     onChanged: (str) {
@@ -106,10 +112,10 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                   ),
         floatingActionButton: bulidFloatingActionButton(
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => ChildInputScreen()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChildInputScreen()),
+            );
           },
         ),
       ),
