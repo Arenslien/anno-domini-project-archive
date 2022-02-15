@@ -13,12 +13,11 @@ class TestItem {
 
   Map<String, dynamic> toMap() {
     return {
-      'test-item-id': testItemId,
-      'test-id': testId,
-      'child-id': childId,
-      'program-field': programField,
-      'sub-field': subField,
-      'sub-item': subItem,
+      'testId': testId,
+      'childId': childId,
+      'programField': programField,
+      'subField': subField,
+      'subItem': subItem,
       'p': _p,
       'plus': _plus,
       'minus': _minus,
