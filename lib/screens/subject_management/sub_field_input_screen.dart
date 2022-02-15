@@ -31,11 +31,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
 
   Future<bool> isCheckDup(String checkDup) async {
     List<String> s = [];
-    for (SubField subField in (await context.read<DBNotifier>().database!.readAllSubFieldList())) {
-      // for (String item in subField.subItemList) {
-      //   s.add(item);
-      // }
-    }
+    // for (SubField subField in (await context.read<DBNotifier>().database!.readAllSubFieldList())) {
+    //   // for (String item in subField.subItemList) {
+    //   //   s.add(item);
+    //   // }
+    // }
     if (s.contains(checkDup)) {
       return true;
     } else {
@@ -83,7 +83,7 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                     //DB에 서브필드 추가
                     // context.read<DBNotifier>().database!.addSubField(addSub);
 
-                    context.read<DBNotifier>().refreshDB();
+                    // context.read<DBNotifier>().refreshDB();
 
                     Navigator.pop(context);
                   }
@@ -107,11 +107,11 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       return '하위영역 이름을 입력해주세요.';
                     }
                     Future.delayed(Duration.zero, () async {
-                      for (SubField subField in await context.read<DBNotifier>().database!.readAllSubFieldList()) {
-                        // if (subField.title == val) {
-                        //   return '중복된 하위영역 이름입니다.';
-                        // }
-                      }
+                      // for (SubField subField in await context.read<DBNotifier>().database!.readAllSubFieldList()) {
+                      //   // if (subField.title == val) {
+                      //   //   return '중복된 하위영역 이름입니다.';
+                      //   // }
+                      // }
                     });
                     return null;
                   },

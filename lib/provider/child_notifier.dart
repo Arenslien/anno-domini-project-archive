@@ -26,7 +26,7 @@ class ChildNotifier extends ChangeNotifier {
   Child? getChild(int childId) {
     // 시간 되면 -> 아이들정렬을 id ㅅ순으로 해서 이진 탐색
     for (Child child in _children) {
-      if (child.childId == childId) {
+      if (child.id == childId) {
         return child;
       }
     }

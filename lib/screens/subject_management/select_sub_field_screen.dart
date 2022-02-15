@@ -101,18 +101,18 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                             text: '정말 삭제하시겠습니까?',
                             onPressed: () async {
                               // DB에서 삭제한 서브필드의 테스트 아이템 삭제
-                              List<TestItem> testItemList = await context.read<DBNotifier>().database!.readTestItemListBySubField(context.read<DBNotifier>().readSubFieldList(widget.program.id)[index]);
-                              for (TestItem testItem in testItemList) {
-                                // await context
-                                //     .read<DBNotifier>()
-                                //     .database!
-                                //     .deleteTestItem(testItem.id!);
-                              }
+                              // List<TestItem> testItemList = await context.read<DBNotifier>().database!.readTestItemListBySubField(context.read<DBNotifier>().readSubFieldList(widget.program.id)[index]);
+                              // for (TestItem testItem in testItemList) {
+                              //   // await context
+                              //   //     .read<DBNotifier>()
+                              //   //     .database!
+                              //   //     .deleteTestItem(testItem.id!);
+                              // }
 
                               // 서브필드 삭제
-                              await context.read<DBNotifier>().database!.deleteSubField(context.read<DBNotifier>().readSubFieldList(widget.program.id)[index].id);
+                              // await context.read<DBNotifier>().database!.deleteSubField(context.read<DBNotifier>().readSubFieldList(widget.program.id)[index].id);
 
-                              context.read<DBNotifier>().refreshDB();
+                              // context.read<DBNotifier>().refreshDB();
 
                               Navigator.pop(context);
                             });
