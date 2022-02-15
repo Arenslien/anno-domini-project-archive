@@ -121,10 +121,10 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         titleText: child.name,
         subtitleText: '${child.age.toString()}세',
         onTap: () {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => ChildTestScreen(child: child)),
-          // );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChildTestScreen(child: child)),
+          );
         },
         trailing: IconButton(
           icon: Icon(Icons.settings),

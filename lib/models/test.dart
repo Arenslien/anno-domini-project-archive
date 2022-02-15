@@ -9,11 +9,10 @@ class Test {
 
   Map<String, dynamic> toMap() {
     return {
-      'test-id': testId,
-      'child-id': childId,
+      'childId': childId,
       'date': date,
       'title': title,
-      'is-input': isInput,
+      'isInput': isInput,
     };
   }
 

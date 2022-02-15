@@ -21,6 +21,6 @@ class Child {
       : id = res['id'],
         name = res['name'],
         gender = res['gender'],
-        birthday = res['birthday'];
+        birthday = DateTime.parse(res['birthday']);
 }
 
