@@ -19,11 +19,11 @@ Widget genChart(
     series: _isDate
         ? <ChartSeries>[
             // 날짜별 그래프일 때
-            ScatterSeries<GraphData, String>(
+            ScatterSeries<GraphDataLocal, String>(
                 name: "하루 평균 성공률",
                 dataSource: _chartData,
-                xValueMapper: (GraphData exp, _) => exp.subItem,
-                yValueMapper: (GraphData exp, _) => exp.itemSuccessRate,
+                xValueMapper: (GraphDataLocal exp, _) => exp.subItem,
+                yValueMapper: (GraphDataLocal exp, _) => exp.itemSuccessRate,
                 markerSettings: MarkerSettings(
                   isVisible: true,
                   width: 12.0,
@@ -33,19 +33,19 @@ Widget genChart(
           ]
         : <ChartSeries>[
             // 아이템 그래프일 때
-            LineSeries<GraphData, String>(
+            LineSeries<GraphDataLocal, String>(
               name: '하루 평균 성공률',
               dataSource: _chartData,
-              xValueMapper: (GraphData exp, _) => exp.dateString,
-              yValueMapper: (GraphData exp, _) => exp.daySuccessRate,
+              xValueMapper: (GraphDataLocal exp, _) => exp.dateString,
+              yValueMapper: (GraphDataLocal exp, _) => exp.daySuccessRate,
               markerSettings: MarkerSettings(isVisible: true),
             ),
-            LineSeries<GraphData, String>(
+            LineSeries<GraphDataLocal, String>(
               name: '전체 평균 성공률',
               dashArray: <double>[5, 5],
               dataSource: _chartData,
-              xValueMapper: (GraphData exp, _) => exp.dateString,
-              yValueMapper: (GraphData exp, _) => exp.allSuccessRate,
+              xValueMapper: (GraphDataLocal exp, _) => exp.dateString,
+              yValueMapper: (GraphDataLocal exp, _) => exp.allSuccessRate,
               markerSettings: MarkerSettings(isVisible: true),
             ),
           ],

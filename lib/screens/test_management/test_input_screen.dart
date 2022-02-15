@@ -180,20 +180,28 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                               height: 180,
                                               width: 300,
                                               child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   DropdownButton(
                                                     hint: Text('프로그램 영역 선택'),
                                                     value: selectedProgramField,
-                                                    items: context.read<FieldManagementNotifier>().programFieldList.map((value) {
+                                                    items: context
+                                                        .read<
+                                                            FieldManagementNotifier>()
+                                                        .programFieldList
+                                                        .map((value) {
                                                       return DropdownMenuItem(
                                                         value: value.title,
-                                                        child: Text(value.title),
+                                                        child:
+                                                            Text(value.title),
                                                       );
                                                     }).toList(),
                                                     onChanged: (String? value) {
                                                       setState1(() {
-                                                        selectedProgramField = value;
+                                                        selectedProgramField =
+                                                            value;
                                                         selectedSubField = null;
                                                         selectedSubItem = null;
                                                       });
@@ -203,14 +211,25 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                   DropdownButton(
                                                     hint: Text('하위 영역 선택'),
                                                     value: selectedSubField,
-                                                    items: selectedProgramField == null
+                                                    items: selectedProgramField ==
+                                                            null
                                                         ? null
-                                                        : context.read<FieldManagementNotifier>().readSubFieldList(selectedProgramField!).map((value) {
-                                                            return DropdownMenuItem(value: value.subFieldName, child: Text(value.subFieldName));
+                                                        : context
+                                                            .read<
+                                                                FieldManagementNotifier>()
+                                                            .readSubFieldList(
+                                                                selectedProgramField!)
+                                                            .map((value) {
+                                                            return DropdownMenuItem(
+                                                                value: value
+                                                                    .subFieldName,
+                                                                child: Text(value
+                                                                    .subFieldName));
                                                           }).toList(),
                                                     onChanged: (String? value) {
                                                       setState1(() {
-                                                        selectedSubField = value;
+                                                        selectedSubField =
+                                                            value;
                                                         selectedSubItem = null;
                                                       });
                                                     },
@@ -219,12 +238,22 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                   DropdownButton(
                                                     hint: Text('하위 목록 선택'),
                                                     value: selectedSubItem,
-                                                    items: selectedProgramField == null || selectedSubField == null
+                                                    items: selectedProgramField ==
+                                                                null ||
+                                                            selectedSubField ==
+                                                                null
                                                         ? null
-                                                        : context.read<FieldManagementNotifier>().readSubItem(selectedSubField!).subItemList.map((value) {
+                                                        : context
+                                                            .read<
+                                                                FieldManagementNotifier>()
+                                                            .readSubItem(
+                                                                selectedSubField!)
+                                                            .subItemList
+                                                            .map((value) {
                                                             return DropdownMenuItem(
                                                               value: value,
-                                                              child: Text(value),
+                                                              child:
+                                                                  Text(value),
                                                             );
                                                           }).toList(),
                                                     onChanged: (String? value) {
@@ -241,7 +270,8 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                               TextButton(
                                                 child: Text(
                                                   "취소",
-                                                  style: TextStyle(color: Colors.red),
+                                                  style: TextStyle(
+                                                      color: Colors.red),
                                                 ),
                                                 onPressed: () {
                                                   Navigator.pop(context);
@@ -250,21 +280,26 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                               TextButton(
                                                 child: Text(
                                                   "확인",
-                                                  style: TextStyle(color: Colors.blue),
+                                                  style: TextStyle(
+                                                      color: Colors.blue),
                                                 ),
                                                 onPressed: () {
                                                   if (selectedSubItem != null) {
                                                     // 저장
                                                     // 리스트에 테스트 아이템 담기
-                                                    TestItemInfo testItemInfo = TestItemInfo(
-                                                      programField: selectedProgramField!,
-                                                      subField: selectedSubField!,
+                                                    TestItemInfo testItemInfo =
+                                                        TestItemInfo(
+                                                      programField:
+                                                          selectedProgramField!,
+                                                      subField:
+                                                          selectedSubField!,
                                                       subItem: selectedSubItem!,
                                                     );
 
                                                     // 리스트에 추가
                                                     setState(() {
-                                                      testItemInfoList.add(testItemInfo);
+                                                      testItemInfoList
+                                                          .add(testItemInfo);
                                                     });
                                                     Navigator.pop(context);
                                                   }
@@ -311,5 +346,8 @@ class TestItemInfo {
   final String subField;
   final String subItem;
 
-  TestItemInfo({required this.programField, required this.subField, required this.subItem});
+  TestItemInfo(
+      {required this.programField,
+      required this.subField,
+      required this.subItem});
 }

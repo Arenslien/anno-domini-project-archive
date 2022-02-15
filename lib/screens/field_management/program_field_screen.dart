@@ -2,6 +2,7 @@ import 'package:aba_analysis_local/components/build_floating_action_button.dart'
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
 import 'package:aba_analysis_local/provider/field_management_notifier.dart';
 import 'package:aba_analysis_local/screens/field_management/sub_field_screen.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,15 +36,22 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount: context.watch<FieldManagementNotifier>().programFieldList.length,
+        itemCount:
+            context.watch<FieldManagementNotifier>().programFieldList.length,
         itemBuilder: (BuildContext context, int index) {
           return buildListTile(
-            titleText: context.read<FieldManagementNotifier>().programFieldList[index].title,
+            titleText: context
+                .read<FieldManagementNotifier>()
+                .programFieldList[index]
+                .title,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SubFieldScreen(program: context.read<FieldManagementNotifier>().programFieldList[index]),
+                  builder: (context) => SubFieldScreen(
+                      program: context
+                          .read<FieldManagementNotifier>()
+                          .programFieldList[index]),
                 ),
               );
             },
@@ -58,7 +66,8 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
                     maxWidth: 64,
                     maxHeight: 64,
                   ),
-                  child: Image.asset('asset/program_field_icon.png', fit: BoxFit.fill),
+                  child: Image.asset('asset/program_field_icon.png',
+                      fit: BoxFit.fill),
                 ),
                 ConstrainedBox(
                   constraints: BoxConstraints(

@@ -86,13 +86,7 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // _graphType = '하위목록';
-    // _charTitleName = widget.subItemList[0].testItem.subItem;
-    // _tableColumn = ['하위목록', '날짜', '성공여부'];
-    // _chartData = getItemGraphDataLocal(_charTitleName, widget.subItemList);
-
-    exportData = ExportData(
-        context.watch<UserNotifier>().abaUser!.nickname, widget.child.name,
+    exportData = ExportData("선생님", widget.child.name,
         allSuccessRate: _allSuccessRate,
         programField: widget.subItemList[0].testItem.programField,
         subArea: widget.subItemList[0].testItem.subField);
@@ -203,7 +197,7 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
     List<List<String>> tableData = [];
 
     // 아이템그래프라면 하위목록, 날짜, 하루 평균 성공률 순으로
-    for (GraphData d in chartData) {
+    for (GraphDataLocal d in chartData) {
       tableData.add(
           <String>[d.subItem, d.dateString, d.daySuccessRate.toString() + "%"]);
     }
@@ -338,10 +332,10 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
 
   // GraphData를 가져온다.
   // SubItemAndDate를 통해 가져온다.
-  List<GraphData> getItemGraphData(
+  List<GraphDataLocal> getItemGraphDataLocal(
       String _noChange, List<SubItemAndDate> subItemList) {
     // 날짜, 하위목록 이름, 평균 성공률
-    List<GraphData> itemChartData = [];
+    List<GraphDataLocal> itemChartData = [];
 
     // 날짜 리스트
     List<String> dateStringList = [];
@@ -400,7 +394,7 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
         // 날짜에 따른 총 성공률 맵과 테스트 횟수 맵을 갖고 그날의 선택된 해당 테스트 아이템의 평균 성공률을 게산한다.
         int daySuccessRate =
             (successRateMap[date]! / testCountMap[date]!).toInt();
-        itemChartData.add(GraphData(
+        itemChartData.add(GraphDataLocal(
           subItem: _noChange,
           dateString: date,
           allSuccessRate: allSuccess,

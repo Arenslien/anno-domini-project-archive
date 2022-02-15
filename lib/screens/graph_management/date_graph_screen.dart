@@ -65,7 +65,7 @@ class _DateGraphState extends State<DateGraph> {
     _graphType = '날짜';
     _charTitleName = widget.dateString;
     _tableColumn = ['날짜', '하위목록', '하루 평균 성공률'];
-    _chartData = getDateGraphData(
+    _chartData = getDateGraphDataLocal(
         _charTitleName, widget.testList, context, widget.testItemList);
 
     _fileName = null;
@@ -82,7 +82,7 @@ class _DateGraphState extends State<DateGraph> {
     // _tableColumn = ['날짜', '하위목록', '성공여부'];
     // _chartData = getDateGraphData(_charTitleName, widget.testList[0], context);
     exportData = ExportData(
-      context.read<UserNotifier>().abaUser!.nickname,
+      "선생님 이름",
       _childName,
     );
     return Scaffold(
@@ -188,7 +188,7 @@ class _DateGraphState extends State<DateGraph> {
     List<List<String>> tableData = [];
 
     // 날짜그래프라면 날짜, 하위목록, 하루평균 성공률 순으로
-    for (GraphData d in chartData) {
+    for (GraphDataLocal d in chartData) {
       tableData.add(
           <String>[d.testDate, d.subItem, d.itemSuccessRate.toString() + "%"]);
     }
@@ -313,10 +313,10 @@ class _DateGraphState extends State<DateGraph> {
         });
   }
 
-  List<GraphData> getDateGraphData(String _noChange, List<Test> testList,
-      BuildContext context, List<TestItem> testItemList) {
+  List<GraphDataLocal> getDateGraphDataLocal(String _noChange,
+      List<Test> testList, BuildContext context, List<TestItem> testItemList) {
     // 통일된거
-    List<GraphData> chartData = []; // 선택한 하위목록과 테스트한 날짜 리스트
+    List<GraphDataLocal> chartData = []; // 선택한 하위목록과 테스트한 날짜 리스트
     // get testItemList
     // List<TestItem> testItemList =
     //     context.read<TestItemNotifier>().getTestItemList(test.testId, false);
@@ -354,7 +354,7 @@ class _DateGraphState extends State<DateGraph> {
       // 각 서브아이템 별 평균 성공률을
       num averageRate = testItemAllSuccessRate[testItemString]! /
           testItemAllCount[testItemString]!;
-      chartData.add(GraphData(
+      chartData.add(GraphDataLocal(
         testDate: _noChange,
         subItem: testItemString,
         itemSuccessRate: averageRate,

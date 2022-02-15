@@ -44,9 +44,8 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    allTest = context
-        .read<TestNotifier>()
-        .getAllTestListOf(widget.child.childId, true);
+    allTest =
+        context.read<TestNotifier>().getAllTestListOf(widget.child.id, true);
 
     // for (Test test in allTest) {      // result가 null이라면
     //   for (TestItem testItem in test.testItemList) {

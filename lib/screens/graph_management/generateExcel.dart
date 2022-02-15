@@ -159,7 +159,6 @@ class ExportData {
   // 공통
   String teacherName;
   String childName;
-//  num averageRate;
 
   // 날짜 그래프
 
