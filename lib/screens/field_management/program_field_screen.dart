@@ -1,12 +1,12 @@
-import 'package:aba_analysis/components/build_floating_action_button.dart';
-import 'package:aba_analysis/components/build_text_form_field.dart';
-import 'package:aba_analysis/provider/field_management_notifier.dart';
-import 'package:aba_analysis/screens/field_management/sub_field_screen.dart';
-import 'package:aba_analysis/services/firestore.dart';
+import 'package:aba_analysis_local/components/build_floating_action_button.dart';
+import 'package:aba_analysis_local/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/constants.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/screens/field_management/sub_field_screen.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis/constants.dart';
-import 'package:aba_analysis/components/build_list_tile.dart';
+import 'package:aba_analysis_local/components/build_list_tile.dart';
 
 class ProgramFieldScreen extends StatefulWidget {
   const ProgramFieldScreen({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
 
   String? title;
 
-  FireStoreService store = FireStoreService();
+  DBNotifier db = DBNotifier();
 
   final formkey = GlobalKey<FormState>();
 
@@ -37,15 +37,15 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount: context.watch<FieldManagementNotifier>().programFieldList.length,
+        itemCount: context.watch<DBNotifier>().programFieldList.length,
         itemBuilder: (BuildContext context, int index) {
           return buildListTile(
-            titleText: context.read<FieldManagementNotifier>().programFieldList[index].title,
+            titleText: context.read<DBNotifier>().programFieldList[index].title,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SubFieldScreen(program: context.read<FieldManagementNotifier>().programFieldList[index]),
+                  builder: (context) => SubFieldScreen(program: context.read<DBNotifier>().programFieldList[index]),
                 ),
               );
             },
@@ -112,8 +112,8 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
                           flag = true;
 
                           //DB추가
-                          await store.addProgramField(title!);
-                          context.read<FieldManagementNotifier>().updateProgramFieldList(await store.readAllProgramField());
+                          // await db.addProgramField(title!);
+                          // context.read<DBNotifier>().updateProgramFieldList(await db.readAllProgramField());
 
                           Navigator.pop(context);
                           title = null;
