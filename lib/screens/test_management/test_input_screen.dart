@@ -326,13 +326,14 @@ class TestItemInfo {
 
 =======
                     // Test test = Test(
-                    //   testId: await db.updateId(AutoID.test),
+                    //   testId: await store.updateId(AutoID.test),
                     //   childId: widget.child.childId,
                     //   title: title,
                     //   date: date!,
                     //   isInput: false,
                     // );
                     // DB에 테스트 추가
+                    // await store.createTest(test);
 
                     // Test Notifier에 추가
                     // context.read<TestNotifier>().addTest(test);
@@ -340,13 +341,15 @@ class TestItemInfo {
                     // DB에 테스트 아이템 추가 & TestItem Notifier에 테스트 아이템 추가
                     // for (TestItemInfo testItemInfo in testItemInfoList) {
                     //   TestItem testItem = TestItem(
-                    //     testItemId: await db.updateId(AutoID.testItem),
+                    //     testItemId: await store.updateId(AutoID.testItem),
                     //     testId: test.testId,
                     //     childId: widget.child.childId,
                     //     programField: testItemInfo.programField,
                     //     subField: testItemInfo.subField,
                     //     subItem: testItemInfo.subItem,
                     //   );
+
+                    //   await store.createTestItem(testItem);
 
                     //   context.read<TestItemNotifier>().addTestItem(testItem);
                     // }
