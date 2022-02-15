@@ -5,8 +5,6 @@ import 'package:aba_analysis_local/components/search_delegate.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/provider/test_notifier.dart';
-import 'package:aba_analysis_local/provider/child_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 import 'package:aba_analysis_local/components/build_no_list_widget.dart';
@@ -62,12 +60,12 @@ class _GraphScreenState extends State<GraphScreen> {
           //       setState(() {
           //         searchResult.clear();
           //       });
-          //       for (int i = 0; i < context.read<ChildNotifier>().children.length; i++) {
+          //       for (int i = 0; i < context.read<DBNotifier>().children.length; i++) {
           //         bool flag = false;
-          //         if (context.read<ChildNotifier>().children[i].name.contains(str)) flag = true;
+          //         if (context.read<DBNotifier>().children[i].name.contains(str)) flag = true;
           //         if (flag) {
           //           setState(() {
-          //             searchResult.add(context.read<ChildNotifier>().children[i]);
+          //             searchResult.add(context.read<DBNotifier>().children[i]);
           //           });
           //         }
           //       }

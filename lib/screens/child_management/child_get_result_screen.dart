@@ -1,13 +1,11 @@
-import 'package:aba_analysis_local/services/db.dart';
+import 'package:aba_analysis_local/provider/db_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:aba_analysis_local/provider/test_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
-import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
 
 class ChildGetResultScreen extends StatefulWidget {
@@ -74,13 +72,13 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
                   // await store.updateTestItem(testItem);
                 }
                 // TestItem Provider에 적용
-                // context.read<TestItemNotifier>().updateTestItemList(await store.readAllTestItem());
+                // context.read<DBNotifier>().updateTestItemList(await store.readAllTestItem());
 
                 // Test 업데이트
                 // await store.updateTest(widget.test.testId, widget.test.date, widget.test.title, true);
 
                 // Test Provider에 적용
-                context.read<TestNotifier>().updateTest(widget.test.testId, widget.test.date, widget.test.title, true);
+                context.read<DBNotifier>().updateTest(widget.test.testId, widget.test.date, widget.test.title, true);
 
                 Navigator.pop(context);
               }
