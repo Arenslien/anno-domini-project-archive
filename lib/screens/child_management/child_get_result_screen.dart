@@ -72,13 +72,13 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
                   testItem.setP(countResult[i][2]);
 
                   // DB 적용
-                  await db.updateTestItem(testItem);
+                  // await db.updateTestItem(testItem.testItemId, );
                 }
                 // TestItem Provider에 적용
                 context.read<TestItemNotifier>().updateTestItemList(await db.readAllTestItem());
 
                 // Test 업데이트
-                await db.updateTest(widget.test.testId, widget.test.date, widget.test.title, true);
+                // await db.updateTest(widget.test.testId, widget.test.date, widget.test.title, true);
 
                 // Test Provider에 적용
                 context.read<TestNotifier>().updateTest(widget.test.testId, widget.test.date, widget.test.title, true);

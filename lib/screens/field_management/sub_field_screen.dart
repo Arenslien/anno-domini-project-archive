@@ -48,15 +48,9 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount: context
-            .watch<FieldManagementNotifier>()
-            .readSubFieldList(widget.program.title)
-            .length,
+        itemCount: context.watch<FieldManagementNotifier>().readSubFieldList(widget.program.title).length,
         itemBuilder: (BuildContext context, int index) {
-          String subFieldName = context
-              .read<FieldManagementNotifier>()
-              .readSubFieldList(widget.program.title)[index]
-              .subFieldName;
+          String subFieldName = context.read<FieldManagementNotifier>().readSubFieldList(widget.program.title)[index].subFieldName;
           return buildListTile(
               titleText: subFieldName,
               titleSize: 20,
@@ -65,10 +59,7 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => SubItemScreen(
-                      subItemList: context
-                          .read<FieldManagementNotifier>()
-                          .readSubItem(subFieldName)
-                          .subItemList,
+                      subItemList: context.read<FieldManagementNotifier>().readSubItem(subFieldName).subItemList,
                       subFieldName: subFieldName,
                       index: index,
                     ),
@@ -86,8 +77,7 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
                       maxWidth: 64,
                       maxHeight: 64,
                     ),
-                    child: Image.asset('asset/sub_field_icon.png',
-                        fit: BoxFit.fill),
+                    child: Image.asset('asset/sub_field_icon.png', fit: BoxFit.fill),
                   ),
                   ConstrainedBox(
                     constraints: BoxConstraints(
@@ -96,8 +86,7 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
                       maxWidth: 44,
                       maxHeight: 48,
                     ),
-                    child:
-                        Image.asset('asset/basic_icon.png', fit: BoxFit.fill),
+                    child: Image.asset('asset/basic_icon.png', fit: BoxFit.fill),
                   ),
                   // 삭제 버튼
                   IconButton(
@@ -110,46 +99,42 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
                           onPressed: () async {
                             if (!flag) {
                               flag = true;
-                              SubField subField = context
-                                  .read<FieldManagementNotifier>()
-                                  .readSubFieldList(
-                                      widget.program.title)[index];
+                              SubField subField = context.read<FieldManagementNotifier>().readSubFieldList(widget.program.title)[index];
 
                               // DB에서 삭제한 서브필드의 테스트 아이템 삭제
-                              List<TestItem> testItemList =
-                                  context.read<TestItemNotifier>().testItemList;
-                              for (TestItem testItem in testItemList) {
-                                if (testItem.subField ==
-                                    subField.subFieldName) {
-                                  await store
-                                      .deleteTestItem(testItem.testItemId);
-                                }
-                              }
-                              context
-                                  .read<TestItemNotifier>()
-                                  .updateTestItemList(
-                                      await store.readAllTestItem());
+                              List<TestItem> testItemList = context.read<TestItemNotifier>().testItemList;
+                              // for (TestItem testItem in testItemList) {
+                              //   if (testItem.subField ==
+                              //       subField.subFieldName) {
+                              //     await store
+                              //         .deleteTestItem(testItem.testItemId);
+                              //   }
+                              // }
+                              // context
+                              //     .read<TestItemNotifier>()
+                              //     .updateTestItemList(
+                              //         await store.readAllTestItem());
 
-                              // DB에서 서브아이템 삭제
-                              await store.deleteSubItem(context
-                                  .read<FieldManagementNotifier>()
-                                  .readSubItem(subField.subFieldName)
-                                  .id);
+                              // // DB에서 서브아이템 삭제
+                              // await store.deleteSubItem(context
+                              //     .read<FieldManagementNotifier>()
+                              //     .readSubItem(subField.subFieldName)
+                              //     .id);
 
-                              // DB에서 서브필드를 삭제한다.
-                              await store.deleteSubField(subField.id);
+                              // // DB에서 서브필드를 삭제한다.
+                              // await store.deleteSubField(subField.id);
 
-                              // 해당 서브필드를 삭제한다.
-                              context
-                                  .read<FieldManagementNotifier>()
-                                  .updateSubFieldList(
-                                      await store.readAllSubField());
-                              context
-                                  .read<FieldManagementNotifier>()
-                                  .updateSubItemList(
-                                      await store.readAllSubItem());
+                              // // 해당 서브필드를 삭제한다.
+                              // context
+                              //     .read<FieldManagementNotifier>()
+                              //     .updateSubFieldList(
+                              //         await store.readAllSubField());
+                              // context
+                              //     .read<FieldManagementNotifier>()
+                              //     .updateSubItemList(
+                              //         await store.readAllSubItem());
 
-                              Navigator.pop(context);
+                              // Navigator.pop(context);
                             }
                           },
                         );
@@ -165,9 +150,7 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
       floatingActionButton: bulidFloatingActionButton(onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  SubFieldInputScreen(program: widget.program)),
+          MaterialPageRoute(builder: (context) => SubFieldInputScreen(program: widget.program)),
         );
       }),
     );

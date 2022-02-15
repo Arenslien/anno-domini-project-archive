@@ -25,7 +25,6 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
   Set<String> subItemSet = {};
   late String subFieldName;
   final formkey = GlobalKey<FormState>();
-  FireStoreService store = FireStoreService();
   final textController = TextEditingController();
 
   bool flag = false;
@@ -74,32 +73,32 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                 ),
                 onPressed: () async {
                   print(subitemList);
-                  if (formkey.currentState!.validate() && !flag) {
-                    flag = true;
-                    SubField addSub = SubField(
-                      id: await store.updateId(AutoID.subField),
-                      programFieldId: widget.program.id,
-                      subFieldName: subFieldName,
-                    );
-                    // DB에 서브필드 추가
-                    await store.addSubField(addSub);
-                    // Subfield를 Notifier에 추가
-                    context.read<FieldManagementNotifier>().updateSubFieldList(await store.readAllSubField());
+                  // if (formkey.currentState!.validate() && !flag) {
+                  //   flag = true;
+                  //   SubField addSub = SubField(
+                  //     id: await store.updateId(AutoID.subField),
+                  //     programFieldId: widget.program.id,
+                  //     subFieldName: subFieldName,
+                  //   );
+                  //   // DB에 서브필드 추가
+                  //   await store.addSubField(addSub);
+                  //   // Subfield를 Notifier에 추가
+                  //   context.read<FieldManagementNotifier>().updateSubFieldList(await store.readAllSubField());
 
-                    // DB에 서브 아이템 추가
-                    SubItem subItem = SubItem(
-                      id: await store.updateId(AutoID.subItem),
-                      subFieldId: addSub.id,
-                      subItemList: subitemList,
-                    );
-                    await store.addSubItem(subItem);
-                    // Provider에 서브 아이템 추가
-                    context.read<FieldManagementNotifier>().updateSubItemList(await store.readAllSubItem());
-                    // 초기화
-                    subitemList = List<String>.generate(10, (index) => "");
+                  //   // DB에 서브 아이템 추가
+                  //   SubItem subItem = SubItem(
+                  //     id: await store.updateId(AutoID.subItem),
+                  //     subFieldId: addSub.id,
+                  //     subItemList: subitemList,
+                  //   );
+                  //   await store.addSubItem(subItem);
+                  //   // Provider에 서브 아이템 추가
+                  //   context.read<FieldManagementNotifier>().updateSubItemList(await store.readAllSubItem());
+                  //   // 초기화
+                  //   subitemList = List<String>.generate(10, (index) => "");
 
-                    Navigator.pop(context);
-                  }
+                  //   Navigator.pop(context);
+                  // }
                 },
               ),
             ],

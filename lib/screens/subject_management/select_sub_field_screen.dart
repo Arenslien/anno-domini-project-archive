@@ -13,8 +13,7 @@ import 'package:aba_analysis_local/screens/subject_management/sub_field_input_sc
 
 class SelectSubfieldScreen extends StatefulWidget {
   final ProgramField program;
-  const SelectSubfieldScreen({Key? key, required this.program})
-      : super(key: key);
+  const SelectSubfieldScreen({Key? key, required this.program}) : super(key: key);
   @override
   _SelectSubfieldScreenState createState() => _SelectSubfieldScreenState();
 }
@@ -49,25 +48,20 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount: context
-            .watch<DBNotifier>()
-            .readSubFieldList(widget.program.id)
-            .length,
+        itemCount: context.watch<DBNotifier>().readSubFieldList(widget.program.id).length,
         itemBuilder: (BuildContext context, int index) {
           return buildListTile(
-            titleText: context
-                .watch<DBNotifier>()
-                .readSubFieldList(widget.program.id)[index]
-                .title,
+            // titleText: context
+            //     .watch<DBNotifier>()
+            //     .readSubFieldList(widget.program.id)[index]
+            //     .title,
             titleSize: 20,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => SelectSubitemScreen(
-                    subField: context
-                        .watch<DBNotifier>()
-                        .readSubFieldList(widget.program.id)[index],
+                    subField: context.watch<DBNotifier>().readSubFieldList(widget.program.id)[index],
                     index: index,
                   ),
                 ),
@@ -85,8 +79,7 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                     maxWidth: 64,
                     maxHeight: 64,
                   ),
-                  child:
-                      Image.asset('asset/sub_field_icon.png', fit: BoxFit.fill),
+                  child: Image.asset('asset/sub_field_icon.png', fit: BoxFit.fill),
                 ),
                 ConstrainedBox(
                   constraints: BoxConstraints(
@@ -95,9 +88,7 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                     maxWidth: 44,
                     maxHeight: 48,
                   ),
-                  child: index == 0
-                      ? Image.asset('asset/basic_icon.png', fit: BoxFit.fill)
-                      : Image.asset('asset/add_icon.png', fit: BoxFit.fill),
+                  child: index == 0 ? Image.asset('asset/basic_icon.png', fit: BoxFit.fill) : Image.asset('asset/add_icon.png', fit: BoxFit.fill),
                 ),
                 Visibility(
                   visible: index != 0,
@@ -110,29 +101,16 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
                             text: '정말 삭제하시겠습니까?',
                             onPressed: () async {
                               // DB에서 삭제한 서브필드의 테스트 아이템 삭제
-                              List<TestItem> testItemList = await context
-                                  .read<DBNotifier>()
-                                  .database!
-                                  .readTestItemListBySubField(context
-                                      .read<DBNotifier>()
-                                      .readSubFieldList(
-                                          widget.program.id)[index]);
+                              List<TestItem> testItemList = await context.read<DBNotifier>().database!.readTestItemListBySubField(context.read<DBNotifier>().readSubFieldList(widget.program.id)[index]);
                               for (TestItem testItem in testItemList) {
-                                await context
-                                    .read<DBNotifier>()
-                                    .database!
-                                    .deleteTestItem(testItem.id!);
+                                // await context
+                                //     .read<DBNotifier>()
+                                //     .database!
+                                //     .deleteTestItem(testItem.id!);
                               }
 
                               // 서브필드 삭제
-                              await context
-                                  .read<DBNotifier>()
-                                  .database!
-                                  .deleteSubField(context
-                                      .read<DBNotifier>()
-                                      .readSubFieldList(
-                                          widget.program.id)[index]
-                                      .id!);
+                              await context.read<DBNotifier>().database!.deleteSubField(context.read<DBNotifier>().readSubFieldList(widget.program.id)[index].id);
 
                               context.read<DBNotifier>().refreshDB();
 
@@ -152,9 +130,7 @@ class _SelectSubfieldScreenState extends State<SelectSubfieldScreen> {
       floatingActionButton: bulidFloatingActionButton(onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  SubFieldInputScreen(program: widget.program)),
+          MaterialPageRoute(builder: (context) => SubFieldInputScreen(program: widget.program)),
         );
       }),
     );
