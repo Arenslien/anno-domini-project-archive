@@ -23,6 +23,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
   String selectedChildName = "";
   Map<String, Child> childNameAndChildMap = {};
   late Child selectedChild;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +34,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
     for (Child c in context.read<DBNotifier>().children) {
       childNameAndChildMap.addAll({c.name: c});
     }
+
     IconButton searchButton = IconButton(
       // 검색버튼. 전역변수값을 변경해야되서 해당 스크린에서 정의했음.
       icon: Icon(Icons.search),
@@ -51,38 +53,16 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         });
       },
     );
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: selectAppBar(context, "아동관리", searchButton: searchButton, isMain: true),
-        // searchBar(
-        //     controller: searchTextEditingController,
-        //     onChanged: (str) {
-        //       setState(() {
-        //         searchResult.clear();
-        //       });
-        //       for (int i = 0;
-        //           i < context.read<ChildNotifier>().children.length;
-        //           i++) {
-        //         bool flag = false;
-        //         if (context
-        //             .read<ChildNotifier>()
-        //             .children[i]
-        //             .name
-        //             .contains(str)) flag = true;
-        //         if (flag) {
-        //           setState(() {
-        //             searchResult
-        //                 .add(context.read<ChildNotifier>().children[i]);
-        //           });
-        //         }
-        //       }
-        //     },
-        //     clear: () {
-        //       setState(() {
-        //         searchTextEditingController.clear();
-        //       });
-        //     }),
+        appBar: selectAppBar(
+          context,
+          "아동관리",
+          searchButton: searchButton,
+          isMain: true,
+        ),
         body: context.watch<DBNotifier>().children.length == 0
             ? noListData(Icons.group, '아동 추가')
             : selectedChildName == ""
