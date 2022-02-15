@@ -1,11 +1,12 @@
-import 'package:aba_analysis_local/components/build_floating_action_button.dart';
-import 'package:aba_analysis_local/components/build_text_form_field.dart';
-import 'package:aba_analysis_local/provider/db_notifier.dart';
-import 'package:aba_analysis_local/screens/field_management/sub_field_screen.dart';
+import 'package:aba_analysis/components/build_floating_action_button.dart';
+import 'package:aba_analysis/components/build_text_form_field.dart';
+import 'package:aba_analysis/provider/field_management_notifier.dart';
+import 'package:aba_analysis/screens/field_management/sub_field_screen.dart';
+import 'package:aba_analysis/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis_local/constants.dart';
-import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:aba_analysis/constants.dart';
+import 'package:aba_analysis/components/build_list_tile.dart';
 
 class ProgramFieldScreen extends StatefulWidget {
   const ProgramFieldScreen({Key? key}) : super(key: key);
@@ -18,6 +19,8 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
   _ProgramFieldScreenState();
 
   String? title;
+
+  FireStoreService store = FireStoreService();
 
   final formkey = GlobalKey<FormState>();
 
@@ -34,24 +37,17 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
         backgroundColor: mainGreenColor,
       ),
       body: ListView.builder(
-        itemCount:
-            context.watch<DBNotifier>().programFieldList.length,
+        itemCount: context.watch<FieldManagementNotifier>().programFieldList.length,
         itemBuilder: (BuildContext context, int index) {
           return buildListTile(
-            titleText: context
-                .read<DBNotifier>()
-                .programFieldList[index]
-                .title,
+            titleText: context.read<FieldManagementNotifier>().programFieldList[index].title,
             onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => SubFieldScreen(
-              //         program: context
-              //             .read<FieldManagementNotifier>()
-              //             .programFieldList[index]),
-              //   ),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SubFieldScreen(program: context.read<FieldManagementNotifier>().programFieldList[index]),
+                ),
+              );
             },
             trailing: Wrap(
               alignment: WrapAlignment.center,
@@ -64,17 +60,7 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
                     maxWidth: 64,
                     maxHeight: 64,
                   ),
-                  child: Image.asset('asset/program_field_icon.png',
-                      fit: BoxFit.fill),
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minWidth: 44,
-                    minHeight: 48,
-                    maxWidth: 44,
-                    maxHeight: 48,
-                  ),
-                  child: Image.asset('asset/basic_icon.png', fit: BoxFit.fill),
+                  child: Image.asset('asset/program_field_icon.png', fit: BoxFit.fill),
                 ),
               ],
             ),
@@ -126,11 +112,8 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
                           flag = true;
 
                           //DB추가
-                          // await store.addProgramField(title!);
-                          // context
-                          //     .read<FieldManagementNotifier>()
-                          //     .updateProgramFieldList(
-                          //         await store.readAllProgramField());
+                          await store.addProgramField(title!);
+                          context.read<FieldManagementNotifier>().updateProgramFieldList(await store.readAllProgramField());
 
                           Navigator.pop(context);
                           title = null;
