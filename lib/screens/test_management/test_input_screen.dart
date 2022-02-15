@@ -63,33 +63,33 @@ class _TestInputScreenState extends State<TestInputScreen> {
                   // 완료 버튼 누르면 실행
                   if (formkey.currentState!.validate() && !flag) {
                     flag = true;
-                    Test test = Test(
-                      testId: await db.updateId(AutoID.test),
-                      childId: widget.child.id,
-                      title: title,
-                      date: date!,
-                      isInput: false,
-                    );
+                    // Test test = Test(
+                    //   testId: await db.updateId(AutoID.test),
+                    //   childId: widget.child.childId,
+                    //   title: title,
+                    //   date: date!,
+                    //   isInput: false,
+                    // );
                     // DB에 테스트 추가
-                    await db.createTest(test);
+                    // await db.createTest(test);
 
                     // Test Notifier에 추가
-                    context.read<TestNotifier>().addTest(test);
+                    // context.read<TestNotifier>().addTest(test);
 
                     // DB에 테스트 아이템 추가 & TestItem Notifier에 테스트 아이템 추가
                     for (TestItemInfo testItemInfo in testItemInfoList) {
-                      TestItem testItem = TestItem(
-                        testItemId: await db.updateId(AutoID.testItem),
-                        testId: test.testId,
-                        childId: widget.child.id,
-                        programField: testItemInfo.programField,
-                        subField: testItemInfo.subField,
-                        subItem: testItemInfo.subItem,
-                      );
+                      // TestItem testItem = TestItem(
+                      //   testItemId: await db.updateId(AutoID.testItem),
+                      //   testId: test.testId,
+                      //   childId: widget.child.childId,
+                      //   programField: testItemInfo.programField,
+                      //   subField: testItemInfo.subField,
+                      //   subItem: testItemInfo.subItem,
+                      // );
 
-                      await db.createTestItem(testItem);
+                      // await db.createTestItem(testItem);
 
-                      context.read<TestItemNotifier>().addTestItem(testItem);
+                      // context.read<TestItemNotifier>().addTestItem(testItem);
                     }
                     Navigator.pop(context);
                   }

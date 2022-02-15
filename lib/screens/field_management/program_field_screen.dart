@@ -21,8 +21,6 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
 
   String? title;
 
-  DBService db = DBService();
-
   final formkey = GlobalKey<FormState>();
 
   bool flag = false;
@@ -129,12 +127,9 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
                         if (formkey.currentState!.validate() && !flag) {
                           flag = true;
 
-                          // //DB추가
+                          //DB추가
                           // await store.addProgramField(title!);
-                          // context
-                          //     .read<FieldManagementNotifier>()
-                          //     .updateProgramFieldList(
-                          //         await store.readAllProgramField());
+                          // context.read<FieldManagementNotifier>().updateProgramFieldList(await store.readAllProgramField());
 
                           Navigator.pop(context);
                           title = null;

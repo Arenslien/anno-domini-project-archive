@@ -69,13 +69,13 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                     });
                   if (formkey.currentState!.validate() && isGenderSelected! && isBirthSelected! && !flag) {
                     flag = true;
-                    Child child = Child(childId: await db.updateId(AutoID.child), teacherEmail: context.read<UserNotifier>().abaUser!.email, name: name, birthday: birth!, gender: gender);
+                    // Child child = Child(childId: await db.updateId(AutoID.child), teacherEmail: context.read<UserNotifier>().abaUser!.email, name: name, birthday: birth!, gender: gender);
 
                     // Firestore에 아동 추가
-                    await db.createChild(child);
+                    // await db.createChild(child);
 
                     // Provider ChildNotifier 수정
-                    context.read<ChildNotifier>().addChild(child);
+                    // context.read<ChildNotifier>().addChild(child);
 
                     Navigator.pop(context);
                   }
