@@ -1,12 +1,11 @@
 import 'package:aba_analysis_local/models/sub_item.dart';
 import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
-// import 'package:aba_analysis_local/services/firestore.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
-// import 'package:aba_analysis_local/provider/field_management_notifier.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
 
 class SubFieldInputScreen extends StatefulWidget {
@@ -26,7 +25,7 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
   Set<String> subItemSet = {};
   late String subFieldName;
   final formkey = GlobalKey<FormState>();
-  // FireStoreService store = FireStoreService();
+  DBService db = DBService();
   final textController = TextEditingController();
 
   bool flag = false;
@@ -75,33 +74,33 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                 ),
                 onPressed: () async {
                   print(subitemList);
-                  // if (formkey.currentState!.validate() && !flag) {
-                  //   flag = true;
-                  //   SubField addSub = SubField(
-                  //     id: await store.updateId(AutoID.subField),
-                  //     programFieldId: widget.program.id,
-                  //     subFieldName: subFieldName,
-                  //   );
-                  //   // DB에 서브필드 추가
-                  //   await store.addSubField(addSub);
-                  //   // Subfield를 Notifier에 추가
-                  //   context.read<DBNotifier>().updateSubFieldList(await store.readAllSubField());
+                  if (formkey.currentState!.validate() && !flag) {
+                    flag = true;
+                    SubField addSub = SubField(
+                      id: 0,
+                      programFieldId: widget.program.id,
+                      subFieldName: subFieldName,
+                    );
+                    // DB에 서브필드 추가
+                    await db.addSubField(addSub);
+                    // Subfield를 Notifier에 추가
+                    // context.read<DBNotifier>().updateSubFieldList(await db.readAllSubField());
 
-                  //   // DB에 서브 아이템 추가
-                  //   SubItem subItem = SubItem(
-                  //     id: await store.updateId(AutoID.subItem),
-                  //     subFieldId: addSub.id,
-                  //     subItemList: subitemList,
-                  //   );
-                  //   await store.addSubItem(subItem);
-                  //   // Provider에 서브 아이템 추가
-                  //   context.read<DBNotifier>().updateSubItemList(await store.readAllSubItem());
-                  //   // 초기화
-                  //   subitemList = List<String>.generate(10, (index) => "");
+                    // DB에 서브 아이템 추가
+                    SubItem subItem = SubItem(
+                      id: 0,
+                      subFieldId: addSub.id,
+                      subItemList: subitemList,
+                    );
+
+                    // await db.addSubItem(subItem);
+                    // Provider에 서브 아이템 추가
+                    // context.read<DBNotifier>().updateSubItemList(await db.readAllSubItem());
+                    // 초기화
+                    subitemList = List<String>.generate(10, (index) => "");
 
                   //   Navigator.pop(context);
                   // }
-                },
               ),
             ],
             backgroundColor: mainGreenColor,

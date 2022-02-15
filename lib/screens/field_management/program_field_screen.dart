@@ -1,12 +1,11 @@
 import 'package:aba_analysis_local/components/build_floating_action_button.dart';
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
+import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/provider/db_notifier.dart';
-// import 'package:aba_analysis_local/provider/field_management_notifier.dart';
 import 'package:aba_analysis_local/screens/field_management/sub_field_screen.dart';
-// import 'package:aba_analysis_local/services/firestore.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 
 class ProgramFieldScreen extends StatefulWidget {
@@ -21,7 +20,7 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
 
   String? title;
 
-  // FireStoreService store = FireStoreService();
+  DBNotifier db = DBNotifier();
 
   final formkey = GlobalKey<FormState>();
 
@@ -113,8 +112,8 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
                           flag = true;
 
                           //DB추가
-                          // await store.addProgramField(title!);
-                          // context.read<DBNotifier>().updateProgramFieldList(await store.readAllProgramField());
+                          // await db.addProgramField(title!);
+                          // context.read<DBNotifier>().updateProgramFieldList(await db.readAllProgramField());
 
                           Navigator.pop(context);
                           title = null;
