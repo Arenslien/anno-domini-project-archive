@@ -27,7 +27,8 @@ import 'generateChart.dart';
 class DateGraph extends StatefulWidget {
   final Child child;
   final Test test;
-  const DateGraph({Key? key, required this.child, required this.test}) : super(key: key);
+  const DateGraph({Key? key, required this.child, required this.test})
+      : super(key: key);
 
   @override
   _DateGraphState createState() => _DateGraphState();
@@ -37,7 +38,7 @@ class _DateGraphState extends State<DateGraph> {
   final bool _isDate = true; // Date Graph인지 Item Graph인지
   late ExportData exportData; // Export할 데이터
 
-  late List<GraphData> _chartData; // chart를 그릴 때 쓰이는 데이터
+  late List<GraphDataLocal> _chartData; // chart를 그릴 때 쓰이는 데이터
   late List<String> _tableColumn; // 내보내기할 때 테이블의 컬럼 이름들
   late String _graphType; // 날짜 그래프인지 하위목록 그래프인지
   late String _charTitleName; // test_date 이거나 subItem
@@ -56,8 +57,8 @@ class _DateGraphState extends State<DateGraph> {
 
     _graphType = '날짜';
     _charTitleName = DateFormat(graphDateFormat).format(widget.test.date);
-    _chartData = getDateGraphData(_charTitleName, widget.test);
-    _averageRate = _chartData[0].averageRate;
+    _chartData = getDateGraphDataLocal(_charTitleName, widget.test);
+    _averageRate = _chartData[0].allSuccessRate;
     _tableColumn = ['날짜', '하위목록', '성공여부'];
     exportData = ExportData("치료사", widget.child.name, _averageRate, '', '');
 
@@ -68,7 +69,8 @@ class _DateGraphState extends State<DateGraph> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: selectAppBar(context, widget.child.name + "의 " + _graphType + "별 그래프"),
+      appBar: selectAppBar(
+          context, widget.child.name + "의 " + _graphType + "별 그래프"),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -76,7 +78,8 @@ class _DateGraphState extends State<DateGraph> {
               Container(
                 height: 460,
                 width: 400,
-                child: genChart(_chartData, _cartesianKey, _charTitleName, _isDate),
+                child: genChart(
+                    _chartData, _cartesianKey, _charTitleName, _isDate),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -85,13 +88,22 @@ class _DateGraphState extends State<DateGraph> {
                     heroTag: 'export_excel', // 버튼 구별을 위한 태그
                     onPressed: () async {
                       if (await Permission.storage.isGranted) {
-                        exportExcel(_tableColumn, genTableData(_chartData), context);
+                        exportExcel(
+                            _tableColumn, genTableData(_chartData), context);
                       } else {
-                        Fluttertoast.showToast(msg: "내보내기를 위해 직접 파일 접근 권한을 허락해주세요.", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, backgroundColor: Colors.red, textColor: Colors.white, fontSize: 16.0);
+                        Fluttertoast.showToast(
+                            msg: "내보내기를 위해 직접 파일 접근 권한을 허락해주세요.",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
                         openAppSettings();
                       }
                     }, // 누르면 엑셀 내보내기
-                    label: Text('엑셀 내보내기', style: TextStyle(fontFamily: 'KoreanGothic')),
+                    label: Text('엑셀 내보내기',
+                        style: TextStyle(fontFamily: 'KoreanGothic')),
                     icon: Icon(LineIcons.excelFile),
                   ),
                   SizedBox(
@@ -101,9 +113,17 @@ class _DateGraphState extends State<DateGraph> {
                     heroTag: 'export_pdf', // 버튼 구별을 위한 태그
                     onPressed: () async {
                       if (await Permission.storage.isGranted) {
-                        exportPDF(_tableColumn, genTableData(_chartData), context);
+                        exportPDF(
+                            _tableColumn, genTableData(_chartData), context);
                       } else {
-                        Fluttertoast.showToast(msg: "내보내기를 위해 직접 파일 접근 권한을 허락해주세요.", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, backgroundColor: Colors.red, textColor: Colors.white, fontSize: 16.0);
+                        Fluttertoast.showToast(
+                            msg: "내보내기를 위해 직접 파일 접근 권한을 허락해주세요.",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
                         openAppSettings();
                       }
                     }, // 누르면 PDF 내보내기
@@ -122,13 +142,16 @@ class _DateGraphState extends State<DateGraph> {
     );
   }
 
-  Future<void> exportExcel(List<String> excelTableColumns, List<List<String>> excelTableData, BuildContext context) async {
-    dart_ui.Image imgData = await _cartesianKey.currentState!.toImage(pixelRatio: 3.0);
+  Future<void> exportExcel(List<String> excelTableColumns,
+      List<List<String>> excelTableData, BuildContext context) async {
+    dart_ui.Image imgData =
+        await _cartesianKey.currentState!.toImage(pixelRatio: 3.0);
     final bytes = await imgData.toByteData(format: dart_ui.ImageByteFormat.png);
     // final excelImg = bytes!.buffer.asUint8List();
     final graphImageBytes = bytes!.buffer.asUint8List();
 
-    final xio.Workbook graphWorkbook = genExcel(excelTableColumns, excelTableData, graphImageBytes, _graphType, _isDate, exportData);
+    final xio.Workbook graphWorkbook = genExcel(excelTableColumns,
+        excelTableData, graphImageBytes, _graphType, _isDate, exportData);
     final List<int> excelBytes = graphWorkbook.saveAsStream();
     final dir = await DownloadsPathProvider.downloadsDirectory;
     String filePath = dir!.path + '/abaGraph/';
@@ -146,11 +169,11 @@ class _DateGraphState extends State<DateGraph> {
     }
   }
 
-  List<List<String>> genTableData(List<GraphData> chartData) {
+  List<List<String>> genTableData(List<GraphDataLocal> chartData) {
     List<List<String>> tableData = [];
 
     // 날짜그래프라면 날짜, 하위목록, 성공여부 순으로
-    for (GraphData d in chartData) {
+    for (GraphDataLocal d in chartData) {
       tableData.add(<String>[d.testDate, d.subItem, d.result.toString()]);
     }
 
@@ -158,15 +181,18 @@ class _DateGraphState extends State<DateGraph> {
     return tableData;
   }
 
-  Future<void> exportPDF(List<String> pdfTableColumns, List<List<String>> pdfTableData, BuildContext context) async {
-    dart_ui.Image imgData = await _cartesianKey.currentState!.toImage(pixelRatio: 3.0);
+  Future<void> exportPDF(List<String> pdfTableColumns,
+      List<List<String>> pdfTableData, BuildContext context) async {
+    dart_ui.Image imgData =
+        await _cartesianKey.currentState!.toImage(pixelRatio: 3.0);
     final bytes = await imgData.toByteData(format: dart_ui.ImageByteFormat.png);
     final graphImageBytes = pw.MemoryImage(
       bytes!.buffer.asUint8List(),
     );
     final ttf = await rootBundle.load('asset/font/korean.ttf');
 
-    pw.Document graphPDF = genPDF(pdfTableColumns, pdfTableData, graphImageBytes, ttf, _graphType, _charTitleName, _isDate, exportData);
+    pw.Document graphPDF = genPDF(pdfTableColumns, pdfTableData,
+        graphImageBytes, ttf, _graphType, _charTitleName, _isDate, exportData);
 
     final dir = await DownloadsPathProvider.downloadsDirectory;
     String filePath = dir!.path + '/abaGraph/';
@@ -183,7 +209,8 @@ class _DateGraphState extends State<DateGraph> {
     }
   }
 
-  Future<void> _displayTextInputDialog(BuildContext context, String filePath, String exportType) async {
+  Future<void> _displayTextInputDialog(
+      BuildContext context, String filePath, String exportType) async {
     return showDialog(
         context: context,
         builder: (context) {
@@ -201,7 +228,10 @@ class _DateGraphState extends State<DateGraph> {
               controller: _inputFileNameController,
               decoration: InputDecoration(
                 hintText: "파일이름 입력",
-                hintStyle: TextStyle(fontSize: 10, color: Colors.grey, fontFamily: 'KoreanGothic'),
+                hintStyle: TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                    fontFamily: 'KoreanGothic'),
               ),
             ),
             actions: <Widget>[
@@ -233,9 +263,25 @@ class _DateGraphState extends State<DateGraph> {
                 ),
                 onPressed: () {
                   if (valueText == null || valueText == '') {
-                    Fluttertoast.showToast(msg: "파일 이름을 입력해주세요.", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, backgroundColor: Colors.red, textColor: Colors.white, fontSize: 16.0);
-                  } else if (File(filePath + valueText! + "." + exportType).existsSync() == true) {
-                    Fluttertoast.showToast(msg: "같은 이름의 파일이 이미 존재합니다.", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.CENTER, timeInSecForIosWeb: 1, backgroundColor: Colors.red, textColor: Colors.white, fontSize: 16.0);
+                    Fluttertoast.showToast(
+                        msg: "파일 이름을 입력해주세요.",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  } else if (File(filePath + valueText! + "." + exportType)
+                          .existsSync() ==
+                      true) {
+                    Fluttertoast.showToast(
+                        msg: "같은 이름의 파일이 이미 존재합니다.",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
                   } else {
                     setState(() {
                       _fileName = valueText;
@@ -251,11 +297,11 @@ class _DateGraphState extends State<DateGraph> {
         });
   }
 
-  List<GraphData> getDateGraphData(String _noChange, Test test) {
-    // 통일된거
-    List<GraphData> chartData = []; // 선택한 하위목록과 테스트한 날짜 리스트
+  List<GraphDataLocal> getDateGraphDataLocal(String chartTitleName, Test test) {
+    List<GraphDataLocal> chartData = []; // 선택한 하위목록과 테스트한 날짜 리스트
     // get testItemList
-    List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.id!, false);
+    List<TestItem> testItemList =
+        context.read<DBNotifier>().getTestItemList(test.id!, false);
     int cnt = 0;
     int length = 0;
 
@@ -270,7 +316,7 @@ class _DateGraphState extends State<DateGraph> {
 
     for (TestItem testItem in testItemList) {
       print(testItem.toString());
-      chartData.add(GraphData(_noChange, testItem.subItem, testItem.result!, average));
+      chartData.add(GraphDataLocal());
     }
 
     return chartData;
