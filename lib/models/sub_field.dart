@@ -1,21 +1,21 @@
 class SubField {
-  int? id;
-  final int programFieldId;
-  final String title;
-  final List<String> subItemList;
-
-  SubField({this.id, required this.programFieldId, required this.title, required this.subItemList});
+  final int id; // PK
+  final int programFieldId; // FK
+  final String subFieldName;
+  SubField(
+      {required this.id,
+      required this.programFieldId,
+      required this.subFieldName});
 
   Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = {
+    return {
+      'id': id,
       'programFieldId': programFieldId,
-      'title': title,
+      'subFieldName': subFieldName,
     };
+  }
 
-    for (int i = 0; i < subItemList.length; i++) {
-      map['item${(i + 1)}'] = subItemList[i];
-    }
-
-    return map;
+  String toString() {
+    return '[하위 영역] - ID:$id & SubFieldName: $subFieldName';
   }
 }

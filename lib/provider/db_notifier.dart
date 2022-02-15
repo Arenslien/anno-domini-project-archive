@@ -59,7 +59,7 @@ class DBNotifier extends ChangeNotifier {
 
   void updateTest(int testId, DateTime date, String title, bool isInput) {
     _testList.forEach((Test test) {
-      if (test.id == testId) {
+      if (test.testId == testId) {
         test.title = title;
         test.date = date;
         test.isInput = isInput;
@@ -109,8 +109,11 @@ class DBNotifier extends ChangeNotifier {
 
   void updateTestItem(int testItemId, String result) {
     for (TestItem testItem in _testItemList) {
-      if (testItem.id == testItemId) {
-        testItem.result = result;
+      if (testItem.testItemId == testItemId) {
+        testItem.setP(p);
+        testItem.setPlus(plus);
+        testItem.setMinus(minus);
+
       }
     }
   }

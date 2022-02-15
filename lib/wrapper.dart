@@ -1,6 +1,6 @@
+import 'package:aba_analysis_local/screens/home/home_screen.dart';
 import 'package:aba_analysis_local/size_config.dart';
 import 'package:flutter/material.dart';
-import 'package:aba_analysis_local/screens/home/home_screen.dart';
 
 class Wrapper extends StatefulWidget {
   static String routeName = '/wrapper';
@@ -15,7 +15,6 @@ class _WrapperState extends State<Wrapper> {
   Widget build(BuildContext context) {
     //SizeConfig를 사용하기 위해서 초기화
     SizeConfig().init(context);
-
     // return 홈스크린 or 인증스크린
     return HomeScreen();
   }

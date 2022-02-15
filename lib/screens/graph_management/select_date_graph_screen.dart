@@ -1,22 +1,24 @@
-import 'package:aba_analysis_local/provider/db_notifier.dart';
-import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/components/search_delegate.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/screens/graph_management/date_graph_screen.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
-import 'package:flutter/material.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import 'no_test_data_screen.dart';
 
 class SelectDateScreen extends StatefulWidget {
   final Child child;
   final List<Test> testList;
-  const SelectDateScreen({Key? key, required this.child, required this.testList}) : super(key: key);
+  const SelectDateScreen(
+      {Key? key, required this.child, required this.testList})
+      : super(key: key);
   static String routeName = '/select_date';
 
   @override
@@ -24,7 +26,7 @@ class SelectDateScreen extends StatefulWidget {
 }
 
 class _SelectDateScreenState extends State<SelectDateScreen> {
-  late Map<String, Test> testAndDateMap = {};
+  late Map<String, List<Test>> testListAndDateMap = {};
   String selectedDate = "";
   // 검색 관련 변수
 
@@ -35,13 +37,25 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
       print(test.toString());
     }
 
-    genTestAndDateMap();
+    genTestListAndDateMap();
   }
 
-  // Search관련해서 쓰일 Test와 Test날짜 Map을 만들어준다.
-  void genTestAndDateMap() {
-    for (Test t in widget.testList) {
-      testAndDateMap.addAll({DateFormat(graphDateFormat).format(t.date).toString(): t});
+  void genTestListAndDateMap() {
+    List<Test> testList = widget.testList;
+    // 테스트 리스트를 날짜별로 정렬
+    testList.sort((a, b) => a.date.compareTo(b.date));
+    for (Test t in testList) {
+      String nowDate = DateFormat(graphDateFormatNoTime).format(t.date);
+      // 만약 맵에 날짜가 없으면 날짜랑 같이 테스트리스트에 추가
+      if (!testListAndDateMap.containsKey(nowDate)) {
+        testListAndDateMap.addAll({
+          nowDate: [t]
+        });
+
+        // 만약 맵에 날짜가 있으면 해당 날짜의 테스트리스트에만 추가
+      } else {
+        testListAndDateMap[nowDate]!.add(t);
+      }
     }
   }
 
@@ -55,7 +69,9 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
       // 검색버튼. 전역변수값을 변경해야되서 해당 스크린에서 정의했음.
       icon: Icon(Icons.search),
       onPressed: () async {
-        final finalResult = await showSearch(context: context, delegate: Search(testAndDateMap.keys.toList()));
+        final finalResult = await showSearch(
+            context: context,
+            delegate: Search(testListAndDateMap.keys.toList()));
         setState(() {
           selectedDate = finalResult;
         });
@@ -64,16 +80,18 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
     return GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-          appBar: selectAppBar(context, (widget.child.name + "의 테스트 날짜 선택"), searchButton: searchButton),
-          body: widget.testList.length == 0
+          appBar: selectAppBar(context, (widget.child.name + "의 테스트 날짜 선택"),
+              searchButton: searchButton),
+          body: testListAndDateMap.length == 0
               ? noTestData()
               : selectedDate == ""
                   ? ListView.builder(
                       // 검색된게 없으면
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
-                      itemCount: widget.testList.length,
+                      itemCount: testListAndDateMap.keys.toList().length,
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(widget.testList[index], index, context);
+                        return dataTile(testListAndDateMap.keys.toList()[index],
+                            index, context);
                       },
                     )
                   : ListView.builder(
@@ -81,7 +99,7 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
                       itemCount: 1,
                       itemBuilder: (BuildContext context, int index) {
-                        return dataTile(testAndDateMap[selectedDate]!, index, context);
+                        return dataTile(selectedDate, index, context);
                       },
                     ),
         ));
@@ -99,34 +117,34 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
           ),
           Text(
             'No Test Data',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'KoreanGothic'),
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 40,
+                fontFamily: 'KoreanGothic'),
           ),
         ],
       ),
     );
   }
 
-  Widget dataTile(Test test, int index, BuildContext context) {
+  Widget dataTile(String dateString, int index, BuildContext context) {
     return buildListTile(
-      titleText: DateFormat(graphDateFormat).format(test.date),
-      subtitleText: "평균성공률: ${getAvg(test)}%",
-      onTap: () async {
+      titleText: dateString,
+      onTap: () {
         setState(() {
           selectedDate = "";
         });
         bool notNull = true;
-
-        List<TestItem> testItemListNotNull = await context.read<DBNotifier>().database!.readAllTestItemNotNull();
-
         List<TestItem> testItemList = [];
-        for (TestItem testItem in testItemListNotNull) {
-          if (testItem.testId == test.id) {
-            testItemList.add(testItem);
-          }
+        for (Test test in testListAndDateMap[dateString]!) {
+          testItemList.addAll(context
+              .read<TestItemNotifier>()
+              .getTestItemList(test.testId, false));
         }
-
         for (TestItem ti in testItemList) {
-          if (ti.result == null) {
+          print(ti.toString());
+          if (ti.p == 0 && ti.minus == 0 && ti.plus == 0) {
             notNull = false;
           }
         }
@@ -135,32 +153,16 @@ class _SelectDateScreenState extends State<SelectDateScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) => DateGraph(
-                        child: widget.child,
-                        test: test,
+                        testList: testListAndDateMap[dateString]!,
+                        dateString: dateString,
+                        testItemList: testItemList,
                       )));
         } else {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => NoTestData()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => NoTestData()));
         }
       },
       trailing: Icon(Icons.keyboard_arrow_right),
     );
-  }
-
-  int getAvg(Test test) {
-    List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.id!, false);
-    int cnt = 0;
-    int length = 0;
-
-    for (TestItem testItem in testItemList) {
-      if (testItem.testId == test.id) {
-        length++;
-        if (testItem.result == '+') cnt++;
-      }
-    }
-    if (length == 0) return 0;
-
-    num average = (cnt / length * 100).toInt();
-
-    return average.toInt();
   }
 }

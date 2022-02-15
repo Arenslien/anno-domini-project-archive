@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
@@ -14,6 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:line_icons/line_icons.dart';
 import 'dart:ui' as dart_ui;
+import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:open_file/open_file.dart';
@@ -40,7 +43,7 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
   late List<String> _tableColumn; // 내보내기할 때 테이블의 컬럼 이름들
   late String _graphType; // 날짜별 그래프인지 하위목록별 그래프인지
   late String _charTitleName; // 차트의 제목
-  late num _averageRate; // 평균 성공률
+  late num _allSuccessRate; // 평균 성공률
   final GlobalKey<SfCartesianChartState> _cartesianKey = GlobalKey();
   String _fileName = ""; // 저장할 파일의 이름
   String valueText = ""; // Dialog에서 사용
@@ -55,11 +58,11 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
 
     _graphType = '하위목록';
     _charTitleName = widget.subItemList[0].testItem.subItem;
-    _tableColumn = ['하위목록', '날짜', '성공여부'];
+    _tableColumn = ['하위목록', '날짜', '하루 평균 성공률'];
 
     _chartData = getItemGraphDataLocal(_charTitleName, widget.subItemList);
 
-    _averageRate = _chartData[0].daySuccessRate;
+    _allSuccessRate = _chartData[0].allSuccessRate;
   }
 
   Widget noTestData() {
@@ -93,11 +96,10 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
     // _chartData = getItemGraphDataLocal(_charTitleName, widget.subItemList);
 
     exportData = ExportData(
-        "치료사",
-        widget.child.name,
-        _averageRate,
-        widget.subItemList[0].testItem.programField,
-        widget.subItemList[0].testItem.subField);
+        context.watch<UserNotifier>().abaUser!.nickname, widget.child.name,
+        allSuccessRate: _allSuccessRate,
+        programField: widget.subItemList[0].testItem.programField,
+        subArea: widget.subItemList[0].testItem.subField);
 
     return Scaffold(
       appBar: selectAppBar(
@@ -204,9 +206,10 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
   List<List<String>> genTableData(List<GraphDataLocal> chartData) {
     List<List<String>> tableData = [];
 
-    // 아이템그래프라면 하위목록, 날짜, 성공여부 순으로
-    for (GraphDataLocal d in chartData) {
-      tableData.add(<String>[d.subItem, d.testDate, d.result.toString()]);
+    // 아이템그래프라면 하위목록, 날짜, 하루 평균 성공률 순으로
+    for (GraphData d in chartData) {
+      tableData.add(
+          <String>[d.subItem, d.dateString, d.daySuccessRate.toString() + "%"]);
     }
 
     print(tableData);
@@ -337,28 +340,86 @@ class _ItemGraphScreenState extends State<ItemGraphScreen> {
         });
   }
 
-  List<GraphDataLocal> getItemGraphDataLocal(
+  // GraphData를 가져온다.
+  // SubItemAndDate를 통해 가져온다.
+  List<GraphData> getItemGraphData(
       String _noChange, List<SubItemAndDate> subItemList) {
-    List<GraphDataLocal> chartData = [];
-    int cnt = 0;
+    // 날짜, 하위목록 이름, 평균 성공률
+    List<GraphData> itemChartData = [];
+
+    // 날짜 리스트
+    List<String> dateStringList = [];
+    // 날짜에 따른 총 성공률 맵.
+    Map<String, int> successRateMap = Map();
+    // 날짜에 따른 테스트횟수 맵
+    Map<String, int> testCountMap = Map();
+    // 위의 두 맵을 사용하여 선택된 테스트 아이템의 각 날짜의 평균 성공률을 계산한다.
 
     for (SubItemAndDate subItemAndDate in subItemList) {
-      if (subItemAndDate.testItem.result == '+') {
-        cnt += 1;
+      // 날짜 리스트를 추가해준다.
+      if (!dateStringList.contains(subItemAndDate.dateString)) {
+        dateStringList.add(subItemAndDate.dateString);
       }
     }
-
+    // 날짜 리스트를 정렬해준다.
+    dateStringList.sort((a, b) => a.compareTo(b));
+    // 전체 성공률 합
+    num allSuccessRate = 0;
+    // 전체 테스트횟수 합
+    num allTestCount = 0;
+    // 두개를 통해 전체 평균 성공률을 구한다.
     for (SubItemAndDate subItemAndDate in subItemList) {
-      chartData.add(GraphDataLocal());
+      // 성공률
+      int nowResult = subItemAndDate.testItem.plus * 100;
+      int nowCount = subItemAndDate.testItem.plus +
+          subItemAndDate.testItem.minus +
+          subItemAndDate.testItem.p;
+      // 현재 날짜(Datetime => String)
+      String dateString = subItemAndDate.dateString;
+      // 맵에 이미 추가되어있다면 기존 값 업데이트
+      if (successRateMap.containsKey(dateString)) {
+        // 총 성공률은 이전까지의 성공률 + 현재성공률
+        successRateMap.update(dateString, (value) => value + nowResult);
+        // 개수는 1개 추가
+        testCountMap.update(dateString, (value) => value += nowCount);
+        allSuccessRate += nowResult;
+        allTestCount += nowCount;
+      } else {
+        // 성공률 맵에 키가 없다면 새로 추가
+        // 총 성공률은 현재 성공률
+        successRateMap.addAll({dateString: nowResult});
+        // 개수는 1로 시작
+        testCountMap.addAll({dateString: nowCount});
+        allSuccessRate += nowResult;
+        allTestCount += nowCount;
+      }
     }
+    // 전체 평균 성공률
+    num allSuccess = allSuccessRate / allTestCount;
 
-    return chartData;
+    for (String date in dateStringList) {
+      if (successRateMap[date] == null || testCountMap[date] == null) {
+        print("해당 날짜에 선택된 테스트 아이템이 없습니다.");
+      } else {
+        // 날짜에 따른 총 성공률 맵과 테스트 횟수 맵을 갖고 그날의 선택된 해당 테스트 아이템의 평균 성공률을 게산한다.
+        int daySuccessRate =
+            (successRateMap[date]! / testCountMap[date]!).toInt();
+        itemChartData.add(GraphData(
+          subItem: _noChange,
+          dateString: date,
+          allSuccessRate: allSuccess,
+          daySuccessRate: daySuccessRate,
+        ));
+      }
+    }
+    return itemChartData;
   }
 }
 
 class SubItemAndDate {
   final TestItem testItem;
   DateTime date;
-
-  SubItemAndDate({required this.testItem, required this.date});
+  final String dateString;
+  SubItemAndDate(
+      {required this.testItem, required this.date, required this.dateString});
 }

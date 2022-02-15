@@ -8,21 +8,23 @@ AppBar selectAppBar(
   bool? isMain,
 }) {
   return AppBar(
-      title: Text(
-        title,
-        style: TextStyle(
-          fontFamily: 'korean',
-          color: Colors.black,
-        ),
+    title: Text(
+      title,
+      style: TextStyle(
+        fontFamily: 'korean',
+        color: Colors.black,
       ),
-      backgroundColor: mainGreenColor,
-      centerTitle: true,
-      leading: isMain == true
-          ? null
-          : IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.arrow_back)),
-      actions: searchButton == null ? [] : <Widget>[searchButton]);
+    ),
+    backgroundColor: mainGreenColor,
+    centerTitle: true,
+    leading: isMain == true
+        ? null
+        : IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back)),
+    actions: searchButton == null ? [] : <Widget>[searchButton],
+    iconTheme: IconThemeData(color: Colors.black),
+  );
 }

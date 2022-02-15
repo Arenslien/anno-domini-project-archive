@@ -1,25 +1,28 @@
 import 'package:aba_analysis_local/components/search_delegate.dart';
+import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/models/sub_field.dart';
+import 'package:aba_analysis_local/models/sub_item.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
-import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/provider/test_item_notifier.dart';
+import 'package:aba_analysis_local/provider/test_notifier.dart';
 import 'package:aba_analysis_local/screens/graph_management/item_graph_screen.dart';
 import 'package:aba_analysis_local/components/select_appbar.dart';
 import 'package:aba_analysis_local/screens/graph_management/no_test_data_screen.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 // select_date 복붙한거라 select_item버전으로 다시 코딩 필요
 class SelectItemScreen extends StatefulWidget {
   final Child child;
-  final SubField subField;
+  final SubItem subItem;
   final int index;
   const SelectItemScreen(
       {Key? key,
       required this.child,
-      required this.subField,
+      required this.subItem,
       required this.index})
       : super(key: key);
   static String routeName = '/select_item';
@@ -33,6 +36,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
   late Map<String, TestItem> testItemAndsubItemNameMap = {};
   String selectedSubItem = "";
   bool isNoTestData = false;
+  late List<Test> allTest;
   @override
   void initState() {
     super.initState();
@@ -40,6 +44,10 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    allTest = context
+        .read<TestNotifier>()
+        .getAllTestListOf(widget.child.childId, true);
+
     // for (Test test in allTest) {      // result가 null이라면
     //   for (TestItem testItem in test.testItemList) {
     //     if (testItem.result == null) {
@@ -54,7 +62,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
       icon: Icon(Icons.search),
       onPressed: () async {
         final finalResult = await showSearch(
-            context: context, delegate: Search(widget.subField.subItemList));
+            context: context, delegate: Search(widget.subItem.subItemList));
         setState(() {
           selectedSubItem = finalResult;
         });
@@ -69,10 +77,10 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
             : selectedSubItem == ""
                 ? ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: widget.subField.subItemList.length,
+                    itemCount: widget.subItem.subItemList.length,
                     itemBuilder: (BuildContext context, int index) {
                       return dataTile(
-                          widget.subField.subItemList[index], index, context);
+                          widget.subItem.subItemList[index], index, context);
                     },
                   )
                 : ListView.builder(
@@ -91,26 +99,33 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
       // subtitleText: "평균성공률: $average%",
       onTap: () {
         List<SubItemAndDate> subItemList = [];
+        Set<String> dateSet = Set();
         // SubItemList 만들기
         // List<Test> allTest = context
         //     .read<TestNotifier>()
         //     .getAllTestListOf(widget.child.childId);
+        // 모든 테스트를 가져온다.
 
-        List<TestItem> testItemNotNullList = context
-            .read<DBNotifier>()
-            .getTestItemListFromChildId(widget.child.id!, false);
-        for (Test test in context.read<DBNotifier>().testList) {
-          List<TestItem> testItemList = [];
-          for (TestItem testItem in testItemNotNullList) {
-            if (test.id == testItem.testId) {
-              testItemList.add(testItem);
-            }
-          }
+        for (Test test in allTest) {
+          // 한 테스트마다 테스트에 속한 테스트 아이템을 가져온다.
+          List<TestItem> testItemList = context
+              .read<TestItemNotifier>()
+              .getTestItemList(test.testId, false);
 
+          Map<DateTime, List<TestItem>> dateAndItemMap;
+          // 모든 테스트 아이템 리스트를 돌면서, 해당 서브아이템이라면 추가해준다.
           for (TestItem testItem in testItemList) {
-            if (testItem.subItem == subItem && testItem.result != null) {
-              subItemList
-                  .add(SubItemAndDate(testItem: testItem, date: test.date));
+            // 선택된 테스트 아이템 이름으로 테스트 아이템을 DB에서 찾는다.
+            if (testItem.subItem == subItem &&
+                testItem.p + testItem.plus + testItem.minus != 0) {
+              //   // 테스트 날짜 추가
+              String testDate =
+                  DateFormat(graphDateFormatNoTime).format(test.date);
+              //   // 만약 테스트날짜가 이미 추가되어있으면
+              if (dateSet.contains(testDate)) {}
+              subItemList.add(SubItemAndDate(
+                  testItem: testItem, date: test.date, dateString: testDate));
+
               break;
             }
           }
@@ -171,7 +186,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
             size: 150,
           ),
           Text(
-            '데이터가 없습니다.',
+            'No Program Data',
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w500,
