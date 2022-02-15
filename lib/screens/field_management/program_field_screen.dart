@@ -2,6 +2,7 @@ import 'package:aba_analysis_local/components/build_floating_action_button.dart'
 import 'package:aba_analysis_local/components/build_text_form_field.dart';
 import 'package:aba_analysis_local/provider/field_management_notifier.dart';
 import 'package:aba_analysis_local/screens/field_management/sub_field_screen.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:aba_analysis_local/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,7 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
 
   String? title;
 
-  FireStoreService store = FireStoreService();
+  DBService db = DBService();
 
   final formkey = GlobalKey<FormState>();
 
@@ -128,12 +129,12 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
                         if (formkey.currentState!.validate() && !flag) {
                           flag = true;
 
-                          //DB추가
-                          await store.addProgramField(title!);
-                          context
-                              .read<FieldManagementNotifier>()
-                              .updateProgramFieldList(
-                                  await store.readAllProgramField());
+                          // //DB추가
+                          // await store.addProgramField(title!);
+                          // context
+                          //     .read<FieldManagementNotifier>()
+                          //     .updateProgramFieldList(
+                          //         await store.readAllProgramField());
 
                           Navigator.pop(context);
                           title = null;

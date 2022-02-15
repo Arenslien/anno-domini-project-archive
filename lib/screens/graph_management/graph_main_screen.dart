@@ -114,9 +114,8 @@ class _GraphScreenState extends State<GraphScreen> {
           onPressed: (index) {
             if (index == 0) {
               // Date Graph 클릭시
-              List<Test> testList = context
-                  .read<TestNotifier>()
-                  .getAllTestListOf(child.childId, true);
+              List<Test> testList =
+                  context.read<TestNotifier>().getAllTestListOf(child.id, true);
               Navigator.push(
                   context,
                   MaterialPageRoute(
