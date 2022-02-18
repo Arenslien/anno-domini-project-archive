@@ -204,7 +204,10 @@ class _TestInputScreenState extends State<TestInputScreen> {
                                                     items: selectedProgramField == null
                                                         ? null
                                                         : context.read<DBNotifier>().readSubFieldList(selectedProgramField!).map((value) {
-                                                            return DropdownMenuItem(value: value.title, child: Text(value.title));
+                                                            return DropdownMenuItem(
+                                                              value: value.title,
+                                                              child: Text(value.title),
+                                                            );
                                                           }).toList(),
                                                     onChanged: (String? value) {
                                                       setState1(() {
