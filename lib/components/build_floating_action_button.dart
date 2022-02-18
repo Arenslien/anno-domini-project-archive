@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:aba_analysis_local/constants.dart';
 
-Widget bulidFloatingActionButton({required void Function()? onPressed}) {
+Widget buildFloatingActionButton({required void Function()? onPressed}) {
   return FloatingActionButton(
     child: Icon(
       Icons.add_rounded,
