@@ -124,7 +124,7 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
               ));
         },
       ),
-      floatingActionButton: bulidFloatingActionButton(onPressed: () {
+      floatingActionButton: buildFloatingActionButton(onPressed: () {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => SubFieldInputScreen(program: widget.program)),

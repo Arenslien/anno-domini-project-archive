@@ -68,7 +68,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                 ? ListView.separated(
                     itemCount: childNameAndChildMap.keys.toList().length + 1,
                     itemBuilder: (BuildContext context, int index) {
-                      return index < childNameAndChildMap.keys.toList().length ? bulidChildListTile(childNameAndChildMap.values.toList()[index]) : buildListTile(titleText: '');
+                      return index < childNameAndChildMap.keys.toList().length ? buildChildListTile(childNameAndChildMap.values.toList()[index]) : buildListTile(titleText: '');
                     },
                     separatorBuilder: (BuildContext context, int index) {
                       return const Divider(color: Colors.black);
@@ -77,13 +77,13 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
                 : ListView.separated(
                     itemCount: 2,
                     itemBuilder: (BuildContext context, int index) {
-                      return index < 1 ? bulidChildListTile(selectedChild) : buildListTile(titleText: '');
+                      return index < 1 ? buildChildListTile(selectedChild) : buildListTile(titleText: '');
                     },
                     separatorBuilder: (BuildContext context, int index) {
                       return const Divider(color: Colors.black);
                     },
                   ),
-        floatingActionButton: bulidFloatingActionButton(
+        floatingActionButton: buildFloatingActionButton(
           onPressed: () {
             Navigator.push(
               context,
@@ -95,7 +95,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
     );
   }
 
-  Widget bulidChildListTile(Child child) {
+  Widget buildChildListTile(Child child) {
     return buildListTile(
         titleText: child.name,
         subtitleText: '${child.age.toString()}세',
