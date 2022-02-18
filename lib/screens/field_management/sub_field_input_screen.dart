@@ -79,12 +79,12 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                     SubField addSub = SubField(
                       id: 0,
                       programFieldId: widget.program.id,
-                      subFieldName: subFieldName,
+                      title: subFieldName,
                     );
                     // DB에 서브필드 추가
                     await db.addSubField(addSub);
                     // Subfield를 Notifier에 추가
-                    // context.read<DBNotifier>().updateSubFieldList(await db.readAllSubField());
+                    context.read<DBNotifier>().updateSubFieldList(await db.readAllSubFieldList());
 
                     // DB에 서브 아이템 추가
                     SubItem subItem = SubItem(
@@ -93,13 +93,13 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       subItemList: subitemList,
                     );
 
-                    // await db.addSubItem(subItem);
+                    await db.addSubItem(subItem);
                     // Provider에 서브 아이템 추가
-                    // context.read<DBNotifier>().updateSubItemList(await db.readAllSubItem());
+                    context.read<DBNotifier>().updateSubItemList(await db.readAllSubItemList());
                     // 초기화
                     subitemList = List<String>.generate(10, (index) => "");
 
-                    //   Navigator.pop(context);
+                    Navigator.pop(context);
                   }
                 },
               ),

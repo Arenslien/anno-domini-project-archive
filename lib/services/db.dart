@@ -1,5 +1,7 @@
 import 'package:aba_analysis_local/models/child.dart';
+import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
+import 'package:aba_analysis_local/models/sub_item.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/test_item.dart';
 import 'package:intl/intl.dart';
@@ -15,7 +17,8 @@ class DBService {
         await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, childId INTEGER, date TEXT, title TEXT, isInput INTEGER)");
         await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, testId INTEGER, childId INTEGER, programField TEXT, subField TEXT, subItem TEXT, result TEXT)");
         await db.execute("CREATE TABLE programField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT)");
-        await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, programFieldId INTEGER, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
+        await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, programFieldId INTEGER NOT NULL)");
+        await db.execute("CREATE TABLE subItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, subFieldId INTEGER NOT NULL, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
       },
       version: 1,
     );
@@ -82,8 +85,54 @@ class DBService {
   }
 
   //=======================================================================================
-  //                          Firebase 연동 - 하위 영역 관련 함수들
+  //                          Firebase 연동 - 프로그램 영역 관련 함수들
   //=======================================================================================
+  Future<void> createProgramField(String title) async {
+    final db = await initializeDB();
+    await db.rawInsert(
+      'INSERT INTO programField(title) VALUES(?)', [title]);
+  }
+
+  // 교사가 맡고 있는 모든 아이들 데이터 가져오기
+  Future<List<ProgramField>> readAllProgramField() async {
+    // 모든 Child 얻기 위해 테이블에 질의합니다.
+    final db = await initializeDB();
+    final List<Map<String, dynamic>> queryResult = await db.query('programField');
+    return queryResult.map((e) => ProgramField.fromMap(e)).toList();
+  }
+
+  Future<ProgramField?> readProgramField(int id) async {
+    final db = await initializeDB();
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      'programField',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    return List.generate(maps.length, (i) {
+      return ProgramField(
+        id: maps[i]['id'],
+        title: maps[i]['title'],
+      );
+    })[0];
+  }
+
+  Future deleteProgramField(int id) async {
+    final db = await initializeDB();
+
+    await db.delete(
+      'programField',
+      // 특정 dog를 제거하기 위해 `where` 절을 사용하세요
+      where: "id = ?",
+      // Dog의 id를 where의 인자로 넘겨 SQL injection을 방지합니다.
+      whereArgs: [id],
+    );
+  }
+  
+  //=======================================================================================
+  //                          Firebase 연동 - 서브 영역 관련 함수들
+  //=======================================================================================
+
   Future addSubField(SubField subField) async {
     final db = await initializeDB();
 
@@ -104,15 +153,10 @@ class DBService {
     );
 
     return List.generate(maps.length, (i) {
-      List<String> subItemList = [];
-      for (int j = 0; j < 10; j++) {
-        subItemList.add(maps[i]['item${j + 1}']);
-      }
-
       return SubField(
         id: maps[i]['id'],
         programFieldId: maps[i]['programFieldId'],
-        subFieldName: maps[i]['subFieldName'],
+        title: maps[i]['title'],
       );
     });
   }
@@ -123,15 +167,10 @@ class DBService {
     final List<Map<String, dynamic>> maps = await db.query('subField');
 
     return List.generate(maps.length, (i) {
-      List<String> subItemList = [];
-      for (int j = 0; j < 10; j++) {
-        subItemList.add(maps[i]['item${j + 1}']);
-      }
-
       return SubField(
         id: maps[i]['id'],
         programFieldId: maps[i]['programFieldId'],
-        subFieldName: maps[i]['subFieldName'],
+        title: maps[i]['title'],
       );
     });
   }
@@ -141,6 +180,73 @@ class DBService {
 
     await db.delete(
       'subField',
+      where: "id = ?",
+      whereArgs: [id],
+    );
+  }
+
+  //=======================================================================================
+  //                          Firebase 연동 - 서브 아이템 관련 함수들
+  //=======================================================================================
+
+
+  Future addSubItem(SubItem subItem) async {
+    final db = await initializeDB();
+
+    await db.insert(
+      'subItem',
+      subItem.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<SubItem>> readSubItemList(int id) async {
+    final db = await initializeDB();
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      'subItem',
+      where: "subFieldId = ?",
+      whereArgs: [id],
+    );
+
+    return List.generate(maps.length, (i) {
+      List<String> subItemList = [];
+      for (int j = 0; j < 10; j++) {
+        subItemList.add(maps[i]['item${j + 1}']);
+      }
+
+      return SubItem(
+        id: maps[i]['id'],
+        subFieldId: maps[i]['subFieldId'],
+        subItemList: subItemList,
+      );
+    });
+  }
+
+  Future<List<SubItem>> readAllSubItemList() async {
+    final db = await initializeDB();
+
+    final List<Map<String, dynamic>> maps = await db.query('subItem');
+
+    return List.generate(maps.length, (i) {
+      List<String> subItemList = [];
+      for (int j = 0; j < 10; j++) {
+        subItemList.add(maps[i]['item${j + 1}']);
+      }
+
+      return SubItem(
+        id: maps[i]['id'],
+        subFieldId: maps[i]['subFieldId'],
+        subItemList: subItemList,
+      );
+    });
+  }
+
+  Future deleteSubItem(int id) async {
+    final db = await initializeDB();
+
+    await db.delete(
+      'subItem',
       where: "id = ?",
       whereArgs: [id],
     );
@@ -393,7 +499,7 @@ class DBService {
     final List<Map<String, dynamic>> maps = await db.query(
       'testItem',
       where: 'subField = ?',
-      whereArgs: [subField.subFieldName],
+      whereArgs: [subField.title],
     );
     return List.generate(maps.length, (i) {
       return TestItem(

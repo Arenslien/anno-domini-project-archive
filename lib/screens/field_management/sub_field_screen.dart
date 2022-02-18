@@ -50,7 +50,7 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
       body: ListView.builder(
         itemCount: context.watch<DBNotifier>().readSubFieldList(widget.program.title).length,
         itemBuilder: (BuildContext context, int index) {
-          String subFieldName = context.read<DBNotifier>().readSubFieldList(widget.program.title)[index].subFieldName;
+          String subFieldName = context.read<DBNotifier>().readSubFieldList(widget.program.title)[index].title;
           return buildListTile(
               titleText: subFieldName,
               titleSize: 20,
@@ -91,26 +91,25 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
                             if (!flag) {
                               flag = true;
                               SubField subField = context.read<DBNotifier>().readSubFieldList(widget.program.title)[index];
-
                               // DB에서 삭제한 서브필드의 테스트 아이템 삭제
                               List<TestItem> testItemList = context.read<DBNotifier>().testItemList;
                               for (TestItem testItem in testItemList) {
-                                if (testItem.subField == subField.subFieldName) {
+                                if (testItem.subField == subField.title) {
                                   await db.deleteTestItem(testItem.testItemId);
                                 }
                               }
                               context.read<DBNotifier>().updateTestItemList(await db.readAllTestItem());
 
                               // DB에서 서브아이템 삭제
-                              // await db.deleteSubItem(context.read<DBNotifier>().readSubItem(subField.subFieldName).id);
+                              await db.deleteSubItem(context.read<DBNotifier>().readSubItem(subField.title).id);
 
                               // DB에서 서브필드를 삭제한다.
                               await db.deleteSubField(subField.id);
 
-                              // 해당 서브필드를 삭제한다.
-                              // context.read<DBNotifier>().updateSubFieldList(await db.readAllSubField());
-                              // context.read<DBNotifier>().updateSubItemList(await db.readAllSubItem());
-
+                              // Notifier 업데이트
+                              context.read<DBNotifier>().updateSubFieldList(await db.readAllSubFieldList());
+                              context.read<DBNotifier>().updateSubItemList(await db.readAllSubItemList());
+                              print('last');
                               Navigator.pop(context);
                             }
                           },

@@ -20,7 +20,7 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
 
   String? title;
 
-  DBNotifier db = DBNotifier();
+  DBService db = DBService();
 
   final formkey = GlobalKey<FormState>();
 
@@ -115,8 +115,8 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
                           flag = true;
 
                           //DB추가
-                          // await db.addProgramField(title!);
-                          // context.read<DBNotifier>().updateProgramFieldList(await db.readAllProgramField());
+                          await db.createProgramField(title!);
+                          context.read<DBNotifier>().updateProgramFieldList(await db.readAllProgramField());
 
                           Navigator.pop(context);
                           title = null;

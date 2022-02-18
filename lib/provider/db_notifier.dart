@@ -30,7 +30,9 @@ class DBNotifier extends ChangeNotifier {
     _children = await _db.readAllChild();
     _testList = await _db.readAllTest();
     _testItemList = await _db.readAllTestItem();
+    _programFieldList = await _db.readAllProgramField();
     _subFieldList = await _db.readAllSubFieldList();
+    _subItemList = await _db.readAllSubItemList();
     notifyListeners();
   }
 
@@ -194,6 +196,7 @@ class DBNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 입력받은 서브 필드 리스트를 Notifier에 있는 subFieldList에 업데이트
   void updateSubFieldList(List<SubField> subFieldList) {
     _subFieldList = subFieldList;
     notifyListeners();
@@ -208,7 +211,7 @@ class DBNotifier extends ChangeNotifier {
     List<String> allSubFieldNameList = [];
 
     for (SubField subField in _subFieldList) {
-      allSubFieldNameList.add(subField.subFieldName);
+      allSubFieldNameList.add(subField.title);
     }
 
     return allSubFieldNameList;
@@ -245,11 +248,14 @@ class DBNotifier extends ChangeNotifier {
   SubItem readSubItem(String title) {
     SubItem? subItem;
     int subFieldId = convertSubFieldTitleToId(title);
+    print(subFieldId);
     for (SubItem sI in _subItemList) {
+      print(sI.subFieldId);
       if (sI.subFieldId == subFieldId) {
         subItem = sI;
       }
     }
+    print(subItem);
     return subItem!;
   }
 
@@ -267,7 +273,7 @@ class DBNotifier extends ChangeNotifier {
   int convertSubFieldTitleToId(String title) {
     int? id;
     for (SubField subField in _subFieldList) {
-      if (subField.subFieldName == title) {
+      if (subField.title == title) {
         id = subField.id;
         break;
       }
