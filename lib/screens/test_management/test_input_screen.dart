@@ -69,16 +69,16 @@ class _TestInputScreenState extends State<TestInputScreen> {
                       isInput: false,
                     );
                     // DB에 테스트 추가
-                    await db.createTest(test);
+                    int testId = await db.createTest(test);
 
                     // Test Notifier에 추가
-                    context.read<DBNotifier>().addTest(test);
+                    await context.read<DBNotifier>().updateTestList();
 
                     // DB에 테스트 아이템 추가 & TestItem Notifier에 테스트 아이템 추가
                     for (TestItemInfo testItemInfo in testItemInfoList) {
                       TestItem testItem = TestItem(
                         testItemId: 0,
-                        testId: test.testId,
+                        testId: testId,
                         childId: widget.child.id,
                         programField: testItemInfo.programField,
                         subField: testItemInfo.subField,
@@ -86,8 +86,7 @@ class _TestInputScreenState extends State<TestInputScreen> {
                       );
 
                       await db.createTestItem(testItem);
-
-                      context.read<DBNotifier>().addTestItem(testItem);
+                      await context.read<DBNotifier>().updateTestItemList();
                     }
                     Navigator.pop(context);
                   }
