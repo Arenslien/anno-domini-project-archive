@@ -37,8 +37,8 @@ class DBNotifier extends ChangeNotifier {
   }
 
   // children 리스트 초기화
-  void updateChildren(List<Child> children) {
-    _children = children;
+  Future<void> updateChildren() async {
+    _children = await _db.readAllChild();
     notifyListeners();
   }
 

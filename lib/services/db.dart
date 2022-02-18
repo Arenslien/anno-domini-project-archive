@@ -29,8 +29,7 @@ class DBService {
 
   Future<void> createChild(Child child) async {
     final db = await initializeDB();
-    await db.rawInsert(
-      'INSERT INTO child(name, birthday, gender) VALUES(?, ?, ?)', [child.name, DateFormat('yyyy-MM-dd').format(child.birthday), child.gender]);
+    await db.rawInsert('INSERT INTO child(name, birthday, gender) VALUES(?, ?, ?)', [child.name, DateFormat('yyyy-MM-dd').format(child.birthday), child.gender]);
   }
 
   // 교사가 맡고 있는 모든 아이들 데이터 가져오기
@@ -89,8 +88,7 @@ class DBService {
   //=======================================================================================
   Future<void> createProgramField(String title) async {
     final db = await initializeDB();
-    await db.rawInsert(
-      'INSERT INTO programField(title) VALUES(?)', [title]);
+    await db.rawInsert('INSERT INTO programField(title) VALUES(?)', [title]);
   }
 
   // 교사가 맡고 있는 모든 아이들 데이터 가져오기
@@ -128,15 +126,14 @@ class DBService {
       whereArgs: [id],
     );
   }
-  
+
   //=======================================================================================
   //                          Firebase 연동 - 서브 영역 관련 함수들
   //=======================================================================================
 
   Future<int> addSubField(SubField subField) async {
     final db = await initializeDB();
-    return await db.rawInsert(
-      'INSERT INTO subField(title, programFieldId) VALUES(?, ?)', [subField.title, subField.programFieldId]);
+    return await db.rawInsert('INSERT INTO subField(title, programFieldId) VALUES(?, ?)', [subField.title, subField.programFieldId]);
   }
 
   Future<List<SubField>> readSubFieldList(int id) async {
@@ -185,11 +182,9 @@ class DBService {
   //                          Firebase 연동 - 서브 아이템 관련 함수들
   //=======================================================================================
 
-
   Future<int> addSubItem(SubItem subItem) async {
     final db = await initializeDB();
-    return await db.rawInsert(
-      'INSERT INTO subItem(subFieldId, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [subItem.subFieldId, subItem.subItemList[0], subItem.subItemList[1], subItem.subItemList[2], subItem.subItemList[3], subItem.subItemList[4], subItem.subItemList[5], subItem.subItemList[6], subItem.subItemList[7], subItem.subItemList[8], subItem.subItemList[9]]);
+    return await db.rawInsert('INSERT INTO subItem(subFieldId, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [subItem.subFieldId, subItem.subItemList[0], subItem.subItemList[1], subItem.subItemList[2], subItem.subItemList[3], subItem.subItemList[4], subItem.subItemList[5], subItem.subItemList[6], subItem.subItemList[7], subItem.subItemList[8], subItem.subItemList[9]]);
   }
 
   Future<SubItem> readSubItem(int id) async {
@@ -252,8 +247,7 @@ class DBService {
   Future<int> createTest(Test test) async {
     final db = await initializeDB();
 
-    return await db.rawInsert(
-      'INSERT INTO test(childId, date, title, isInput) VALUES(?, ?, ?, ?)', [test.childId, DateFormat('yyyy-MM-dd').format(test.date), test.title, test.isInput? 1:0]);
+    return await db.rawInsert('INSERT INTO test(childId, date, title, isInput) VALUES(?, ?, ?, ?)', [test.childId, DateFormat('yyyy-MM-dd').format(test.date), test.title, test.isInput ? 1 : 0]);
   }
 
   // childId INTEGER, date TEXT, title TEXT, isInput INTEGER)
@@ -364,13 +358,12 @@ class DBService {
   // TestItem 추가
   Future<int> createTestItem(TestItem testItem) async {
     final db = await initializeDB();
-    return await db.rawInsert(
-      'INSERT INTO testItem(testId, childId, programField, subField, subItem, p, plus, minus) VALUES(?, ?, ?, ?, ?, ?, ?, ?)', [testItem.testId, testItem.childId, testItem.programField, testItem.subField, testItem.subItem, testItem.p, testItem.plus, testItem.minus]);
+    return await db.rawInsert('INSERT INTO testItem(testId, childId, programField, subField, subItem, p, plus, minus) VALUES(?, ?, ?, ?, ?, ?, ?, ?)', [testItem.testId, testItem.childId, testItem.programField, testItem.subField, testItem.subItem, testItem.p, testItem.plus, testItem.minus]);
   }
 
   Future copyTestItem(TestItem testItem, int testId) async {
     TestItem newTestItem = TestItem(
-      testItemId: testItem.testItemId,
+      testItemId: 0,
       testId: testId,
       childId: testItem.childId,
       programField: testItem.programField,

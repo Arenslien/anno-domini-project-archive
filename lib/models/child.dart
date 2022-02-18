@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Child {
   // Child
   final int id; // PK
@@ -13,7 +15,7 @@ class Child {
     return {
       'name': name,
       'gender': gender,
-      'birthday': birthday
+      'birthday': DateFormat('yyyyMMdd').format(birthday),
     };
   }
 
@@ -23,4 +25,3 @@ class Child {
         gender = res['gender'],
         birthday = DateTime.parse(res['birthday']);
 }
-
