@@ -66,9 +66,9 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
             ? noListData(Icons.group, '아동 추가')
             : selectedChildName == ""
                 ? ListView.separated(
-                    itemCount: childNameAndChildMap.keys.toList().length + 1,
+                    itemCount: context.watch<DBNotifier>().children.length + 1,
                     itemBuilder: (BuildContext context, int index) {
-                      return index < childNameAndChildMap.keys.toList().length ? buildChildListTile(childNameAndChildMap.values.toList()[index]) : buildListTile(titleText: '');
+                      return index < context.read<DBNotifier>().children.length ? buildChildListTile(context.read<DBNotifier>().children[index]) : buildListTile(titleText: '');
                     },
                     separatorBuilder: (BuildContext context, int index) {
                       return const Divider(color: Colors.black);
@@ -108,10 +108,10 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         trailing: IconButton(
           icon: Icon(Icons.settings),
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => ChildModifyScreen(child: child)),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChildModifyScreen(child: child)),
+            );
           },
           color: Colors.black,
         ));
