@@ -112,23 +112,22 @@ class _GraphScreenState extends State<GraphScreen> {
           onPressed: (index) {
             if (index == 0) {
               // Date Graph 클릭시
-              List<Test> testList = context
-                  .read<DBNotifier>()
-                  .getAllTestListOf(child.id, true);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) =>
-              //             SelectDateScreen(child: child, testList: testList)));
+              List<Test> testList =
+                  context.read<DBNotifier>().getAllTestListOf(child.id, true);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SelectDateScreen(child: child, testList: testList)));
             } else if (index == 1) {
               // Item Graph 클릭시
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => SelectProgramScreen(
-              //             child: child,
-              //           )),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SelectProgramScreen(
+                          child: child,
+                        )),
+              );
             }
           },
         ));

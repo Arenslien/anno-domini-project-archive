@@ -57,22 +57,14 @@ class DBNotifier extends ChangeNotifier {
   //     }
   //   }
 
-
   //   return child;
   // }
-
-
-
 
   // 아이 삭제
   void removeChild(Child child) {
     _children.remove(child);
     notifyListeners();
   }
-
-
-
-
 
   // Test 리스트 초기화
   Future<void> updateTestList() async {
@@ -166,9 +158,9 @@ class DBNotifier extends ChangeNotifier {
       });
     } else {
       _testItemList.forEach((TestItem testItem) {
-        // if (testItem.testId == testId && testItem.result != null) {
-        //   testItemList.add(testItem);
-        // }
+        if (testItem.testId == testId) {
+          testItemList.add(testItem);
+        }
       });
     }
 
