@@ -32,7 +32,10 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
       appBar: AppBar(
         title: Text(
           '프로그램영역 확인 및 추가',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: mainGreenColor,
       ),
@@ -67,7 +70,7 @@ class _ProgramFieldScreenState extends State<ProgramFieldScreen> {
           );
         },
       ),
-      floatingActionButton: bulidFloatingActionButton(
+      floatingActionButton: buildFloatingActionButton(
         onPressed: () {
           showDialog(
             context: context,

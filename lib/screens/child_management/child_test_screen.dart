@@ -33,6 +33,8 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
 
   TextEditingController searchTextEditingController = TextEditingController();
 
+  DBService db = DBService();
+
   @override
   void initState() {
     super.initState();
@@ -105,7 +107,7 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
                       return const Divider(color: Colors.black);
                     },
                   ),
-        floatingActionButton: bulidFloatingActionButton(onPressed: () {
+        floatingActionButton: buildFloatingActionButton(onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -163,29 +165,29 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
         onPressed: (idx) async {
           if (idx == 0) {
             // DB에 Test 추가
-            // Test copiedTest = await db.copyTest(test);
-            // TestNotifer에 추가
-            // context.read<DBNotifier>().addTest(copiedTest);
+            Test copiedTest = await db.copyTest(test);
+            // TestNotifier에 추가
+            context.read<DBNotifier>().addTest(copiedTest);
 
             // 복사할 Test의 TestItemList 가져오기
             List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.testId, true);
 
             for (TestItem testItem in testItemList) {
               // DB에 TestItem 추가
-              // TestItem copiedTestItem = await db.copyTestItem(testItem, copiedTest.testId);
+              TestItem copiedTestItem = await db.copyTestItem(testItem, copiedTest.testId);
               // 복사된 테스트 아이템 TestItem Notifier에 추가
-              // context.read<DBNotifier>().addTestItem(copiedTestItem);
+              context.read<DBNotifier>().addTestItem(copiedTestItem);
             }
             setState(() {
               searchTextEditingController.text = '';
             });
           } else if (idx == 1) {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => TestModifyScreen(child: widget.child, test: test),
-            //   ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TestModifyScreen(child: widget.child, test: test),
+              ),
+            );
             setState(() {
               searchTextEditingController.text = '';
             });
