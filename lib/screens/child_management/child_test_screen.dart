@@ -165,19 +165,13 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
         onPressed: (idx) async {
           if (idx == 0) {
             // DB에 Test 추가
-            Test copiedTest = await db.copyTest(test);
+            await db.copyTest(test);
             // TestNotifier에 추가
-            context.read<DBNotifier>().addTest(copiedTest);
+            await context.read<DBNotifier>().updateTestList();
 
             // 복사할 Test의 TestItemList 가져오기
-            List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.testId, true);
+            await context.read<DBNotifier>().updateTestItemList();
 
-            for (TestItem testItem in testItemList) {
-              // DB에 TestItem 추가
-              TestItem copiedTestItem = await db.copyTestItem(testItem, copiedTest.testId);
-              // 복사된 테스트 아이템 TestItem Notifier에 추가
-              context.read<DBNotifier>().addTestItem(copiedTestItem);
-            }
             setState(() {
               searchTextEditingController.text = '';
             });

@@ -80,7 +80,8 @@ class _DateGraphState extends State<DateGraph> {
       widget.child.name,
     );
     return Scaffold(
-      appBar: selectAppBar(context, widget.child.name + "의 " + _graphType + "별 그래프"),
+      appBar: selectAppBar(
+          context, widget.child.name + "의 " + _graphType + "별 그래프"),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -208,7 +209,7 @@ class _DateGraphState extends State<DateGraph> {
     final Directory? dir = await getDownloadsDirectory();
 
     String filePath = dir!.path + '/abaGraph/';
-    
+
     if (!(await Directory(filePath).exists())) {
       // 폴더가 없다
       new Directory(filePath).createSync(recursive: true);
@@ -325,7 +326,6 @@ class _DateGraphState extends State<DateGraph> {
     // 위의 두 맵으로 각 테스트 아이템의 평균 성공률을 계산한다.
     List<String> testItemStringList = [];
     // 테스트아이템 리스트를 돌면서 각 테스트 아이템들의 총 성공률 및 총 횟수를 추가한다.
-
     for (TestItem ti in testItemList) {
       String nowItem = ti.subItem;
       int nowResult = -1;
@@ -336,7 +336,6 @@ class _DateGraphState extends State<DateGraph> {
       }
 
       nowResult = ti.plus * 100;
-
       // 만약 맵의 키에 서브아이템이 없다면 키,밸류를 다 추가한다.
       if (!testItemAllSuccessRate.containsKey(nowItem)) {
         testItemAllSuccessRate.addAll({nowItem: nowResult});

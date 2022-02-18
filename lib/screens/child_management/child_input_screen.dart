@@ -76,7 +76,7 @@ class _ChildInputScreenState extends State<ChildInputScreen> {
                     await db.createChild(child);
 
                     // Provider DBNotifier 수정
-                    context.read<DBNotifier>().addChild(child);
+                    await context.read<DBNotifier>().updateChildren();
 
                     Navigator.pop(context);
                   }
