@@ -158,9 +158,9 @@ class DBNotifier extends ChangeNotifier {
       });
     } else {
       _testItemList.forEach((TestItem testItem) {
-        // if (testItem.testId == testId && testItem.result != null) {
-        //   testItemList.add(testItem);
-        // }
+        if (testItem.testId == testId) {
+          testItemList.add(testItem);
+        }
       });
     }
 
