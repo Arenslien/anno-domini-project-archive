@@ -115,11 +115,11 @@ class _GraphScreenState extends State<GraphScreen> {
               List<Test> testList = context
                   .read<DBNotifier>()
                   .getAllTestListOf(child.id, true);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) =>
-              //             SelectDateScreen(child: child, testList: testList)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SelectDateScreen(child: child, testList: testList)));
             } else if (index == 1) {
               // Item Graph 클릭시
               // Navigator.push(
