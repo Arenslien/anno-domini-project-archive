@@ -15,7 +15,7 @@ class DBService {
       onCreate: (db, version) async {
         await db.execute("CREATE TABLE child(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, birthday TEXT, gender TEXT)");
         await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, childId INTEGER, date TEXT, title TEXT, isInput INTEGER)");
-        await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, testId INTEGER, childId INTEGER, programField TEXT, subField TEXT, subItem TEXT, result TEXT)");
+        await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, testId INTEGER, childId INTEGER, programField TEXT, subField TEXT, subItem TEXT, p INTEGER, plus INTEGER, minus INTEGER)");
         await db.execute("CREATE TABLE programField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT)");
         await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, programFieldId INTEGER NOT NULL)");
         await db.execute("CREATE TABLE subItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, subFieldId INTEGER NOT NULL, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
@@ -133,14 +133,10 @@ class DBService {
   //                          Firebase 연동 - 서브 영역 관련 함수들
   //=======================================================================================
 
-  Future addSubField(SubField subField) async {
+  Future<int> addSubField(SubField subField) async {
     final db = await initializeDB();
-
-    await db.insert(
-      'subField',
-      subField.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return await db.rawInsert(
+      'INSERT INTO subField(title, programFieldId) VALUES(?, ?)', [subField.title, subField.programFieldId]);
   }
 
   Future<List<SubField>> readSubFieldList(int id) async {
@@ -190,22 +186,18 @@ class DBService {
   //=======================================================================================
 
 
-  Future addSubItem(SubItem subItem) async {
+  Future<int> addSubItem(SubItem subItem) async {
     final db = await initializeDB();
-
-    await db.insert(
-      'subItem',
-      subItem.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return await db.rawInsert(
+      'INSERT INTO subItem(subFieldId, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [subItem.subFieldId, subItem.subItemList[0], subItem.subItemList[1], subItem.subItemList[2], subItem.subItemList[3], subItem.subItemList[4], subItem.subItemList[5], subItem.subItemList[6], subItem.subItemList[7], subItem.subItemList[8], subItem.subItemList[9]]);
   }
 
-  Future<List<SubItem>> readSubItemList(int id) async {
+  Future<SubItem> readSubItem(int id) async {
     final db = await initializeDB();
 
     final List<Map<String, dynamic>> maps = await db.query(
       'subItem',
-      where: "subFieldId = ?",
+      where: "id = ?",
       whereArgs: [id],
     );
 
@@ -220,7 +212,7 @@ class DBService {
         subFieldId: maps[i]['subFieldId'],
         subItemList: subItemList,
       );
-    });
+    })[0];
   }
 
   Future<List<SubItem>> readAllSubItemList() async {
@@ -257,26 +249,26 @@ class DBService {
   //=======================================================================================
 
   // Test 추가
-  Future<Test> createTest(Test test) async {
+  Future<int> createTest(Test test) async {
     final db = await initializeDB();
 
-    return (await readTest(await db.insert(
-      'test',
-      test.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    )))!;
+    return await db.rawInsert(
+      'INSERT INTO test(childId, date, title, isInput) VALUES(?, ?, ?, ?)', [test.childId, DateFormat('yyyy-MM-dd').format(test.date), test.title, test.isInput? 1:0]);
   }
+
+  // childId INTEGER, date TEXT, title TEXT, isInput INTEGER)
 
   // Test 복사
   Future copyTest(Test test) async {
     Test newTest = Test(
-      testId: test.testId,
+      testId: 0,
       childId: test.childId,
       title: "${test.title}_복사본",
       date: DateTime.now(),
       isInput: false,
     );
-    Test copiedTest = await createTest(newTest);
+
+    Test copiedTest = (await readTest(await createTest(newTest)))!;
 
     List<TestItem> testItemList = [];
     for (TestItem testItem in await readTestItemList(test.testId)) {
@@ -370,16 +362,10 @@ class DBService {
   //=======================================================================================
 
   // TestItem 추가
-  Future<TestItem?> createTestItem(TestItem testItem) async {
+  Future<int> createTestItem(TestItem testItem) async {
     final db = await initializeDB();
-
-    int testItemId = await db.insert(
-      'testItem',
-      testItem.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-    print(await readTestItem(testItemId));
-    return await readTestItem(testItemId);
+    return await db.rawInsert(
+      'INSERT INTO testItem(testId, childId, programField, subField, subItem, p, plus, minus) VALUES(?, ?, ?, ?, ?, ?, ?, ?)', [testItem.testId, testItem.childId, testItem.programField, testItem.subField, testItem.subItem, testItem.p, testItem.plus, testItem.minus]);
   }
 
   Future copyTestItem(TestItem testItem, int testId) async {

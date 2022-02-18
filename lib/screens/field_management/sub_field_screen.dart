@@ -98,7 +98,7 @@ class _SubFieldScreenState extends State<SubFieldScreen> {
                                   await db.deleteTestItem(testItem.testItemId);
                                 }
                               }
-                              context.read<DBNotifier>().updateTestItemList(await db.readAllTestItem());
+                              context.read<DBNotifier>().updateTestItemList();
 
                               // DB에서 서브아이템 삭제
                               await db.deleteSubItem(context.read<DBNotifier>().readSubItem(subField.title).id);

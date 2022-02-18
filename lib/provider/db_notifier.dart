@@ -48,15 +48,35 @@ class DBNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  // // 아이 찾기
+  // Child readChild(int id) {
+  //   Child child;
+  //   for (Child c in _children) {
+  //     if (c.id == id) {
+  //       child = child
+  //     }
+  //   }
+
+
+  //   return child;
+  // }
+
+
+
+
   // 아이 삭제
   void removeChild(Child child) {
     _children.remove(child);
     notifyListeners();
   }
 
+
+
+
+
   // Test 리스트 초기화
-  void updateTestList(List<Test> testList) {
-    _testList = testList;
+  Future<void> updateTestList() async {
+    _testList = await _db.readAllTest();
     notifyListeners();
   }
 
@@ -105,8 +125,8 @@ class DBNotifier extends ChangeNotifier {
   }
 
   // TestItem 리스트 초기화
-  void updateTestItemList(List<TestItem> testItemList) {
-    _testItemList = testItemList;
+  Future<void> updateTestItemList() async {
+    _testItemList = await _db.readAllTestItem();
     notifyListeners();
   }
 
@@ -248,9 +268,7 @@ class DBNotifier extends ChangeNotifier {
   SubItem readSubItem(String title) {
     SubItem? subItem;
     int subFieldId = convertSubFieldTitleToId(title);
-    print(subFieldId);
     for (SubItem sI in _subItemList) {
-      print(sI.subFieldId);
       if (sI.subFieldId == subFieldId) {
         subItem = sI;
       }
