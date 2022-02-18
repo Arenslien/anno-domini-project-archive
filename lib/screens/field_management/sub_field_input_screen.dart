@@ -73,7 +73,6 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                   color: Colors.black,
                 ),
                 onPressed: () async {
-                  print(subitemList);
                   if (formkey.currentState!.validate() && !flag) {
                     flag = true;
                     SubField addSub = SubField(
@@ -82,14 +81,14 @@ class _SubFieldInputScreenState extends State<SubFieldInputScreen> {
                       title: subFieldName,
                     );
                     // DB에 서브필드 추가
-                    await db.addSubField(addSub);
+                    int subFieldId = await db.addSubField(addSub);
                     // Subfield를 Notifier에 추가
                     context.read<DBNotifier>().updateSubFieldList(await db.readAllSubFieldList());
 
                     // DB에 서브 아이템 추가
                     SubItem subItem = SubItem(
                       id: 0,
-                      subFieldId: addSub.id,
+                      subFieldId: subFieldId,
                       subItemList: subitemList,
                     );
 
