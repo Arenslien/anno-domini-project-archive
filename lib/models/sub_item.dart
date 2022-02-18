@@ -9,7 +9,6 @@ class SubItem {
   // DB -> 넘김
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    map['id'] = id;
     map['subFieldId'] = subFieldId;
     for (int i=0; i<subItemList.length; i++) {
       map['item${i+1}'] = subItemList[i];

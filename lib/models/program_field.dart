@@ -5,7 +5,6 @@ class ProgramField {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'title': title,
     };
   }
@@ -13,4 +12,8 @@ class ProgramField {
   String toString() {
     return '[프로그램 영역] - ID:$id & TITLE: $title';
   }
+
+  ProgramField.fromMap(Map<String, dynamic> res)
+      : id = res['id'],
+        title = res['title'];
 }
