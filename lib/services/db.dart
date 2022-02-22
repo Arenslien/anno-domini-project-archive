@@ -400,7 +400,7 @@ class DBService {
     final List<Map<String, dynamic>> maps = await db.query('testItem');
 
     return List.generate(maps.length, (i) {
-      return TestItem(
+      TestItem testItem = TestItem(
         testItemId: maps[i]['id'],
         testId: maps[i]['testId'],
         childId: maps[i]['childId'],
@@ -408,6 +408,10 @@ class DBService {
         subField: maps[i]['subField'],
         subItem: maps[i]['subItem'],
       );
+      testItem.setP(maps[i]['p']);
+      testItem.setPlus(maps[i]['plus']);
+      testItem.setMinus(maps[i]['minus']);
+      return testItem;
     });
   }
 
@@ -493,15 +497,26 @@ class DBService {
   }
 
   // TestItem 수정
-  Future updateTestItem(int testItemId, String result) async {
+  Future updateTestItem(int testItemId, int plus, int minus, int p) async {
     final db = await initializeDB();
+    print("plus:$plus minus:$minus p:$p");
 
     await db.update(
       'testItem',
-      {'result': result},
+      {'plus': plus, 'minus': minus, 'p': p},
       where: "id = ?",
       whereArgs: [testItemId],
     );
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      'testItem',
+      where: "id = ?",
+      whereArgs: [testItemId],
+    );
+
+    for (Map<String, dynamic> map in maps) {
+      print("$map['plus'] $map['minus'] $map['p']");
+    }
   }
 
   // Test 삭제
