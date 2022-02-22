@@ -1,18 +1,20 @@
+import 'package:intl/intl.dart';
+
 class Test {
   final int testId;
-  final int childId; 
+  final int childId;
   DateTime date;
   String title;
   bool isInput;
 
-  Test({ required this.testId, required this.childId, required this.date, required this.title, required this.isInput});
+  Test({required this.testId, required this.childId, required this.date, required this.title, required this.isInput});
 
   Map<String, dynamic> toMap() {
     return {
       'childId': childId,
-      'date': date,
+      'date': DateFormat('yyyyMMdd').format(date),
       'title': title,
-      'isInput': isInput,
+      'isInput': isInput ? 1 : 0,
     };
   }
 

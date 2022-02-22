@@ -1,4 +1,5 @@
 import 'package:aba_analysis_local/provider/db_notifier.dart';
+import 'package:aba_analysis_local/services/db.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
@@ -23,9 +24,17 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
 
   bool flag = false;
 
+  DBService db = DBService();
+
   @override
   void initState() {
     super.initState();
+
+    //print testItem
+    for (TestItem ti in widget.testItem) {
+      print("puls: ${ti.plus} minus: ${ti.minus} p: ${ti.p}");
+    }
+
     for (int i = 0; i < widget.testItem.length; i++) {
       countResult.add([widget.testItem[i].plus, widget.testItem[i].minus, widget.testItem[i].p]);
     }
@@ -69,16 +78,10 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
                   testItem.setP(countResult[i][2]);
 
                   // DB 적용
-                  // await store.updateTestItem(testItem);
+                  await db.updateTestItem(testItem.testItemId, testItem.plus, testItem.minus, testItem.p);
                 }
                 // TestItem Provider에 적용
-                // context.read<DBNotifier>().updateTestItemList(await store.readAllTestItem());
-
-                // Test 업데이트
-                // await store.updateTest(widget.test.testId, widget.test.date, widget.test.title, true);
-
-                // Test Provider에 적용
-                context.read<DBNotifier>().updateTest(widget.test.testId, widget.test.date, widget.test.title, true);
+                await context.read<DBNotifier>().updateTestItemList();
 
                 Navigator.pop(context);
               }

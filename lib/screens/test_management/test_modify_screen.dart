@@ -24,9 +24,12 @@ class _TestInputScreenState extends State<TestModifyScreen> {
   _TestInputScreenState();
   late String title;
   late DateTime date;
+
   final formkey = GlobalKey<FormState>();
+
   List<TestItem> testItemList = [];
   List<TestItemInfo> testItemInfoList = [];
+
   DBService db = DBService();
   bool flag = false;
 
@@ -115,9 +118,16 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                     flag = true;
                     // 완료 버튼 누르면 실행
                     if (formkey.currentState!.validate()) {
+                      Test updatedTest = Test(
+                        testId: widget.test.testId,
+                        childId: widget.child.id,
+                        title: title,
+                        date: date,
+                        isInput: false,
+                      );
                       // 테스트의 날짜와 테스트 제목 수정
-                      // db.updateTest(widget.test.testId, date, title, widget.test.isInput);
-                      context.read<DBNotifier>().updateTest(widget.test.testId, date, title, widget.test.isInput);
+                      await db.updateTest(updatedTest);
+                      await context.read<DBNotifier>().updateTestList();
 
                       // 기존의 테스트에 대한 테스트 아이템 모두 제거
                       List<TestItem> testItemList1 = context.read<DBNotifier>().getTestItemList(widget.test.testId, true);
@@ -127,18 +137,20 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                         // Provider에서 testItem 제거
                         context.read<DBNotifier>().removeTestItem(testItem);
                       }
+
                       // 테스트 만들기
                       for (TestItemInfo testItemInfo in testItemInfoList) {
-                        // TestItem testItem = TestItem(
-                        //   testItemId: await db.updateId(AutoID.testItem),
-                        //   testId: widget.test.testId,
-                        //   childId: widget.test.childId,
-                        //   programField: testItemInfo.programField,
-                        //   subField: testItemInfo.subField,
-                        //   subItem: testItemInfo.subItem,
-                        // );
-                        // await db.createTestItem(testItem);
-                        // context.read<DBNotifier>().addTestItem(testItem);
+                        TestItem testItem = TestItem(
+                          testItemId: 0,
+                          testId: updatedTest.testId,
+                          childId: widget.child.id,
+                          programField: testItemInfo.programField,
+                          subField: testItemInfo.subField,
+                          subItem: testItemInfo.subItem,
+                        );
+
+                        await db.createTestItem(testItem);
+                        await context.read<DBNotifier>().updateTestItemList();
                       }
 
                       Navigator.pop(context);

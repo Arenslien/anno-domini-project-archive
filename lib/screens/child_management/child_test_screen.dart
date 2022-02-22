@@ -6,9 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/test.dart';
 import 'package:aba_analysis_local/models/child.dart';
-import 'package:aba_analysis_local/models/test_item.dart';
-// import 'package:aba_analysis_local/provider/test_notifier.dart';
-// import 'package:aba_analysis_local/provider/test_item_notifier.dart';
 import 'package:aba_analysis_local/components/build_list_tile.dart';
 import 'package:aba_analysis_local/components/build_no_list_widget.dart';
 import 'package:aba_analysis_local/components/build_toggle_buttons.dart';
@@ -155,7 +152,7 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
             builder: (context) => ChildGetResultScreen(
               child: widget.child,
               test: test,
-              testItem: context.read<DBNotifier>().getTestItemList(test.testId, true),
+              testItem: context.watch<DBNotifier>().getTestItemList(test.testId, true),
             ),
           ),
         );

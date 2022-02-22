@@ -9,7 +9,14 @@ class TestItem {
   int _plus = 0;
   int _minus = 0;
 
-  TestItem({ required this.testItemId, required this.testId, required this.childId, required this.programField, required this.subField, required this.subItem});
+  TestItem({
+    required this.testItemId,
+    required this.testId,
+    required this.childId,
+    required this.programField,
+    required this.subField,
+    required this.subItem,
+  });
 
   Map<String, dynamic> toMap() {
     return {
