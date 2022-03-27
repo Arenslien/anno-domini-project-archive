@@ -67,6 +67,17 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
             onPressed: () async {
               if (!flag) {
                 flag = true;
+                for (int i = 0; i < countResult.length; i++) {
+                  if (countResult[i][0] + countResult[i][1] + countResult[i][2] == 0) {
+                    flag = false;
+                    ScaffoldMessenger.of(context).showSnackBar(makeSnackBar('입력되지 않은 테스트가 존재합니다.', false));
+                    return;
+                  }
+                }
+
+                Test updatedTest = widget.test;
+                updatedTest.isInput = true;
+
                 // TestItem 생성
                 List<TestItem> testItemList = widget.testItem;
 
@@ -80,8 +91,13 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
                   // DB 적용
                   await db.updateTestItem(testItem.testItemId, testItem.plus, testItem.minus, testItem.p);
                 }
+
+                // Test 적용
+                await db.updateTest(updatedTest);
+
                 // TestItem Provider에 적용
                 await context.read<DBNotifier>().updateTestItemList();
+                await context.read<DBNotifier>().updateTestList();
 
                 Navigator.pop(context);
               }

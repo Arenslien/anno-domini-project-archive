@@ -60,28 +60,6 @@ class _ChildTestScreenState extends State<ChildTestScreen> {
           iconTheme: IconThemeData(color: Colors.black),
           backgroundColor: mainGreenColor,
         ),
-        endDrawer: Drawer(
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(
-                '${widget.child.name} 추가 정보',
-                style: TextStyle(color: Colors.black),
-              ),
-              backgroundColor: mainGreenColor,
-              iconTheme: IconThemeData(color: mainGreenColor),
-            ),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextButton(
-                  child: Text("a"),
-                  style: TextButton.styleFrom(),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ),
-        ),
         body: context.watch<DBNotifier>().getAllTestListOf(widget.child.id, false).length == 0
             ? noListData(Icons.library_add_outlined, '테스트 추가')
             : searchTextEditingController.text.isEmpty

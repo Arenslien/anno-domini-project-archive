@@ -499,7 +499,6 @@ class DBService {
   // TestItem 수정
   Future updateTestItem(int testItemId, int plus, int minus, int p) async {
     final db = await initializeDB();
-    print("plus:$plus minus:$minus p:$p");
 
     await db.update(
       'testItem',
@@ -507,16 +506,6 @@ class DBService {
       where: "id = ?",
       whereArgs: [testItemId],
     );
-
-    final List<Map<String, dynamic>> maps = await db.query(
-      'testItem',
-      where: "id = ?",
-      whereArgs: [testItemId],
-    );
-
-    for (Map<String, dynamic> map in maps) {
-      print("$map['plus'] $map['minus'] $map['p']");
-    }
   }
 
   // Test 삭제
