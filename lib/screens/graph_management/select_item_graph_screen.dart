@@ -18,12 +18,7 @@ class SelectItemScreen extends StatefulWidget {
   final Child child;
   final SubItem subItem;
   final int index;
-  const SelectItemScreen(
-      {Key? key,
-      required this.child,
-      required this.subItem,
-      required this.index})
-      : super(key: key);
+  const SelectItemScreen({Key? key, required this.child, required this.subItem, required this.index}) : super(key: key);
   static String routeName = '/select_item';
 
   @override
@@ -43,8 +38,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    allTest =
-        context.read<DBNotifier>().getAllTestListOf(widget.child.id, true);
+    allTest = context.read<DBNotifier>().getAllTestListOf(widget.child.id, true);
 
     // for (Test test in allTest) {      // result가 null이라면
     //   for (TestItem testItem in test.testItemList) {
@@ -59,8 +53,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
       // 검색버튼
       icon: Icon(Icons.search),
       onPressed: () async {
-        final finalResult = await showSearch(
-            context: context, delegate: Search(widget.subItem.subItemList));
+        final finalResult = await showSearch(context: context, delegate: Search(widget.subItem.subItemList));
         setState(() {
           selectedSubItem = finalResult;
         });
@@ -68,8 +61,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
     );
 
     return Scaffold(
-        appBar: selectAppBar(context, (widget.child.name + "의 하위목록 선택"),
-            searchButton: searchButton),
+        appBar: selectAppBar(context, (widget.child.name + "의 하위목록 선택"), searchButton: searchButton),
         body: isNoTestData
             ? noTestData()
             : selectedSubItem == ""
@@ -77,8 +69,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: widget.subItem.subItemList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return dataTile(
-                          widget.subItem.subItemList[index], index, context);
+                      return dataTile(widget.subItem.subItemList[index], index, context);
                     },
                   )
                 : ListView.builder(
@@ -106,22 +97,18 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
 
         for (Test test in allTest) {
           // 한 테스트마다 테스트에 속한 테스트 아이템을 가져온다.
-          List<TestItem> testItemList =
-              context.read<DBNotifier>().getTestItemList(test.testId, false);
+          List<TestItem> testItemList = context.read<DBNotifier>().getTestItemList(test.testId, false);
 
           Map<DateTime, List<TestItem>> dateAndItemMap;
           // 모든 테스트 아이템 리스트를 돌면서, 해당 서브아이템이라면 추가해준다.
           for (TestItem testItem in testItemList) {
             // 선택된 테스트 아이템 이름으로 테스트 아이템을 DB에서 찾는다.
-            if (testItem.subItem == subItem &&
-                testItem.p + testItem.plus + testItem.minus != 0) {
+            if (testItem.subItem == subItem && testItem.p + testItem.plus + testItem.minus != 0) {
               //   // 테스트 날짜 추가
-              String testDate =
-                  DateFormat(graphDateFormatNoTime).format(test.date);
+              String testDate = DateFormat(graphDateFormatNoTime).format(test.date);
               //   // 만약 테스트날짜가 이미 추가되어있으면
               if (dateSet.contains(testDate)) {}
-              subItemList.add(SubItemAndDate(
-                  testItem: testItem, date: test.date, dateString: testDate));
+              subItemList.add(SubItemAndDate(testItem: testItem, date: test.date, dateString: testDate));
 
               break;
             }
@@ -131,8 +118,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
           selectedSubItem = "";
         });
         if (subItemList.isEmpty) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => NoTestData()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => NoTestData()));
         } else {
           Navigator.push(
               context,
@@ -156,17 +142,6 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
             ),
             child: Image.asset('asset/sub_list_icon.png', fit: BoxFit.fill),
           ),
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              minWidth: 44,
-              minHeight: 48,
-              maxWidth: 44,
-              maxHeight: 48,
-            ),
-            child: widget.index == 0
-                ? Image.asset('asset/basic_icon.png', fit: BoxFit.fill)
-                : Image.asset('asset/add_icon.png', fit: BoxFit.fill),
-          ),
         ],
       ),
     );
@@ -184,11 +159,7 @@ class _SelectItemScreenState extends State<SelectItemScreen> {
           ),
           Text(
             'No Program Data',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: 40,
-                fontFamily: 'korean'),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'korean'),
           ),
         ],
       ),

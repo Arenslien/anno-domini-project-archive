@@ -12,9 +12,7 @@ import 'package:provider/provider.dart';
 class SelectAreaScreen extends StatefulWidget {
   final Child child;
   final List<SubField> subFieldList;
-  const SelectAreaScreen(
-      {Key? key, required this.child, required this.subFieldList})
-      : super(key: key);
+  const SelectAreaScreen({Key? key, required this.child, required this.subFieldList}) : super(key: key);
   static String routeName = '/select_area';
 
   @override
@@ -40,17 +38,14 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
       // 검색버튼
       icon: Icon(Icons.search),
       onPressed: () async {
-        final finalResult = await showSearch(
-            context: context,
-            delegate: Search(subFieldAndNameMap.keys.toList()));
+        final finalResult = await showSearch(context: context, delegate: Search(subFieldAndNameMap.keys.toList()));
         setState(() {
           selectedSubField = finalResult;
         });
       },
     );
     return Scaffold(
-        appBar: selectAppBar(context, (widget.child.name + "의 하위영역 선택"),
-            searchButton: searchButton),
+        appBar: selectAppBar(context, (widget.child.name + "의 하위영역 선택"), searchButton: searchButton),
         body: widget.subFieldList.length == 0
             ? noTestData()
             : selectedSubField == ""
@@ -65,8 +60,7 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: 1,
                     itemBuilder: (BuildContext context, int index) {
-                      return dataTile(
-                          subFieldAndNameMap[selectedSubField]!, index);
+                      return dataTile(subFieldAndNameMap[selectedSubField]!, index);
                     },
                   ));
   }
@@ -83,11 +77,7 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
           ),
           Text(
             'No Sub Field',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: 40,
-                fontFamily: 'korean'),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: 40, fontFamily: 'korean'),
           ),
         ],
       ),
@@ -109,9 +99,7 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
             MaterialPageRoute(
                 builder: (context) => SelectItemScreen(
                       child: widget.child,
-                      subItem: context
-                          .read<DBNotifier>()
-                          .readSubItem(subField.title),
+                      subItem: context.read<DBNotifier>().readSubItem(subField.title),
                       index: index,
                     )));
       },
@@ -127,17 +115,6 @@ class _SelectAreaScreenState extends State<SelectAreaScreen> {
               maxHeight: 64,
             ),
             child: Image.asset('asset/sub_field_icon.png', fit: BoxFit.fill),
-          ),
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              minWidth: 44,
-              minHeight: 48,
-              maxWidth: 44,
-              maxHeight: 48,
-            ),
-            child: index == 0
-                ? Image.asset('asset/basic_icon.png', fit: BoxFit.fill)
-                : Image.asset('asset/add_icon.png', fit: BoxFit.fill),
           ),
         ],
       ),
