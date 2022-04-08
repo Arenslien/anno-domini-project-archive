@@ -25,6 +25,7 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
   String? memo;
 
   bool flag = false;
+  String memo = "";
 
   DBService db = DBService();
 
