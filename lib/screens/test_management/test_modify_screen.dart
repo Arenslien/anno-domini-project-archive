@@ -24,6 +24,7 @@ class _TestInputScreenState extends State<TestModifyScreen> {
   _TestInputScreenState();
   late String title;
   late DateTime date;
+  late String memo;
 
   final formkey = GlobalKey<FormState>();
 
@@ -39,6 +40,7 @@ class _TestInputScreenState extends State<TestModifyScreen> {
     setState(() {
       title = widget.test.title;
       date = widget.test.date;
+      memo = widget.test.memo;
       testItemList = context.read<DBNotifier>().getTestItemList(widget.test.testId, true);
 
       for (TestItem testItem in testItemList) {
@@ -124,6 +126,7 @@ class _TestInputScreenState extends State<TestModifyScreen> {
                         title: title,
                         date: date,
                         isInput: false,
+                        memo: memo,
                       );
                       // 테스트의 날짜와 테스트 제목 수정
                       await db.updateTest(updatedTest);

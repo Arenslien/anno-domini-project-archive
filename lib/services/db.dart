@@ -1,3 +1,4 @@
+import 'package:aba_analysis_local/constants.dart';
 import 'package:aba_analysis_local/models/child.dart';
 import 'package:aba_analysis_local/models/program_field.dart';
 import 'package:aba_analysis_local/models/sub_field.dart';
@@ -10,18 +11,29 @@ import 'package:sqflite/sqflite.dart';
 
 class DBService {
   Future<Database> initializeDB() async {
+    print("hi");
     return await openDatabase(
       Path.join(await getDatabasesPath(), 'aba_analysis.db'),
       onCreate: (db, version) async {
+        print("start");
         await db.execute("CREATE TABLE child(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, birthday TEXT, gender TEXT)");
-        await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, childId INTEGER, date TEXT, title TEXT, isInput INTEGER)");
+        await db.execute("CREATE TABLE test(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, childId INTEGER, date TEXT, title TEXT, isInput INTEGER, memo TEXT)");
         await db.execute("CREATE TABLE testItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, testId INTEGER, childId INTEGER, programField TEXT, subField TEXT, subItem TEXT, p INTEGER, plus INTEGER, minus INTEGER)");
         await db.execute("CREATE TABLE programField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT)");
         await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, programFieldId INTEGER NOT NULL)");
         await db.execute("CREATE TABLE subItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, subFieldId INTEGER NOT NULL, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
+        await db.execute("CREATE TABLE initStatus(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, status INTEGER)");
+        await createInitProgramField();
+        print("end");
       },
       version: 1,
     );
+  }
+
+  Future<void> deleteDB() async {
+    await deleteDatabase(
+        Path.join(await getDatabasesPath(), 'aba_analysis.db'));
+    print('delete');
   }
   //=======================================================================================
   //                          Firebase 연동 - 아이들 관련 함수들
@@ -86,6 +98,53 @@ class DBService {
   //=======================================================================================
   //                          Firebase 연동 - 프로그램 영역 관련 함수들
   //=======================================================================================
+  Future<void> createInitProgramField() async {
+    final db = await initializeDB();
+
+    dynamic initStatus = await db.query(
+      'initStatus',
+      where: 'id = ?',
+      whereArgs: [1],
+    );
+
+    if (initStatus['status'] == 0) {
+      await db.rawInsert("INSERT INTO initStatus(status) VALUES(?)", [0]);
+      await db.update(
+        'initStatus',
+        {'status': 1},
+        // Dog의 id가 일치하는 지 확인합니다.
+        where: "id = ?",
+        // Dog의 id를 whereArg로 넘겨 SQL injection을 방지합니다.
+        whereArgs: [1],
+      );
+
+      for (int i = 0; i < 9; i++) {
+        await db.rawInsert('INSERT INTO programField(title) VALUES(?)',
+            [basicProgramField[i]]);
+        await db.rawInsert(
+            'INSERT INTO subField(title, programFieldId) VALUES(?, ?)',
+            [basicSubField[i], (i + 1)]);
+        await db.rawInsert(
+            'INSERT INTO subItem(subFieldId, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+              i,
+              basicSubItem[i][0],
+              basicSubItem[i][1],
+              basicSubItem[i][2],
+              basicSubItem[i][3],
+              basicSubItem[i][4],
+              basicSubItem[i][5],
+              basicSubItem[i][6],
+              basicSubItem[i][7],
+              basicSubItem[i][8],
+              basicSubItem[i][9]
+            ]);
+      }
+    }
+  }
+
+
+
   Future<void> createProgramField(String title) async {
     final db = await initializeDB();
     await db.rawInsert('INSERT INTO programField(title) VALUES(?)', [title]);
@@ -260,6 +319,7 @@ class DBService {
       title: "${test.title}_복사본",
       date: DateTime.now(),
       isInput: false,
+      memo: "",
     );
 
     Test copiedTest = (await readTest(await createTest(newTest)))!;
@@ -287,6 +347,7 @@ class DBService {
         date: DateTime.parse(maps[i]['date']),
         title: maps[i]['title'],
         isInput: maps[i]['isInput'] == 0 ? false : true,
+        memo: maps[i]['memo'],
       );
     })[0];
   }
@@ -303,6 +364,7 @@ class DBService {
         date: DateTime.parse(maps[i]['date']),
         title: maps[i]['title'],
         isInput: maps[i]['isInput'] == 0 ? false : true,
+        memo: maps[i]['memo'],
       );
     });
   }
@@ -322,6 +384,7 @@ class DBService {
         date: DateTime.parse(maps[i]['date']),
         title: maps[i]['title'],
         isInput: maps[i]['isInput'] == 0 ? false : true,
+        memo: maps[i]['memo'],
       );
     });
   }

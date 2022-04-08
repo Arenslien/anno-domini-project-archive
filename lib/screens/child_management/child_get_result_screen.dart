@@ -23,6 +23,7 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
   List<List<int>> countResult = [];
 
   bool flag = false;
+  String memo = "";
 
   DBService db = DBService();
 
