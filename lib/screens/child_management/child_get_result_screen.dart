@@ -22,10 +22,7 @@ class ChildGetResultScreen extends StatefulWidget {
 class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
   List<List<int>> countResult = [];
 
-  String? memo;
-
   bool flag = false;
-  String memo = "";
 
   DBService db = DBService();
 
@@ -35,6 +32,9 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
   void initState() {
     super.initState();
 
+    setState(() {
+      memoTextEditingController.text = widget.test.memo;
+    });
     //print testItem
     for (TestItem ti in widget.testItem) {
       print("puls: ${ti.plus} minus: ${ti.minus} p: ${ti.p}");
@@ -84,6 +84,7 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
 
                   Test updatedTest = widget.test;
                   updatedTest.isInput = true;
+                  updatedTest.memo = memoTextEditingController.text;
 
                   // TestItem 생성
                   List<TestItem> testItemList = widget.testItem;
@@ -179,7 +180,7 @@ class _ChildGetResultScreenState extends State<ChildGetResultScreen> {
                   cursorColor: Colors.black,
                   onChanged: (value) {
                     setState(() {
-                      memo = memoTextEditingController.text;
+                      // memo = memoTextEditingController.text;
                     });
                   },
                 ),
