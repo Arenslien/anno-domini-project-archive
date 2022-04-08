@@ -31,14 +31,14 @@ final Map<String, String> korToEngAboutPF = {
 
 final List<String> basicProgramField = [
   "수용 언어",
-  "동적 모방",
   "표현 언어",
-  "매칭",
-  "수학",
-  "놀이 기술",
-  "자조 기술",
+  "동적모방",
+  "놀이기술",
   "사회성 기술",
-  "쓰기"
+  "자조 기술",
+  "수학",
+  "쓰기",
+  "매칭"
 ];
 
 final List<String> basicSubField = [

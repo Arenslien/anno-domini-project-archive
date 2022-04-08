@@ -11,9 +11,10 @@ import 'package:sqflite/sqflite.dart';
 
 class DBService {
   Future<Database> initializeDB() async {
-    print("hi");
+    var databasesPath = await getDatabasesPath();
+    String path = Path.join(databasesPath, 'aba_analysis.db');
     return await openDatabase(
-      Path.join(await getDatabasesPath(), 'aba_analysis.db'),
+      path,
       onCreate: (db, version) async {
         print("start");
         await db.execute("CREATE TABLE child(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, birthday TEXT, gender TEXT)");
@@ -23,7 +24,46 @@ class DBService {
         await db.execute("CREATE TABLE subField(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, programFieldId INTEGER NOT NULL)");
         await db.execute("CREATE TABLE subItem(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, subFieldId INTEGER NOT NULL, item1 TEXT, item2 TEXT, item3 TEXT, item4 TEXT, item5 TEXT, item6 TEXT, item7 TEXT, item8 TEXT, item9 TEXT, item10 TEXT)");
         await db.execute("CREATE TABLE initStatus(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, status INTEGER)");
-        await createInitProgramField();
+        await db.rawInsert("INSERT INTO initStatus(status) VALUES(?)", [0]);
+        dynamic initStatus = await db.query(
+          'initStatus',
+          where: 'id = ?',
+          whereArgs: [1],
+        );
+        if (initStatus[0]['status'] == 0) {
+          await db.update(
+            'initStatus',
+            {'status': 1},
+            // Dog의 id가 일치하는 지 확인합니다.
+            where: "id = ?",
+            // Dog의 id를 whereArg로 넘겨 SQL injection을 방지합니다.
+            whereArgs: [1],
+          );
+
+          for (int i = 0; i < 9; i++) {
+            await db.rawInsert('INSERT INTO programField(title) VALUES(?)',
+                [basicProgramField[i]]);
+            await db.rawInsert(
+                'INSERT INTO subField(title, programFieldId) VALUES(?, ?)',
+                [basicSubField[i], (i + 1)]);
+            await db.rawInsert(
+                'INSERT INTO subItem(subFieldId, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [
+                  (i+1),
+                  basicSubItem[i][0],
+                  basicSubItem[i][1],
+                  basicSubItem[i][2],
+                  basicSubItem[i][3],
+                  basicSubItem[i][4],
+                  basicSubItem[i][5],
+                  basicSubItem[i][6],
+                  basicSubItem[i][7],
+                  basicSubItem[i][8],
+                  basicSubItem[i][9]
+                ]);
+          }
+        }
+
         print("end");
       },
       version: 1,
@@ -99,48 +139,7 @@ class DBService {
   //                          Firebase 연동 - 프로그램 영역 관련 함수들
   //=======================================================================================
   Future<void> createInitProgramField() async {
-    final db = await initializeDB();
-
-    dynamic initStatus = await db.query(
-      'initStatus',
-      where: 'id = ?',
-      whereArgs: [1],
-    );
-
-    if (initStatus['status'] == 0) {
-      await db.rawInsert("INSERT INTO initStatus(status) VALUES(?)", [0]);
-      await db.update(
-        'initStatus',
-        {'status': 1},
-        // Dog의 id가 일치하는 지 확인합니다.
-        where: "id = ?",
-        // Dog의 id를 whereArg로 넘겨 SQL injection을 방지합니다.
-        whereArgs: [1],
-      );
-
-      for (int i = 0; i < 9; i++) {
-        await db.rawInsert('INSERT INTO programField(title) VALUES(?)',
-            [basicProgramField[i]]);
-        await db.rawInsert(
-            'INSERT INTO subField(title, programFieldId) VALUES(?, ?)',
-            [basicSubField[i], (i + 1)]);
-        await db.rawInsert(
-            'INSERT INTO subItem(subFieldId, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [
-              i,
-              basicSubItem[i][0],
-              basicSubItem[i][1],
-              basicSubItem[i][2],
-              basicSubItem[i][3],
-              basicSubItem[i][4],
-              basicSubItem[i][5],
-              basicSubItem[i][6],
-              basicSubItem[i][7],
-              basicSubItem[i][8],
-              basicSubItem[i][9]
-            ]);
-      }
-    }
+    
   }
 
 
@@ -306,7 +305,7 @@ class DBService {
   Future<int> createTest(Test test) async {
     final db = await initializeDB();
 
-    return await db.rawInsert('INSERT INTO test(childId, date, title, isInput) VALUES(?, ?, ?, ?)', [test.childId, DateFormat('yyyy-MM-dd').format(test.date), test.title, test.isInput ? 1 : 0]);
+    return await db.rawInsert('INSERT INTO test(childId, date, title, isInput, memo) VALUES(?, ?, ?, ?, ?)', [test.childId, DateFormat('yyyy-MM-dd').format(test.date), test.title, test.isInput ? 1 : 0, test.memo]);
   }
 
   // childId INTEGER, date TEXT, title TEXT, isInput INTEGER)
