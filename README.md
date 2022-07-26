@@ -1,16 +1,12 @@
-# bibler
+# Anno Domini Project - Bibler
 
-A new Flutter project.
+## 1. main branch 코드 가져오기
 
-## Getting Started
++ git branch -M <자신이 사용할 브랜치 명>
++ git checkout <자신이 사용할 브랜치 명>
++ git pull origin main
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 2. 각자의 branch에서 작업한 코드 merge 하기
++ git add *
++ git commit -m "변경사항과 관련된 메시지"
++ git push origin <자신이 사용하는 브랜치 명>
