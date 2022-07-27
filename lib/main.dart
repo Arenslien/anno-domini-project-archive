@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:bibler/screens/kakao_login/kakao_login_screen.dart';
 
-import 'package:bibler/screens/menu/menu_screen.dart';
+import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
 void main() {
+  KakaoSdk.init(nativeAppKey: '457951f09b39d2b07b13eac04d093d67'); // 카카오 로그인 설정
   runApp(const MyApp());
 }
 
@@ -37,6 +39,22 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const KakaoLoginScreen()),
+                );
+              },
+              child: const Text('kakao'),
+            ),
+          ],
+        ),
       ),
     );
   }
