@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:bibler/screens/kakao_login/kakao_login_screen.dart';
+import 'package:bibler/screens/google_map/google_map_sample.dart';
 
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
@@ -51,7 +53,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => const KakaoLoginScreen()),
                 );
               },
-              child: const Text('kakao'),
+              child: const Text('Kakao'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GoogleMapSample()),
+                );
+              },
+              child: const Text('Google'),
             ),
           ],
         ),
