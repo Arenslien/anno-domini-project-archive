@@ -35,6 +35,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   kakao_flutter_sdk_user: ^1.2.1 # 카카오 로그인
   google_maps_flutter: ^2.1.9 # 구글 지도
+  location: ^4.4.0
+  geolocator: ^9.0.1
 
 dev_dependencies:
   flutter_test:
