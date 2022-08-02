@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -15,36 +13,42 @@ class GoogleMapSample extends StatefulWidget {
 }
 
 class _GoogleMapSampleState extends State<GoogleMapSample> {
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
 
   Set<Marker> markers = {};
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-      target: LatLng(37.42796133580664, -122.085749655962), zoom: 14.4746);
+  static const CameraPosition _kGooglePlex = CameraPosition(target: LatLng(37.42796133580664, -122.085749655962), zoom: 14.4746);
 
   bool isAllowed = false;
   late Position position;
   late StreamSubscription<Position> streamSubscription;
 
+  @override
   void initState() {
     super.initState();
     getData();
   }
 
-//기본 exception만 다룬 것으로 추후에 다른 예외들 추가할 예정
+// 기본 exception만 다룬 것으로 추후에 다른 예외들 추가할 예정
   void getData() async {
     try {
       position = await _getCurrent();
 
       setState(() {
-        this.isAllowed = true;
+        isAllowed = true;
       });
-    } catch (PermissionDefinitionsNotFoundException) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Please allow permission to use the service.')));
-    } catch (LocationServiceDisabledException) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Please activate your Gps')));
+    } on PermissionDefinitionsNotFoundException {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please allow permission to use the service.'),
+        ),
+      );
+    } on LocationServiceDisabledException {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please activate your Gps'),
+        ),
+      );
     }
   }
 
@@ -54,7 +58,7 @@ class _GoogleMapSampleState extends State<GoogleMapSample> {
     return Scaffold(
       body: Column(
         children: [
-          Container(
+          SizedBox(
             width: size.width,
             height: size.height * 0.75,
             child: GoogleMap(
@@ -70,23 +74,27 @@ class _GoogleMapSampleState extends State<GoogleMapSample> {
             onPressed: !isAllowed
                 ? null
                 : () async {
-                    final GoogleMapController controller =
-                        await _controller.future;
+                    final GoogleMapController controller = await _controller.future;
                     controller.animateCamera(
-                        CameraUpdate.newCameraPosition(CameraPosition(
-                      target: LatLng(position.latitude, position.longitude),
-                      zoom: 14,
-                    )));
+                      CameraUpdate.newCameraPosition(
+                        CameraPosition(
+                          target: LatLng(position.latitude, position.longitude),
+                          zoom: 14,
+                        ),
+                      ),
+                    );
 
-                    markers.add(Marker(
-                      markerId: MarkerId('current Location'),
-                      position: LatLng(position.latitude, position.longitude),
-                    ));
+                    markers.add(
+                      Marker(
+                        markerId: const MarkerId('current Location'),
+                        position: LatLng(position.latitude, position.longitude),
+                      ),
+                    );
 
                     setState(() {});
                   },
-            label: Text('Go to the current'),
-            icon: Icon(Icons.location_on),
+            label: const Text('Go to the current'),
+            icon: const Icon(Icons.location_on),
           ),
           ElevatedButton.icon(
             onPressed: !isAllowed
@@ -94,13 +102,15 @@ class _GoogleMapSampleState extends State<GoogleMapSample> {
                 : () {
                     double latitude = position.latitude;
                     double longitude = position.longitude;
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('lat : $latitude / lng : $longitude'),
-                      duration: Duration(seconds: 2),
-                    ));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('lat : $latitude / lng : $longitude'),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
                   },
-            label: Text('Show lng/lat'),
-            icon: Icon(Icons.location_searching_sharp),
+            label: const Text('Show lng/lat'),
+            icon: const Icon(Icons.location_searching_sharp),
           ),
           ElevatedButton.icon(
             onPressed: !isAllowed
@@ -108,8 +118,8 @@ class _GoogleMapSampleState extends State<GoogleMapSample> {
                 : () {
                     getAddressFromLatLang(position, context);
                   },
-            label: Text('Show address'),
-            icon: Icon(Icons.home),
+            label: const Text('Show address'),
+            icon: const Icon(Icons.home),
           )
         ],
       ),
@@ -146,14 +156,12 @@ Future<Position> _getCurrent() async {
   return position;
 }
 
-Future<void> getAddressFromLatLang(
-    Position position, BuildContext context) async {
+Future<void> getAddressFromLatLang(Position position, BuildContext context) async {
   Map addressMap = {'admin': '', 'subAdmin': '', 'local': '', 'thorough': ''};
   late String address = '';
 
   try {
-    List<Placemark> placemark =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
+    List<Placemark> placemark = await placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark place = placemark[0];
 
     addressMap['admin'] = place.administrativeArea;
@@ -163,13 +171,13 @@ Future<void> getAddressFromLatLang(
 
     addressMap.forEach((key, value) {
       if (value != '') {
-        address = address + value + ' ';
+        address = '${address + value} ';
       }
     });
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(address),
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
     ));
   } catch (e) {
     print(e);
