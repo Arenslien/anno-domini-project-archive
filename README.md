@@ -9,12 +9,12 @@
 
 각 프로젝트는 독립적인 목표를 가지고 개발되었으며, `git subtree`를 통해 체계적으로 통합되었습니다.
 
-### 1. 🔍 Specialist Solutions (ABA Series)
-전문 기관의 업무 효율화를 목표로 진행된 프로젝트군입니다.
+### 1. 🔍 Main Solution (ABA Series)
+전문 기관의 업무 효율화를 목표로 진행된 프로젝트입니다.
 * **[`/aba-analysis`](./aba-analysis)**: ABA 행동발달연구소를 위한 행동 기록 디지털화 앱 (Online Ver.)
 * **[`/aba-analysis-local`](./aba-analysis-local)**: 오프라인 환경을 고려한 로컬 데이터 관리 버전
 
-### 2. 💡 Service Incubation (Core & MVP)
+### 2. 💡 Service Incubation
 창업 준비 단계에서 시도된 서비스 아이디어 구현 및 테스트 코드들입니다.
 * **[`/lifetree`](./lifetree)**: LifeTree 프로젝트 기반 코드 (Anno-domini-project)
 * **[`/bibler`](./bibler)**: 성경 기반 서비스 'Bibler' 프로젝트 (Bibler-Project)
