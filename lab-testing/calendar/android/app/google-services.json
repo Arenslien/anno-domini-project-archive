@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "412493963719",
+    "project_id": "christian-calendar-app",
+    "storage_bucket": "christian-calendar-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412493963719:android:bf492a256a1e61197479e2",
+        "android_client_info": {
+          "package_name": "com.annodomini.calendar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "412493963719-e8kvu7k4ac8hd1dhnsccod920640hau7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.annodomini.calendar",
+            "certificate_hash": "3a2fbda64f22465e74ad27c610857a74c34669ba"
+          }
+        },
+        {
+          "client_id": "412493963719-b97jfsqgdib9sm13819err3vni6ugm3o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSilIro5iL8xeMZVwrJDfBfXQgtD0IzV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "412493963719-b97jfsqgdib9sm13819err3vni6ugm3o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
