@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "992950691620",
+    "project_id": "aba-analysis",
+    "storage_bucket": "aba-analysis.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992950691620:android:08cf7529b80df3b6e2f5b1",
+        "android_client_info": {
+          "package_name": "com.annodomini.aba_analysis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "992950691620-6948k10q7tpd3rl63ef96ei9cdsibqoi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.annodomini.aba_analysis",
+            "certificate_hash": "a6234eeca837871a3c66a658bf55bb849e13232f"
+          }
+        },
+        {
+          "client_id": "992950691620-fqo3nuo0phv6unnp21j1b2eufbc6g92d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.annodomini.aba_analysis",
+            "certificate_hash": "da260574419ebbdc36134ac438b6bb4c14ebf9a7"
+          }
+        },
+        {
+          "client_id": "992950691620-ef1hp6rsnviptj3u9hjru0ej65tbu63k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPT2CIKfV5_lkkOuWmHMWdIlcuyFALWIY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "992950691620-ef1hp6rsnviptj3u9hjru0ej65tbu63k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
